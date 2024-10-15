@@ -191,6 +191,8 @@ namespace HomeAssignment.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email");
+
                     b.ToTable("UserEntities");
                 });
 
