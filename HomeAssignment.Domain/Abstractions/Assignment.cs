@@ -4,7 +4,7 @@ public class Assignment
 {
     public Guid Id { get; set; }
     public Guid OwnerId { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; set; }
     public string? Description { get; set; }
     public DateTime Deadline { get; set; }
     public int MaxScore { get; set; }
@@ -14,11 +14,12 @@ public class Assignment
     public ScoreSection TestsSection { get; set; }
     public ScoreSection QualitySection { get; set; }
 
-    public Assignment(Guid id, Guid ownerId, string? description, DateTime deadline, int maxScore, int maxAttemptsAmount, 
+    public Assignment(Guid id, Guid ownerId, string title, string? description, DateTime deadline, int maxScore, int maxAttemptsAmount, 
         ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
     {
         Id = id;
         OwnerId = ownerId;
+        Title = title;
         Description = description;
         Deadline = deadline;
         MaxScore = maxScore;
@@ -28,7 +29,7 @@ public class Assignment
         QualitySection = qualitySection;
     }
 
-    public static Assignment Create(Guid id, Guid ownerId, string? description, DateTime deadline, int maxScore,
+    public static Assignment Create(Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null, 
         ScoreSection? qualitySection = null)
     {
@@ -37,6 +38,7 @@ public class Assignment
         return new Assignment(
             assignmentId, 
             ownerId, 
+            title,
             description, 
             deadline, 
             maxScore, 
@@ -47,11 +49,12 @@ public class Assignment
         );
     }
     
-    public void Update(Guid ownerId, string? description, DateTime deadline, int maxScore,
+    public void Update(Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null, 
         ScoreSection? qualitySection = null)
     {
         OwnerId = ownerId;
+        Title = title;
         Description = description;
         Deadline = deadline;
         MaxScore = maxScore;
