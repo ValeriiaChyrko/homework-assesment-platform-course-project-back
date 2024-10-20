@@ -43,6 +43,7 @@ public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssi
         );
 
         var assignmentEntity = _mapper.Map<AssignmentEntity>(assignment);
+        assignmentEntity.Id = command.Id;
         _context.AssignmentEntities.Update(assignmentEntity);
 
         return Task.FromResult(_mapper.Map<RespondAssignmentDto>(assignmentEntity));
