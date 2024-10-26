@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Attempts;
 
-public record GetAttemptByIdQuery(Guid Id) : IRequest<RespondAssignmentDto?>;
+public record GetAttemptByIdQuery(Guid Id) : IRequest<RespondAttemptDto?>;
