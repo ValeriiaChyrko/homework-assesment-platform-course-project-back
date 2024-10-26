@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.GitHubProfiles;
 
-public record GetAllGitHubProfilesQuery : IRequest<IEnumerable<GitHubProfileDto>>;
+public record GetAllGitHubProfilesByUserIdQuery(Guid UserId) : IRequest<IEnumerable<GitHubProfileDto>?>;

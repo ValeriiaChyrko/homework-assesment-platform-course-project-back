@@ -54,7 +54,7 @@ public class AssignmentService : IAssignmentService
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error updating patient {ex.InnerException}. Using rollback transaction.");
+            _logger.Log($"Error updating assignment {ex.InnerException}. Using rollback transaction.");
 
             throw new Exception("Error updating assignment", ex);
         }
@@ -72,7 +72,7 @@ public class AssignmentService : IAssignmentService
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error deleting patient {ex.InnerException}. Using rollback transaction.");
+            _logger.Log($"Error deleting assignment {ex.InnerException}. Using rollback transaction.");
 
             throw new Exception("Error deleting assignment", ex);
         }
@@ -87,7 +87,7 @@ public class AssignmentService : IAssignmentService
         }
         catch (Exception ex)
         {
-            _logger.Log($"Error getting patient {ex.InnerException}.");
+            _logger.Log($"Error getting assignment {ex.InnerException}.");
 
             throw new Exception("Error getting assignment", ex);
         }
@@ -97,15 +97,15 @@ public class AssignmentService : IAssignmentService
     {
         try
         {
-            var patient = await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken);
+            var assignments = await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken);
             
-            return patient.ToList();
+            return assignments.ToList();
         }
         catch (Exception ex)
         {
-            _logger.Log($"Error getting patient entities {ex.InnerException}.");
+            _logger.Log($"Error getting assignments entities {ex.InnerException}.");
 
-            throw new Exception("Error getting assignment entities", ex);
+            throw new Exception("Error getting assignments entities", ex);
         }
     }
 }

@@ -6,22 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.GitHubProfiles;
 
-public sealed class GetAllGitHubProfilesQueryHandler : IRequestHandler<GetAllGitHubProfilesQuery, IEnumerable<GitHubProfileDto>>
+public sealed class GetAllGitHubProfilesByUserIdQueryHandler : IRequestHandler<GetAllGitHubProfilesByUserIdQuery, IEnumerable<GitHubProfileDto>?>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetAllGitHubProfilesQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    public GetAllGitHubProfilesByUserIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<GitHubProfileDto>> Handle(GetAllGitHubProfilesQuery query,
+    public async Task<IEnumerable<GitHubProfileDto>?> Handle(GetAllGitHubProfilesByUserIdQuery query,
         CancellationToken cancellationToken)
     {
         var profiles = await _context
             .GitHubProfilesEntities
+            .Where(g=>g.UserId == query.UserId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
