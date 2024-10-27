@@ -50,6 +50,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+app.UseCors("AllowMyOrigin");
 app.UseHttpsRedirection();
 app.MapControllerRoute(
     "default",

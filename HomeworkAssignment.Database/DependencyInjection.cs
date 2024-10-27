@@ -8,15 +8,15 @@ public static class DependencyInjection
 {
     public static void AddDatabaseServices(this IServiceCollection services)
     {
-        services.AddSingleton<IHomeworkAssignmentDbContextProvider, HomeworkAssignmentDbContextProvider>();
+        services.AddScoped<IHomeworkAssignmentDbContextProvider, HomeworkAssignmentDbContextProvider>();
 
-        services.AddSingleton<IHomeworkAssignmentDbContextFactory>(provider =>
+        services.AddScoped<IHomeworkAssignmentDbContextFactory>(provider =>
         {
             var contextFactoryProvider = provider.GetService<IHomeworkAssignmentDbContextProvider>();
             return contextFactoryProvider!.GetFactory();
         });
 
-        services.AddSingleton<IHomeworkAssignmentDbContext>(provider =>
+        services.AddScoped<IHomeworkAssignmentDbContext>(provider =>
         {
             var contextFactory = provider.GetService<IHomeworkAssignmentDbContextFactory>();
             return contextFactory!.CreateDbContext();
