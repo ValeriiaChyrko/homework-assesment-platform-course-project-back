@@ -13,7 +13,7 @@ public static class DependencyInjection
         services.AddSingleton<IStudentService, StudentService>();
         services.AddSingleton<ITeacherService, TeacherService>();
 
-        services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
+        services.AddSingleton<IDatabaseTransactionManager, DatabaseTransactionManager>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
     }
 }

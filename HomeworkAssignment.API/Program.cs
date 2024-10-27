@@ -1,27 +1,58 @@
+using HomeAssignment.Database;
+using HomeAssignment.Domain;
+using HomeAssignment.DTOs;
+using HomeAssignment.Persistence;
+using HomeworkAssignment.Application;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddApplicationServices();
+builder.Services.AddDatabaseServices();
+builder.Services.AddDomainServices();
+builder.Services.AddDtosServices();
+builder.Services.AddPersistenceServices();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyOrigin", p =>
+    {
+        p.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HomeworkAssignment API v1", Version = "v1" });
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    c.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WheelsCatalog API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-
-
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
-
-app.MapFallbackToFile("index.html");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
