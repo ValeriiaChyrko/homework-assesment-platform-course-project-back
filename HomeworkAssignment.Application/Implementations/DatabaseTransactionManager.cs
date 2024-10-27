@@ -18,10 +18,7 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        if (cancellationToken.IsCancellationRequested)
-        {
-            throw new OperationCanceledException(cancellationToken);
-        }
+        if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
 
         return await _context.SaveChangesAsync(cancellationToken);
     }
@@ -33,10 +30,7 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()
     {
-        if (_transaction != null)
-        {
-            throw new InvalidOperationException("Transaction is already active.");
-        }
+        if (_transaction != null) throw new InvalidOperationException("Transaction is already active.");
 
         _transaction = await _context.BeginTransactionAsync();
 
@@ -45,26 +39,17 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public async Task CommitAsync(IDbContextTransaction transaction, CancellationToken cancellationToken)
     {
-        if (transaction == null)
-        {
-            throw new ArgumentNullException(nameof(transaction));
-        }
+        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-        if (_transaction != transaction)
-        {
-            throw new InvalidOperationException("Transaction is not current.");
-        }
+        if (_transaction != transaction) throw new InvalidOperationException("Transaction is not current.");
 
         try
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException(cancellationToken);
-            }
+            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
             _context.DetachEntitiesInChangeTracker();
-            
+
             await transaction.CommitAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -84,22 +69,13 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public async Task RollbackAsync(IDbContextTransaction transaction, CancellationToken cancellationToken)
     {
-        if (transaction == null)
-        {
-            throw new ArgumentNullException(nameof(transaction));
-        }
+        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-        if (_transaction != transaction)
-        {
-            throw new InvalidOperationException("Transaction is not current.");
-        }
+        if (_transaction != transaction) throw new InvalidOperationException("Transaction is not current.");
 
         try
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException(cancellationToken);
-            }
+            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
 
             await transaction.RollbackAsync(cancellationToken);
         }
@@ -121,9 +97,6 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public async ValueTask DisposeAsync()
     {
-        if (_transaction != null)
-        {
-            await _transaction.DisposeAsync();
-        }
+        if (_transaction != null) await _transaction.DisposeAsync();
     }
 }

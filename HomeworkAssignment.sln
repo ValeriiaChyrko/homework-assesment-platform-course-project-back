@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Database", "HomeAssignment.Database\HomeAssignment.Database.csproj", "{681E32BD-281B-4312-92E0-D40B3AF53A91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Database", "HomeworkAssignment.Database\HomeworkAssignment.Database.csproj", "{681E32BD-281B-4312-92E0-D40B3AF53A91}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C5C0F829-1D76-48D1-8723-2FE9D314C741}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Domain", "HomeAssignment.Domain\HomeAssignment.Domain.csproj", "{958EB26F-0A6D-435A-8870-39F82C52925F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Domain", "HomeworkAssignment.Domain\HomeworkAssignment.Domain.csproj", "{958EB26F-0A6D-435A-8870-39F82C52925F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.DTOs", "HomeAssignment.DTOs\HomeAssignment.DTOs.csproj", "{641BCEA4-A032-445C-A432-1CBE6D786793}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.DTOs", "HomeworkAssignment.DTOs\HomeworkAssignment.DTOs.csproj", "{641BCEA4-A032-445C-A432-1CBE6D786793}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Persistence", "HomeAssignment.Persistence\HomeAssignment.Persistence.csproj", "{98981997-7EF8-4C76-AECF-0E040301FCB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Persistence", "HomeworkAssignment.Persistence\HomeworkAssignment.Persistence.csproj", "{98981997-7EF8-4C76-AECF-0E040301FCB3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Application", "HomeworkAssignment.Application\HomeworkAssignment.Application.csproj", "{B87CECF0-0E74-4672-BDB2-A08B5B97BBD0}"
 EndProject

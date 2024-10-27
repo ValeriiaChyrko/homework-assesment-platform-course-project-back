@@ -32,13 +32,14 @@ public class TeacherService : ITeacherService
         _mediator = mediator;
     }
 
-    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
         try
         {
             var passwordHash = _passwordHasher.HashPassword(teacherDto.Password);
-            
+
             var teacher = Teacher.Create(
                 teacherDto.FullName,
                 teacherDto.Email,
@@ -48,12 +49,12 @@ public class TeacherService : ITeacherService
                 teacherDto.GithubProfileUrl,
                 teacherDto.GithubPictureUrl
             );
-            
+
             var userDto = _mapper.Map<UserDto>(teacher);
-            await _mediator.Send( new CreateUserCommand(userDto), cancellationToken);
-            
+            await _mediator.Send(new CreateUserCommand(userDto), cancellationToken);
+
             var profileDto = _mapper.Map<GitHubProfileDto>(teacher);
-            await _mediator.Send( new CreateGitHubProfileCommand(profileDto), cancellationToken);
+            await _mediator.Send(new CreateGitHubProfileCommand(profileDto), cancellationToken);
 
             await _transactionManager.CommitAsync(transaction, cancellationToken);
             return _mapper.Map<RespondTeacherDto>(teacher);
@@ -66,14 +67,15 @@ public class TeacherService : ITeacherService
             throw new Exception("Error creating teacher", ex);
         }
     }
-    
-    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId, RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
+
+    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId,
+        RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
         try
         {
             var passwordHash = _passwordHasher.HashPassword(teacherDto.Password);
-            
+
             var teacher = Teacher.Create(
                 teacherDto.FullName,
                 teacherDto.Email,
@@ -85,12 +87,12 @@ public class TeacherService : ITeacherService
             );
             teacher.UserId = userId;
             teacher.GitHubProfileId = githubProfileId;
-            
+
             var userDto = _mapper.Map<UserDto>(teacher);
-            await _mediator.Send( new UpdateUserCommand(userDto), cancellationToken);
-            
+            await _mediator.Send(new UpdateUserCommand(userDto), cancellationToken);
+
             var profileDto = _mapper.Map<GitHubProfileDto>(teacher);
-            await _mediator.Send( new UpdateGitHubProfileCommand(profileDto), cancellationToken);
+            await _mediator.Send(new UpdateGitHubProfileCommand(profileDto), cancellationToken);
 
             await _transactionManager.CommitAsync(transaction, cancellationToken);
             return _mapper.Map<RespondTeacherDto>(teacher);
@@ -103,7 +105,7 @@ public class TeacherService : ITeacherService
             throw new Exception("Error updating teacher", ex);
         }
     }
-    
+
     public async Task DeleteTeacherAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
@@ -121,25 +123,21 @@ public class TeacherService : ITeacherService
             throw new Exception("Error getting teacher", ex);
         }
     }
-    
-    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid userId, Guid githubProfileId, CancellationToken cancellationToken = default)
+
+    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid userId, Guid githubProfileId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             var userDto = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken);
-            if (userDto == null)
-            {
-                return null;
-            }
+            if (userDto == null) return null;
 
-            var gitHubProfileDto = await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
+            var gitHubProfileDto =
+                await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
 
             var teacherWithProfileDto = _mapper.Map<RespondTeacherDto>(userDto);
-            if (gitHubProfileDto == null)
-            {
-                return teacherWithProfileDto;
-            }
-            
+            if (gitHubProfileDto == null) return teacherWithProfileDto;
+
             teacherWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
             teacherWithProfileDto.GithubAccessToken = gitHubProfileDto.GithubAccessToken;
             teacherWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
@@ -154,18 +152,19 @@ public class TeacherService : ITeacherService
             throw new Exception("Error getting teacher", ex);
         }
     }
-    
+
     public async Task<IReadOnlyList<RespondTeacherDto>> GetTeacherAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Student), cancellationToken);
-            
+
             var teacherDtos = await Task.WhenAll(userDtos.Select(async user =>
             {
                 var teacherWithProfileDto = _mapper.Map<RespondTeacherDto>(user);
-                
-                var gitHubProfiles = await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
+
+                var gitHubProfiles =
+                    await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
                 var mainGitHubProfile = gitHubProfiles?.FirstOrDefault();
 
                 if (mainGitHubProfile != null)

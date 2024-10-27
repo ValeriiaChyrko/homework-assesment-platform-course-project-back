@@ -21,12 +21,13 @@ public class AssignmentService : IAssignmentService
         _mediator = mediator;
     }
 
-    public async Task<RespondAssignmentDto> CreateAssignmentAsync(RequestAssignmentDto assignmentDto, CancellationToken cancellationToken = default)
+    public async Task<RespondAssignmentDto> CreateAssignmentAsync(RequestAssignmentDto assignmentDto,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
         try
         {
-            var assignment = await _mediator.Send( new CreateAssignmentCommand(assignmentDto), cancellationToken);
+            var assignment = await _mediator.Send(new CreateAssignmentCommand(assignmentDto), cancellationToken);
 
             await _transactionManager.CommitAsync(transaction, cancellationToken);
             return assignment;
@@ -39,8 +40,8 @@ public class AssignmentService : IAssignmentService
             throw new Exception("Error creating assignment", ex);
         }
     }
-    
-    public async Task<RespondAssignmentDto> UpdateAssignmentAsync(Guid id, RequestAssignmentDto assignmentDto, 
+
+    public async Task<RespondAssignmentDto> UpdateAssignmentAsync(Guid id, RequestAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
@@ -59,7 +60,7 @@ public class AssignmentService : IAssignmentService
             throw new Exception("Error updating assignment", ex);
         }
     }
-    
+
     public async Task DeleteAssignmentAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
@@ -77,8 +78,9 @@ public class AssignmentService : IAssignmentService
             throw new Exception("Error deleting assignment", ex);
         }
     }
-    
-    public async Task<RespondAssignmentDto?> GetAssignmentByIdAsync(Guid id, CancellationToken cancellationToken = default)
+
+    public async Task<RespondAssignmentDto?> GetAssignmentByIdAsync(Guid id,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -92,13 +94,14 @@ public class AssignmentService : IAssignmentService
             throw new Exception("Error getting assignment", ex);
         }
     }
-    
-    public async Task<IReadOnlyList<RespondAssignmentDto>> GetAssignmentsAsync(CancellationToken cancellationToken = default)
+
+    public async Task<IReadOnlyList<RespondAssignmentDto>> GetAssignmentsAsync(
+        CancellationToken cancellationToken = default)
     {
         try
         {
             var assignments = await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken);
-            
+
             return assignments.ToList();
         }
         catch (Exception ex)

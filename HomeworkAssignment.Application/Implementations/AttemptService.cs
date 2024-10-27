@@ -21,12 +21,13 @@ public class AttemptService : IAttemptService
         _mediator = mediator;
     }
 
-    public async Task<RespondAttemptDto> CreateAttemptAsync(RequestAttemptDto attemptDto, CancellationToken cancellationToken = default)
+    public async Task<RespondAttemptDto> CreateAttemptAsync(RequestAttemptDto attemptDto,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
         try
         {
-            var attempt = await _mediator.Send( new CreateAttemptCommand(attemptDto), cancellationToken);
+            var attempt = await _mediator.Send(new CreateAttemptCommand(attemptDto), cancellationToken);
 
             await _transactionManager.CommitAsync(transaction, cancellationToken);
             return attempt;
@@ -39,8 +40,9 @@ public class AttemptService : IAttemptService
             throw new Exception("Error creating attempt", ex);
         }
     }
-    
-    public async Task<RespondAttemptDto> UpdateAttemptAsync(Guid id, RequestAttemptDto attemptDto, CancellationToken cancellationToken = default)
+
+    public async Task<RespondAttemptDto> UpdateAttemptAsync(Guid id, RequestAttemptDto attemptDto,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
         try
@@ -58,7 +60,7 @@ public class AttemptService : IAttemptService
             throw new Exception("Error updating attempt", ex);
         }
     }
-    
+
     public async Task DeleteAttemptAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using var transaction = await _transactionManager.BeginTransactionAsync();
@@ -76,7 +78,7 @@ public class AttemptService : IAttemptService
             throw new Exception("Error deleting attempt", ex);
         }
     }
-    
+
     public async Task<RespondAttemptDto?> GetAttemptByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         try
@@ -91,8 +93,9 @@ public class AttemptService : IAttemptService
             throw new Exception("Error getting attempt", ex);
         }
     }
-    
-    public async  Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByAssignmentIdAsync(Guid assignmentId, CancellationToken cancellationToken = default)
+
+    public async Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByAssignmentIdAsync(Guid assignmentId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -106,8 +109,9 @@ public class AttemptService : IAttemptService
             throw new Exception("Error getting attempts", ex);
         }
     }
-    
-    public async Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
+
+    public async Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
