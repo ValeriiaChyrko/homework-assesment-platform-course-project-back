@@ -20,7 +20,7 @@ public sealed class GetAllUsersByRoleQueryHandler : IRequestHandler<GetAllUsersB
     public async Task<IEnumerable<UserDto>> Handle(GetAllUsersByRoleQuery query, CancellationToken cancellationToken)
     {
         var users = await _context.UserEntities
-            .Where(u => u.RoleType.Equals(query.Role))
+            .Where(u => u.RoleType.Equals(query.Role.ToString().ToLower()))
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

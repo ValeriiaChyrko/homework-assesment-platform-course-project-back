@@ -9,12 +9,15 @@ public class StudentMappingProfile : Profile
 {
     public StudentMappingProfile()
     {
-        CreateMap<Student, RespondStudentDto>()
-            .ReverseMap();
+        CreateMap<Student, RespondStudentDto>();
 
         CreateMap<Student, UserDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
             .ReverseMap();
+        
+        CreateMap<UserDto, RespondStudentDto>()
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<Student, GitHubProfileDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.GitHubProfileId))

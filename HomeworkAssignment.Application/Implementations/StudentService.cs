@@ -138,6 +138,7 @@ public class StudentService : IStudentService
             var studentWithProfileDto = _mapper.Map<RespondStudentDto>(userDto);
             if (gitHubProfileDto == null) return studentWithProfileDto;
 
+            studentWithProfileDto.GitHubProfileId = gitHubProfileDto.Id;
             studentWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
             studentWithProfileDto.GithubAccessToken = gitHubProfileDto.GithubAccessToken;
             studentWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
@@ -169,6 +170,7 @@ public class StudentService : IStudentService
 
                 if (mainGitHubProfile != null)
                 {
+                    studentWithProfileDto.GitHubProfileId = mainGitHubProfile.Id;
                     studentWithProfileDto.GithubUsername = mainGitHubProfile.GithubUsername;
                     studentWithProfileDto.GithubAccessToken = mainGitHubProfile.GithubAccessToken;
                     studentWithProfileDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;

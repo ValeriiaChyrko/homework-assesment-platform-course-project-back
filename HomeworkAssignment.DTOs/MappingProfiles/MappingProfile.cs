@@ -10,6 +10,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<UserDto, UserEntity>().ReverseMap();
+        CreateMap<GitHubProfileDto, GitHubProfilesEntity>().ReverseMap();
         
         CreateMap<ScoreSectionDto, ScoreSection>().ReverseMap();
     }
