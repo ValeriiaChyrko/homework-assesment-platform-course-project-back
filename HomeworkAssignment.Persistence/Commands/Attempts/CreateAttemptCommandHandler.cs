@@ -31,7 +31,7 @@ public sealed class CreateAttemptCommandHandler : IRequestHandler<CreateAttemptC
             command.AttemptDto.TestsScore,
             command.AttemptDto.QualityScore
         );
-
+        
         var attemptEntity = _mapper.Map<AttemptEntity>(attempt);
         var addedEntity = await _context.AttemptEntities.AddAsync(attemptEntity, cancellationToken);
 

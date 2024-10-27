@@ -7,12 +7,12 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attempts;
 
-public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAttemptCommand, RespondAttemptDto>
+public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttemptCommand, RespondAttemptDto>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateAssignmentCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    public UpdateAttemptCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

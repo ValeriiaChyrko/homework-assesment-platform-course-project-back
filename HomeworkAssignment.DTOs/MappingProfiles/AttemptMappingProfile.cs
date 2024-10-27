@@ -15,7 +15,7 @@ public class AttemptMappingProfile : Profile
             .ForMember(dest => dest.Assignment, opt => opt.Ignore())
             .ReverseMap();
 
-        CreateMap<Attempt, RespondAttemptDto>()
+        CreateMap<AttemptEntity, RespondAttemptDto>()
             .ReverseMap();
     }
 }
