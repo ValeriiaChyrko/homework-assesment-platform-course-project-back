@@ -138,6 +138,7 @@ public class TeacherService : ITeacherService
             var teacherWithProfileDto = _mapper.Map<RespondTeacherDto>(userDto);
             if (gitHubProfileDto == null) return teacherWithProfileDto;
 
+            teacherWithProfileDto.GitHubProfileId = gitHubProfileDto.Id;
             teacherWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
             teacherWithProfileDto.GithubAccessToken = gitHubProfileDto.GithubAccessToken;
             teacherWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
@@ -157,7 +158,7 @@ public class TeacherService : ITeacherService
     {
         try
         {
-            var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Student), cancellationToken);
+            var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Teacher), cancellationToken);
 
             var teacherDtos = await Task.WhenAll(userDtos.Select(async user =>
             {
@@ -169,6 +170,7 @@ public class TeacherService : ITeacherService
 
                 if (mainGitHubProfile != null)
                 {
+                    teacherWithProfileDto.GitHubProfileId = mainGitHubProfile.Id;
                     teacherWithProfileDto.GithubUsername = mainGitHubProfile.GithubUsername;
                     teacherWithProfileDto.GithubAccessToken = mainGitHubProfile.GithubAccessToken;
                     teacherWithProfileDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;

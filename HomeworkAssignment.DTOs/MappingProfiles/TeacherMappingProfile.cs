@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.SharedDTOs;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 
@@ -9,19 +9,18 @@ public class TeacherMappingProfile : Profile
 {
     public TeacherMappingProfile()
     {
-        CreateMap<Teacher, RespondTeacherDto>()
-            .ReverseMap();
+        CreateMap<Teacher, RespondTeacherDto>();
 
-        CreateMap<Teacher, UserEntity>()
+        CreateMap<Teacher, UserDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.GitHubProfiles, opt => opt.Ignore())
             .ReverseMap();
 
-        CreateMap<Teacher, GitHubProfilesEntity>()
+        CreateMap<UserDto, RespondTeacherDto>()
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+
+        CreateMap<Teacher, GitHubProfileDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.GitHubProfileId))
-            .ForMember(dest => dest.User, opt => opt.Ignore())
-            .ForMember(dest => dest.Assignments, opt => opt.Ignore())
-            .ForMember(dest => dest.Attempts, opt => opt.Ignore())
             .ReverseMap();
     }
 }
