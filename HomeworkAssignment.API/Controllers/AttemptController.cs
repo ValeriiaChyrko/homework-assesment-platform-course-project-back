@@ -26,6 +26,15 @@ public class AttemptController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, result);
     }
     
+    [HttpGet("{assignmentId:guid}/assignment/last")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<RespondAttemptDto>> LastAttemptByAssignmentId(Guid assignmentId)
+    {
+        var result = await _attemptService.GetLastAttemptByAssignmentIdAsync(assignmentId);
+        return StatusCode(StatusCodes.Status200OK, result);
+    }
+    
     [HttpGet("{studentId:guid}/student")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

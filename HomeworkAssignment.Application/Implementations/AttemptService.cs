@@ -110,6 +110,22 @@ public class AttemptService : IAttemptService
         }
     }
 
+    public async Task<RespondAttemptDto> GetLastAttemptByAssignmentIdAsync(Guid assignmentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var attempt = await _mediator.Send(new GetLastAttemptByAssignmentIdQuery(assignmentId), cancellationToken);
+            return attempt;
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Error getting attempt score {ex.InnerException}.");
+
+            throw new Exception("Error getting attempt score", ex);
+        }
+    }
+
     public async Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId,
         CancellationToken cancellationToken = default)
     {
