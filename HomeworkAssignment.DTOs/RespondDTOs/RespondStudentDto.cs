@@ -8,7 +8,6 @@ public class RespondStudentDto
     public string Email { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
     public string GithubUsername { get; set; } = string.Empty;
-    public string GithubAccessToken { get; set; } = string.Empty;
     public string GithubProfileUrl { get; set; } = string.Empty;
     public string? GithubPictureUrl { get; set; }
     public DateTime CreatedAt { get; init; }

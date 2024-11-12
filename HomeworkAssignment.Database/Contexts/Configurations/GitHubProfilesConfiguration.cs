@@ -14,7 +14,6 @@ public class GitHubProfilesConfiguration : IEntityTypeConfiguration<GitHubProfil
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.GithubUsername).IsRequired().HasMaxLength(64);
-        builder.Property(mr => mr.GithubAccessToken).IsRequired().HasMaxLength(128);
         builder.Property(mr => mr.GithubProfileUrl).IsRequired().HasMaxLength(128);
         builder.Property(mr => mr.GithubPictureUrl).HasMaxLength(128);
     }

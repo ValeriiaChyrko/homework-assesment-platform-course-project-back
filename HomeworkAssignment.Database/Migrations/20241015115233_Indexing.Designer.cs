@@ -3,6 +3,7 @@ using System;
 using HomeAssignment.Database.Contexts.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HomeAssignment.Database.Migrations
 {
     [DbContext(typeof(HomeworkAssignmentDbContext))]
-    partial class HomeworkAssignmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241015115233_Indexing")]
+    partial class Indexing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace HomeAssignment.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.AssignmentEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,11 +74,6 @@ namespace HomeAssignment.Database.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("RepositoryName")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -88,7 +86,7 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("AssignmentEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.AttemptEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,11 +125,16 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("AttemptEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.GitHubProfilesEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.GitHubProfilesEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("GithubAccessToken")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("GithubPictureUrl")
                         .HasMaxLength(128)
@@ -157,7 +160,7 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("GitHubProfilesEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.UserEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -196,9 +199,9 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("UserEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.AssignmentEntity", b =>
                 {
-                    b.HasOne("HomeAssignment.Database.Entities.GitHubProfilesEntity", "OwnerEntity")
+                    b.HasOne("HomeworkAssignment.Database.Entities.GitHubProfilesEntity", "OwnerEntity")
                         .WithMany("Assignments")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -207,15 +210,15 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("OwnerEntity");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.AttemptEntity", b =>
                 {
-                    b.HasOne("HomeAssignment.Database.Entities.AssignmentEntity", "Assignment")
+                    b.HasOne("HomeworkAssignment.Database.Entities.AssignmentEntity", "Assignment")
                         .WithMany("Attempts")
                         .HasForeignKey("AssignmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HomeAssignment.Database.Entities.GitHubProfilesEntity", "Student")
+                    b.HasOne("HomeworkAssignment.Database.Entities.GitHubProfilesEntity", "Student")
                         .WithMany("Attempts")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -226,9 +229,9 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.GitHubProfilesEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.GitHubProfilesEntity", b =>
                 {
-                    b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
+                    b.HasOne("HomeworkAssignment.Database.Entities.UserEntity", "User")
                         .WithMany("GitHubProfiles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -237,19 +240,19 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.AssignmentEntity", b =>
                 {
                     b.Navigation("Attempts");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.GitHubProfilesEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.GitHubProfilesEntity", b =>
                 {
                     b.Navigation("Assignments");
 
                     b.Navigation("Attempts");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.UserEntity", b =>
+            modelBuilder.Entity("HomeworkAssignment.Database.Entities.UserEntity", b =>
                 {
                     b.Navigation("GitHubProfiles");
                 });

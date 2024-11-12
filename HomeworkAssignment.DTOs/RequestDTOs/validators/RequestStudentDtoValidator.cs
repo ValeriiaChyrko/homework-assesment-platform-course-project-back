@@ -7,7 +7,6 @@ public class RequestStudentDtoValidator : AbstractValidator<RequestStudentDto>
     private const int MinPasswordLength = 8;
     private const int MaxLengthNamePropertyLength = 128;
     private const int MaxLengthUserNamePropertyLength = 64;
-    private const int MaxLengthAccessTokenPropertyLength = 128;
     private const int MaxLengthUrlPropertyLength = 128;
 
     public RequestStudentDtoValidator()
@@ -34,11 +33,6 @@ public class RequestStudentDtoValidator : AbstractValidator<RequestStudentDto>
             .NotNull().NotEmpty().WithMessage("Github username cannot be empty.")
             .MaximumLength(MaxLengthUserNamePropertyLength)
             .WithMessage($"Github username  cannot exceed {MaxLengthUserNamePropertyLength} characters.");
-
-        RuleFor(dto => dto.GithubAccessToken)
-            .NotNull().NotEmpty().WithMessage("Github access token cannot be empty.")
-            .MaximumLength(MaxLengthAccessTokenPropertyLength)
-            .WithMessage($"Github access token cannot exceed {MaxLengthAccessTokenPropertyLength} characters.");
 
         RuleFor(dto => dto.GithubProfileUrl)
             .NotNull().NotEmpty().WithMessage("Github profile url cannot be empty.")

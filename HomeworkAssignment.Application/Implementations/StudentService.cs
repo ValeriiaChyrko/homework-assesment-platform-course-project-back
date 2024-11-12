@@ -46,7 +46,6 @@ public class StudentService : IStudentService
                 studentDto.Email,
                 passwordHash,
                 studentDto.GithubUsername,
-                studentDto.GithubAccessToken,
                 studentDto.GithubProfileUrl,
                 studentDto.GithubPictureUrl
             );
@@ -82,7 +81,6 @@ public class StudentService : IStudentService
                 studentDto.Email,
                 passwordHash,
                 studentDto.GithubUsername,
-                studentDto.GithubAccessToken,
                 studentDto.GithubProfileUrl,
                 studentDto.GithubPictureUrl
             );
@@ -141,7 +139,6 @@ public class StudentService : IStudentService
 
             studentWithProfileDto.GitHubProfileId = gitHubProfileDto.Id;
             studentWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
-            studentWithProfileDto.GithubAccessToken = gitHubProfileDto.GithubAccessToken;
             studentWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
             studentWithProfileDto.GithubPictureUrl = gitHubProfileDto.GithubPictureUrl;
 
@@ -173,7 +170,6 @@ public class StudentService : IStudentService
                 {
                     studentWithProfileDto.GitHubProfileId = mainGitHubProfile.Id;
                     studentWithProfileDto.GithubUsername = mainGitHubProfile.GithubUsername;
-                    studentWithProfileDto.GithubAccessToken = mainGitHubProfile.GithubAccessToken;
                     studentWithProfileDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
                     studentWithProfileDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
                 }

@@ -5,8 +5,8 @@ namespace HomeAssignment.Domain.Abstractions;
 
 public class Student : IUser, IHaveGitHubProfile
 {
-    public Student(Guid userId, string fullName, string email, string passwordHash, string roleType,
-        DateTime createdAt, DateTime updatedAt, Guid gitHubProfileId, string githubUsername, string githubAccessToken,
+    private Student(Guid userId, string fullName, string email, string passwordHash, string roleType,
+        DateTime createdAt, DateTime updatedAt, Guid gitHubProfileId, string githubUsername,
         string githubProfileUrl, string? githubPictureUrl)
     {
         UserId = userId;
@@ -16,7 +16,6 @@ public class Student : IUser, IHaveGitHubProfile
         PasswordHash = passwordHash;
         RoleType = roleType;
         GithubUsername = githubUsername;
-        GithubAccessToken = githubAccessToken;
         GithubProfileUrl = githubProfileUrl;
         GithubPictureUrl = githubPictureUrl;
         CreatedAt = createdAt;
@@ -25,7 +24,6 @@ public class Student : IUser, IHaveGitHubProfile
 
     public Guid GitHubProfileId { get; set; }
     public string GithubUsername { get; set; }
-    public string GithubAccessToken { get; set; }
     public string GithubProfileUrl { get; set; }
     public string? GithubPictureUrl { get; set; }
     public Guid UserId { get; set; }
@@ -37,7 +35,7 @@ public class Student : IUser, IHaveGitHubProfile
     public DateTime UpdatedAt { get; set; }
 
     public static Student Create(string fullName, string email, string passwordHash,
-        string githubUsername, string githubAccessToken, string githubProfileUrl, string? githubPictureUrl)
+        string githubUsername, string githubProfileUrl, string? githubPictureUrl)
     {
         var userId = Guid.NewGuid();
         var gitHubProfileId = Guid.NewGuid();
@@ -54,7 +52,6 @@ public class Student : IUser, IHaveGitHubProfile
             dateTime,
             gitHubProfileId,
             githubUsername,
-            githubAccessToken,
             githubProfileUrl,
             githubPictureUrl
         );
@@ -63,13 +60,12 @@ public class Student : IUser, IHaveGitHubProfile
     }
 
     public void Update(string fullName, string email, string passwordHash,
-        string githubUsername, string githubAccessToken, string githubProfileUrl, string? githubPictureUrl)
+        string githubUsername, string githubProfileUrl, string? githubPictureUrl)
     {
         FullName = fullName;
         Email = email;
         PasswordHash = passwordHash;
         GithubUsername = githubUsername;
-        GithubAccessToken = githubAccessToken;
         GithubProfileUrl = githubProfileUrl;
         GithubPictureUrl = githubPictureUrl;
         UpdatedAt = DateTime.UtcNow;

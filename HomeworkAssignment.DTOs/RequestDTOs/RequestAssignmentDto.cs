@@ -6,6 +6,7 @@ public class RequestAssignmentDto
 {
     public Guid OwnerId { get; init; }
     public required string Title { get; init; }
+    public required string RepositoryName { get; init; }
     public string? Description { get; init; }
     public DateTime Deadline { get; init; }
     public int MaxScore { get; init; }

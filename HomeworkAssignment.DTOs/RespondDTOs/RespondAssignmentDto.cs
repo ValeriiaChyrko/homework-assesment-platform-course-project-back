@@ -7,6 +7,7 @@ public class RespondAssignmentDto
     public Guid Id { get; set; }
     public Guid OwnerId { get; init; }
     public string Title { get; init; } = string.Empty;
+    public string RepositoryName { get; init; } = string.Empty;
     public string? Description { get; init; }
     public DateTime Deadline { get; init; }
     public int MaxScore { get; init; }

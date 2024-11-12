@@ -2,7 +2,7 @@
 
 public class Assignment
 {
-    public Assignment(Guid id, Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
+    private Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
         int maxAttemptsAmount,
         ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
     {
@@ -10,6 +10,7 @@ public class Assignment
         OwnerId = ownerId;
         Title = title;
         Description = description;
+        RepositoryName = repositoryName;
         Deadline = deadline;
         MaxScore = maxScore;
         MaxAttemptsAmount = maxAttemptsAmount;
@@ -22,6 +23,7 @@ public class Assignment
     public Guid OwnerId { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
+    public string RepositoryName { get; set; }
     public DateTime Deadline { get; set; }
     public int MaxScore { get; set; }
     public int MaxAttemptsAmount { get; set; }
@@ -30,7 +32,7 @@ public class Assignment
     public ScoreSection TestsSection { get; set; }
     public ScoreSection QualitySection { get; set; }
 
-    public static Assignment Create(Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
+    public static Assignment Create(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
         ScoreSection? qualitySection = null)
     {
@@ -41,6 +43,7 @@ public class Assignment
             ownerId,
             title,
             description,
+            repositoryName,
             deadline,
             maxScore,
             maxAttemptsAmount,
@@ -50,13 +53,14 @@ public class Assignment
         );
     }
 
-    public void Update(Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
+    public void Update(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
         ScoreSection? qualitySection = null)
     {
         OwnerId = ownerId;
         Title = title;
         Description = description;
+        RepositoryName = repositoryName;
         Deadline = deadline;
         MaxScore = maxScore;
         MaxAttemptsAmount = maxAttemptsAmount;

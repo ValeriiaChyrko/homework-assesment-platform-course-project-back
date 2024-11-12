@@ -31,6 +31,7 @@ public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssi
             command.AssignmentDto.OwnerId,
             command.AssignmentDto.Title,
             command.AssignmentDto.Description,
+            command.AssignmentDto.RepositoryName,
             command.AssignmentDto.Deadline,
             command.AssignmentDto.MaxScore,
             command.AssignmentDto.MaxAttemptsAmount,

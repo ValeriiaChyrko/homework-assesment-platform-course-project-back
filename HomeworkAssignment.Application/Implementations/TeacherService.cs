@@ -46,7 +46,6 @@ public class TeacherService : ITeacherService
                 teacherDto.Email,
                 passwordHash,
                 teacherDto.GithubUsername,
-                teacherDto.GithubAccessToken,
                 teacherDto.GithubProfileUrl,
                 teacherDto.GithubPictureUrl
             );
@@ -82,7 +81,6 @@ public class TeacherService : ITeacherService
                 teacherDto.Email,
                 passwordHash,
                 teacherDto.GithubUsername,
-                teacherDto.GithubAccessToken,
                 teacherDto.GithubProfileUrl,
                 teacherDto.GithubPictureUrl
             );
@@ -141,7 +139,6 @@ public class TeacherService : ITeacherService
 
             teacherWithProfileDto.GitHubProfileId = gitHubProfileDto.Id;
             teacherWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
-            teacherWithProfileDto.GithubAccessToken = gitHubProfileDto.GithubAccessToken;
             teacherWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
             teacherWithProfileDto.GithubPictureUrl = gitHubProfileDto.GithubPictureUrl;
 
@@ -173,7 +170,6 @@ public class TeacherService : ITeacherService
                 {
                     teacherWithProfileDto.GitHubProfileId = mainGitHubProfile.Id;
                     teacherWithProfileDto.GithubUsername = mainGitHubProfile.GithubUsername;
-                    teacherWithProfileDto.GithubAccessToken = mainGitHubProfile.GithubAccessToken;
                     teacherWithProfileDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
                     teacherWithProfileDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
                 }

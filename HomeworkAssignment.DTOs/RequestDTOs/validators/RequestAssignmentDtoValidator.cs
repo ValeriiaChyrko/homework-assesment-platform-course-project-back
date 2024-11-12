@@ -18,6 +18,11 @@ public class RequestAssignmentDtoValidator : AbstractValidator<RequestAssignment
             .NotEmpty().WithMessage("Title cannot be empty.")
             .MaximumLength(MaxLengthTitlePropertyLength)
             .WithMessage($"Full name cannot exceed {MaxLengthTitlePropertyLength} characters.");
+        
+        RuleFor(dto => dto.RepositoryName)
+            .NotEmpty().WithMessage("Repository name cannot be empty.")
+            .MaximumLength(MaxLengthTitlePropertyLength)
+            .WithMessage($"Repository name cannot exceed {MaxLengthTitlePropertyLength} characters.");
 
         RuleFor(dto => dto.Description)
             .NotEmpty().WithMessage("Description cannot be empty.")
