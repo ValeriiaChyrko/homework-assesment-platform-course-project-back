@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.Persistence.Commands.Attempts;
 using HomeAssignment.Persistence.Queries.Attempts;
+using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 using MediatR;
 
@@ -11,8 +12,8 @@ namespace HomeworkAssignment.Application.Implementations;
 public class AttemptService : IAttemptService
 {
     private readonly ILogger _logger;
-    private readonly IDatabaseTransactionManager _transactionManager;
     private readonly IMediator _mediator;
+    private readonly IDatabaseTransactionManager _transactionManager;
 
     public AttemptService(ILogger logger, IDatabaseTransactionManager transactionManager, IMediator mediator)
     {

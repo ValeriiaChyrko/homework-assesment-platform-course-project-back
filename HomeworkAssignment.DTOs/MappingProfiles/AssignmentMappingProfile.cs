@@ -31,7 +31,7 @@ public class AssignmentMappingProfile : Profile
                 MaxScore = src.AttemptQualityMaxScore,
                 MinScore = src.AttemptQualityMinScore
             }));
-        
+
         CreateMap<AssignmentEntity, Assignment>()
             .ForMember(dest => dest.CompilationSection, opt => opt.MapFrom(src => new ScoreSectionDto
             {
@@ -52,9 +52,12 @@ public class AssignmentMappingProfile : Profile
                 MinScore = src.AttemptQualityMinScore
             }))
             .ReverseMap()
-            .ForPath(src => src.AttemptCompilationSectionEnable, opt => opt.MapFrom(dest => dest.CompilationSection.IsEnabled))
-            .ForPath(src => src.AttemptCompilationMaxScore, opt => opt.MapFrom(dest => dest.CompilationSection.MaxScore))
-            .ForPath(src => src.AttemptCompilationMinScore, opt => opt.MapFrom(dest => dest.CompilationSection.MinScore))
+            .ForPath(src => src.AttemptCompilationSectionEnable,
+                opt => opt.MapFrom(dest => dest.CompilationSection.IsEnabled))
+            .ForPath(src => src.AttemptCompilationMaxScore,
+                opt => opt.MapFrom(dest => dest.CompilationSection.MaxScore))
+            .ForPath(src => src.AttemptCompilationMinScore,
+                opt => opt.MapFrom(dest => dest.CompilationSection.MinScore))
             .ForPath(src => src.AttemptTestsSectionEnable, opt => opt.MapFrom(dest => dest.TestsSection.IsEnabled))
             .ForPath(src => src.AttemptTestsMaxScore, opt => opt.MapFrom(dest => dest.TestsSection.MaxScore))
             .ForPath(src => src.AttemptTestsMinScore, opt => opt.MapFrom(dest => dest.TestsSection.MinScore))

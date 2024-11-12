@@ -12,14 +12,6 @@ public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbConte
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder
-            .ApplyConfigurationsFromAssembly(typeof(HomeworkAssignmentDbContext).Assembly);
-
-        base.OnModelCreating(modelBuilder);
-    }
-
 
     public void DetachEntitiesInChangeTracker()
     {
@@ -50,4 +42,12 @@ public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbConte
     public DbSet<AttemptEntity> AttemptEntities { get; set; } = null!;
     public DbSet<GitHubProfilesEntity> GitHubProfilesEntities { get; set; } = null!;
     public DbSet<UserEntity> UserEntities { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .ApplyConfigurationsFromAssembly(typeof(HomeworkAssignmentDbContext).Assembly);
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

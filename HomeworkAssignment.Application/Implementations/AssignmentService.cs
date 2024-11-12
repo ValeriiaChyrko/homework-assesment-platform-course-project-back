@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
+using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 using MediatR;
 
@@ -11,8 +12,8 @@ namespace HomeworkAssignment.Application.Implementations;
 public class AssignmentService : IAssignmentService
 {
     private readonly ILogger _logger;
-    private readonly IDatabaseTransactionManager _transactionManager;
     private readonly IMediator _mediator;
+    private readonly IDatabaseTransactionManager _transactionManager;
 
     public AssignmentService(ILogger logger, IDatabaseTransactionManager transactionManager, IMediator mediator)
     {

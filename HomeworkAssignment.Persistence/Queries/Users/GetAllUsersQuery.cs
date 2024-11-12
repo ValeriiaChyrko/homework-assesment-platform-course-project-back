@@ -1,5 +1,4 @@
-﻿using HomeAssignment.DTOs.RespondDTOs;
-using HomeAssignment.DTOs.SharedDTOs;
+﻿using HomeAssignment.DTOs.SharedDTOs;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Users;

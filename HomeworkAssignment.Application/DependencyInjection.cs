@@ -1,4 +1,5 @@
-﻿using HomeworkAssignment.Application.Abstractions.Contracts;
+﻿using HomeworkAssignment.Application.Abstractions;
+using HomeworkAssignment.Application.Abstractions.Contracts;
 using HomeworkAssignment.Application.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<IAttemptService, AttemptService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<ITeacherService, TeacherService>();
+        services.AddScoped<IGitHubService, GitHubService>();
 
         services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();

@@ -1,6 +1,6 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
-using HomeworkAssignment.Application.Abstractions.Contracts;
+using HomeworkAssignment.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers;
@@ -16,7 +16,7 @@ public class AttemptController : ControllerBase
     {
         _attemptService = attemptService;
     }
-    
+
     [HttpGet("{assignmentId:guid}/assignment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -25,7 +25,7 @@ public class AttemptController : ControllerBase
         var result = await _attemptService.GetAttemptsByAssignmentIdAsync(assignmentId);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet("{assignmentId:guid}/assignment/last")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -34,7 +34,7 @@ public class AttemptController : ControllerBase
         var result = await _attemptService.GetLastAttemptByAssignmentIdAsync(assignmentId);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet("{studentId:guid}/student")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -54,7 +54,7 @@ public class AttemptController : ControllerBase
         var result = await _attemptService.GetAttemptByIdAsync(id);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

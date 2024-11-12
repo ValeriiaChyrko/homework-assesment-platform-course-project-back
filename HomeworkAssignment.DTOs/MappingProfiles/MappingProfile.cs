@@ -11,7 +11,7 @@ public class MappingProfile : Profile
     {
         CreateMap<UserDto, UserEntity>().ReverseMap();
         CreateMap<GitHubProfileDto, GitHubProfilesEntity>().ReverseMap();
-        
+
         CreateMap<ScoreSectionDto, ScoreSection>().ReverseMap();
     }
 }

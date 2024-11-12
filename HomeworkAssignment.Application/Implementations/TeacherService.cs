@@ -9,6 +9,7 @@ using HomeAssignment.Persistence.Commands.GitHubProfiles;
 using HomeAssignment.Persistence.Commands.Users;
 using HomeAssignment.Persistence.Queries.GitHubProfiles;
 using HomeAssignment.Persistence.Queries.Users;
+using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 using MediatR;
 
@@ -18,9 +19,9 @@ public class TeacherService : ITeacherService
 {
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IDatabaseTransactionManager _transactionManager;
-    private readonly IMediator _mediator;
 
     public TeacherService(ILogger logger, IMapper mapper, IPasswordHasher passwordHasher,
         IDatabaseTransactionManager transactionManager, IMediator mediator)
@@ -124,12 +125,12 @@ public class TeacherService : ITeacherService
         }
     }
 
-    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid userId, Guid githubProfileId,
+    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var userDto = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken);
+            var userDto = await _mediator.Send(new GetUserByGithubProfileIdQuery(githubProfileId), cancellationToken);
             if (userDto == null) return null;
 
             var gitHubProfileDto =

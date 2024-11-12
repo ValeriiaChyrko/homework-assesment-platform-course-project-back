@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Users;
 
-public record GetUserByIdQuery(Guid Id) : IRequest<UserDto?>;
+public record GetUserByGithubProfileIdQuery(Guid GithubProfileId) : IRequest<UserDto?>;

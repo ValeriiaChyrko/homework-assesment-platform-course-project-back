@@ -2,18 +2,6 @@
 
 public class Assignment
 {
-    public Guid Id { get; set; }
-    public Guid OwnerId { get; set; }
-    public string Title { get; set; }
-    public string? Description { get; set; }
-    public DateTime Deadline { get; set; }
-    public int MaxScore { get; set; }
-    public int MaxAttemptsAmount { get; set; }
-
-    public ScoreSection CompilationSection { get; set; }
-    public ScoreSection TestsSection { get; set; }
-    public ScoreSection QualitySection { get; set; }
-
     public Assignment(Guid id, Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
         int maxAttemptsAmount,
         ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
@@ -29,6 +17,18 @@ public class Assignment
         TestsSection = testsSection;
         QualitySection = qualitySection;
     }
+
+    public Guid Id { get; set; }
+    public Guid OwnerId { get; set; }
+    public string Title { get; set; }
+    public string? Description { get; set; }
+    public DateTime Deadline { get; set; }
+    public int MaxScore { get; set; }
+    public int MaxAttemptsAmount { get; set; }
+
+    public ScoreSection CompilationSection { get; set; }
+    public ScoreSection TestsSection { get; set; }
+    public ScoreSection QualitySection { get; set; }
 
     public static Assignment Create(Guid ownerId, string title, string? description, DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,

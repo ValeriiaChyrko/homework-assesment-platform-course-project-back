@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Attempts;
 
-public sealed class GetLastAttemptByAssignmentIdQueryHandler : IRequestHandler<GetLastAttemptByAssignmentIdQuery, RespondAttemptDto>
+public sealed class
+    GetLastAttemptByAssignmentIdQueryHandler : IRequestHandler<GetLastAttemptByAssignmentIdQuery, RespondAttemptDto>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -17,15 +18,16 @@ public sealed class GetLastAttemptByAssignmentIdQueryHandler : IRequestHandler<G
         _mapper = mapper;
     }
 
-    public async Task<RespondAttemptDto> Handle(GetLastAttemptByAssignmentIdQuery query, CancellationToken cancellationToken)
+    public async Task<RespondAttemptDto> Handle(GetLastAttemptByAssignmentIdQuery query,
+        CancellationToken cancellationToken)
     {
         var lastAttempt = await _context
             .AttemptEntities
             .Where(a => a.AssignmentId == query.AssignmentId)
             .AsNoTracking()
-            .OrderBy(a => a.FinishedAt) 
+            .OrderBy(a => a.FinishedAt)
             .LastOrDefaultAsync(cancellationToken);
 
-        return  _mapper.Map<RespondAttemptDto>(lastAttempt);
+        return _mapper.Map<RespondAttemptDto>(lastAttempt);
     }
 }

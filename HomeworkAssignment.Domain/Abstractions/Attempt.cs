@@ -2,16 +2,6 @@
 
 public class Attempt
 {
-    public Guid Id { get; set; }
-    public Guid StudentId { get; set; }
-    public Guid AssignmentId { get; set; }
-    public int AttemptNumber { get; set; }
-    public DateTime FinishedAt { get; set; }
-    public int CompilationScore { get; set; }
-    public int TestsScore { get; set; }
-    public int QualityScore { get; set; }
-    public int FinalScore { get; set; }
-
     public Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, DateTime finishedAt,
         int compilationScore, int testsScore, int qualityScore, int finalScore)
     {
@@ -25,6 +15,16 @@ public class Attempt
         QualityScore = qualityScore;
         FinalScore = finalScore;
     }
+
+    public Guid Id { get; set; }
+    public Guid StudentId { get; set; }
+    public Guid AssignmentId { get; set; }
+    public int AttemptNumber { get; set; }
+    public DateTime FinishedAt { get; set; }
+    public int CompilationScore { get; set; }
+    public int TestsScore { get; set; }
+    public int QualityScore { get; set; }
+    public int FinalScore { get; set; }
 
     public static Attempt Create(Guid studentId, Guid assignmentId, int attemptNumber, int compilationScore,
         int testsScore, int qualityScore)

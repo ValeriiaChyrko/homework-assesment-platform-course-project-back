@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Applicat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.API", "HomeworkAssignment.API\HomeworkAssignment.API.csproj", "{45BE986A-D6F3-40FD-B979-AACED7FC4ABB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Infrastructure", "HomeworkAssignment.Infrastructure\HomeworkAssignment.Infrastructure.csproj", "{5FF39CD4-F713-42F2-8B65-C7F85B32D541}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{45BE986A-D6F3-40FD-B979-AACED7FC4ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45BE986A-D6F3-40FD-B979-AACED7FC4ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45BE986A-D6F3-40FD-B979-AACED7FC4ABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{681E32BD-281B-4312-92E0-D40B3AF53A91} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
@@ -52,5 +58,6 @@ Global
 		{98981997-7EF8-4C76-AECF-0E040301FCB3} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 		{B87CECF0-0E74-4672-BDB2-A08B5B97BBD0} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 		{45BE986A-D6F3-40FD-B979-AACED7FC4ABB} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
+		{5FF39CD4-F713-42F2-8B65-C7F85B32D541} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 	EndGlobalSection
 EndGlobal

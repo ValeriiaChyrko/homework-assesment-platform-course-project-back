@@ -1,7 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 
-namespace HomeworkAssignment.Application.Abstractions.Contracts;
+namespace HomeworkAssignment.Application.Abstractions;
 
 public interface IAssignmentService
 {

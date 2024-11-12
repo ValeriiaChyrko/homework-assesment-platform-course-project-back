@@ -1,6 +1,6 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
-using HomeworkAssignment.Application.Abstractions.Contracts;
+using HomeworkAssignment.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers;
@@ -36,7 +36,7 @@ public class AssignmentController : ControllerBase
         var result = await _assignmentService.GetAssignmentByIdAsync(id);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

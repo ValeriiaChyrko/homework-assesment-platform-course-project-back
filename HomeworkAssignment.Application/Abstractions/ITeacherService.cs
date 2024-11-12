@@ -1,7 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 
-namespace HomeworkAssignment.Application.Abstractions.Contracts;
+namespace HomeworkAssignment.Application.Abstractions;
 
 public interface ITeacherService
 {
@@ -13,7 +13,7 @@ public interface ITeacherService
 
     Task DeleteTeacherAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid userId, Guid githubProfileId,
+    Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<RespondTeacherDto>> GetTeacherAsync(CancellationToken cancellationToken = default);

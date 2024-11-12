@@ -1,7 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 
-namespace HomeworkAssignment.Application.Abstractions.Contracts;
+namespace HomeworkAssignment.Application.Abstractions;
 
 public interface IAttemptService
 {
@@ -16,8 +16,9 @@ public interface IAttemptService
 
     Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByAssignmentIdAsync(Guid assignmentId,
         CancellationToken cancellationToken = default);
-    
-    Task<RespondAttemptDto> GetLastAttemptByAssignmentIdAsync(Guid assignmentId, CancellationToken cancellationToken = default);
+
+    Task<RespondAttemptDto> GetLastAttemptByAssignmentIdAsync(Guid assignmentId,
+        CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId,
         CancellationToken cancellationToken = default);
