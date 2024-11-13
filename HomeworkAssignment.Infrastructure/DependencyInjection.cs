@@ -23,6 +23,8 @@ public static class DependencyInjection
         
         services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<ICommitService, CommitService>();
+        services.AddScoped<IBuildService, BuildService>();
+        services.AddScoped<IGitService, GitService>();
         services.AddScoped<IGitHubBuildService, GitHubBuildService>();
     }
 }
