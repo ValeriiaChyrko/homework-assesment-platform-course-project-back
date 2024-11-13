@@ -17,7 +17,7 @@ public class GitHubBuildService : IGitHubBuildService
     {
         if (string.IsNullOrEmpty(lastCommitSha)) return false;
 
-        var repoDirectory = Path.Combine(Guid.NewGuid().ToString(), Path.GetTempPath(), repositoryName);
+        var repoDirectory = Path.Combine(Path.GetTempPath(), string.Join('_', repositoryName, Guid.NewGuid()));
         _gitService.CloneRepository(owner, repositoryName, repoDirectory);
         _gitService.CheckoutBranch(repoDirectory, branch); 
         _gitService.CheckoutCommit(repoDirectory, lastCommitSha); 
