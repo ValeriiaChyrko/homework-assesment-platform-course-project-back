@@ -11,7 +11,7 @@ public static class DependencyInjection
     {
         services.AddSingleton<IGitHubClientProvider, GitHubClientProvider>();
 
-        services.AddHttpClient<IGitHubClient, GitHubClient>((provider, client) =>
+        services.AddHttpClient<IGitHubApiClient, GitHubApiApiClient>((provider, client) =>
         {
             var gitHubClientProvider = provider.GetService<IGitHubClientProvider>();
             var options = gitHubClientProvider!.GetGitHubClientOptions();
@@ -20,5 +20,9 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", options.Token);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("HomeworkAssignment API v1/1.0");
         });
+        
+        services.AddScoped<IBranchService, BranchService>();
+        services.AddScoped<ICommitService, CommitService>();
+        services.AddScoped<IGitHubBuildService, GitHubBuildService>();
     }
 }
