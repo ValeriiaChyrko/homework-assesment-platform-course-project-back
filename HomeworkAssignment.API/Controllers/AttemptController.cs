@@ -60,7 +60,7 @@ public class AttemptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Guid>> Create([FromBody] RequestAttemptDto request)
+    public async Task<ActionResult<RespondAttemptDto>> Create([FromBody] RequestAttemptDto request)
     {
         var result = await _attemptService.CreateAttemptAsync(request);
         return StatusCode(StatusCodes.Status201Created, result);

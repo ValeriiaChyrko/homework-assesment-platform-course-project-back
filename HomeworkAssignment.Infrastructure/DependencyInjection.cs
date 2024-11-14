@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<ICommitService, CommitService>();
         services.AddScoped<ICodeBuildService, CodeBuildService>();
         services.AddScoped<ICodeQualityService, CodeQualityService>();
+        services.AddScoped<ICodeTestsService, CodeTestsService>();
         services.AddScoped<IGitService, GitService>();
         services.AddScoped<IGitHubBuildService, GitHubBuildService>();
     }

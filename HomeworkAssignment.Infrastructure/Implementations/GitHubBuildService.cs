@@ -9,13 +9,15 @@ public class GitHubBuildService : IGitHubBuildService
     private readonly IGitService _gitService;
     private readonly ICodeBuildService _codeBuildService;
     private readonly ICodeQualityService _qualityService;
+    private readonly ICodeTestsService _codeTestsService;
 
-    public GitHubBuildService(IGitService gitService, ICodeBuildService codeBuildService, ICodeQualityService qualityService, ILogger logger)
+    public GitHubBuildService(IGitService gitService, ICodeBuildService codeBuildService, ICodeQualityService qualityService, ILogger logger, ICodeTestsService codeTestsService)
     {
         _gitService = gitService;
         _codeBuildService = codeBuildService;
         _qualityService = qualityService;
         _logger = logger;
+        _codeTestsService = codeTestsService;
     }
 
     public async Task<bool> CheckIfProjectCompilesAsync(string owner, string repositoryName, string branch, string lastCommitSha, CancellationToken cancellationToken = default)
@@ -66,6 +68,24 @@ public class GitHubBuildService : IGitHubBuildService
         _gitService.CheckoutCommit(repoDirectory, lastCommitSha);
 
         var score =  await _qualityService.CheckCodeQualityAsync(repoDirectory, cancellationToken);
+        return score;
+    }
+    
+    public async Task<int> EvaluateProjectCodePassedTestsAsync(string owner, string repositoryName, string branch, string lastCommitSha, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(lastCommitSha)) return 0;
+
+        var repoDirectory = Path.Combine(Path.GetTempPath(), repositoryName);
+        if (!Directory.Exists(repoDirectory))
+        {
+            _gitService.CloneRepository(owner, repositoryName, repoDirectory);
+        }
+        
+        _gitService.CheckoutBranch(repoDirectory, branch);
+        _gitService.CheckoutCommit(repoDirectory, lastCommitSha);
+        
+        var testsDirectory = Path.Combine(repoDirectory, "tests");
+        var score =  await _codeTestsService.CheckCodeTestsAsync(testsDirectory, cancellationToken);
         return score;
     }
 }

@@ -41,4 +41,13 @@ public class GitHubApiController : ControllerBase
         var result = await _gitHubService.VerifyProjectQuality(githubProfileId, assignmentId, branch);
         return StatusCode(StatusCodes.Status200OK, result);
     }
+    
+    [HttpGet("tests/{githubProfileId:guid}/{assignmentId:guid}/{branch}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<int>> GetProjectTestsVerification(Guid githubProfileId, Guid assignmentId, string branch)
+    {
+        var result = await _gitHubService.VerifyProjectTests(githubProfileId, assignmentId, branch);
+        return StatusCode(StatusCodes.Status200OK, result);
+    }
 }

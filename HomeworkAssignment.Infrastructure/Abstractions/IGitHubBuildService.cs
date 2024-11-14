@@ -7,4 +7,7 @@ public interface IGitHubBuildService
 
     Task<int> EvaluateProjectCodeQualityAsync(string owner, string repositoryName, string branch, string lastCommitSha,
         CancellationToken cancellationToken = default);
+
+    Task<int> EvaluateProjectCodePassedTestsAsync(string owner, string repositoryName, string branch,
+        string lastCommitSha, CancellationToken cancellationToken = default);
 }

@@ -155,8 +155,58 @@ public class GitHubService : IGitHubService
         }
         catch (Exception ex)
         {
-            _logger.Log($"Error verifying project compilation: {ex.InnerException}.");
-            throw new Exception("Error verifying project compilation", ex);
+            _logger.Log($"Error verifying project quality: {ex.InnerException}.");
+            throw new Exception("Error verifying project quality", ex);
+        }
+    }
+    
+    public async Task<int> VerifyProjectTests(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId, cancellationToken);
+            if (assignment?.TestsSection == null) return 0;
+
+            var student = await _studentService.GetStudentByIdAsync(githubProfileId, cancellationToken);
+            if (student == null) return 0;
+
+            var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
+            if (teacher == null) return 0;
+
+            var lastCommitSha = await _commitService.GetLastCommitByAuthorAsync(
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                student.GithubUsername,
+                cancellationToken: cancellationToken);
+
+            if (string.IsNullOrEmpty(lastCommitSha))
+            {
+                _logger.Log("No commits found for the specified author.");
+                return 0;
+            }
+
+            var percentage = await _gitHubBuildService.EvaluateProjectCodePassedTestsAsync(
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                lastCommitSha,
+                cancellationToken
+            );
+
+
+            var minScore = assignment.TestsSection.MinScore;
+            var maxScore = assignment.TestsSection.MaxScore;
+            
+            if (maxScore == minScore) return minScore; 
+
+            var finalScore = minScore + (percentage / 100.0) * (maxScore - minScore);
+            return (int)Math.Round(finalScore);
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Error verifying project tests: {ex.InnerException}.");
+            throw new Exception("Error verifying project tests", ex);
         }
     }
 }
