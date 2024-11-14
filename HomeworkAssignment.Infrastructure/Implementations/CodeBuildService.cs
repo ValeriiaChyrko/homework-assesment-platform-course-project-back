@@ -3,9 +3,9 @@ using HomeworkAssignment.Infrastructure.Abstractions;
 
 namespace HomeworkAssignment.Infrastructure.Implementations;
 
-public class BuildService : IBuildService
+public class CodeBuildService : ICodeBuildService
 {
-    public async Task<bool> BuildProject(string projectFile)
+    public async Task<int> BuildProjectAsync(string projectFile, CancellationToken cancellationToken = default)
     {
         var processStartInfo = new ProcessStartInfo
         {
@@ -21,14 +21,14 @@ public class BuildService : IBuildService
         process.StartInfo = processStartInfo;
         process.Start();
 
-        var error = await process.StandardError.ReadToEndAsync();
-        await process.WaitForExitAsync();
+        var error = await process.StandardError.ReadToEndAsync(cancellationToken);
+        await process.WaitForExitAsync(cancellationToken);
 
         if (process.ExitCode != 0)
         {
             throw new Exception($"Build failed for project '{projectFile}'. Error: {error}");
         }
 
-        return true; // Build succeeded
+        return process.ExitCode; 
     }
 }

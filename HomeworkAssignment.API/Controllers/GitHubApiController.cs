@@ -24,12 +24,21 @@ public class GitHubApiController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, result);
     }
     
-    [HttpGet("{githubProfileId:guid}/{assignmentId:guid}/{branch}")]
+    [HttpGet("compilation/{githubProfileId:guid}/{assignmentId:guid}/{branch}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<bool>> GetProjectCompilationVerification(Guid githubProfileId, Guid assignmentId, string branch)
+    public async Task<ActionResult<int>> GetProjectCompilationVerification(Guid githubProfileId, Guid assignmentId, string branch)
     {
         var result = await _gitHubService.VerifyProjectCompilation(githubProfileId, assignmentId, branch);
+        return StatusCode(StatusCodes.Status200OK, result);
+    }
+    
+    [HttpGet("quality/{githubProfileId:guid}/{assignmentId:guid}/{branch}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<int>> GetProjectQualityVerification(Guid githubProfileId, Guid assignmentId, string branch)
+    {
+        var result = await _gitHubService.VerifyProjectQuality(githubProfileId, assignmentId, branch);
         return StatusCode(StatusCodes.Status200OK, result);
     }
 }

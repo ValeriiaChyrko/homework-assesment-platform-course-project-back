@@ -67,18 +67,18 @@ public class GitHubService : IGitHubService
         }
     }
 
-    public async Task<bool> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+    public async Task<int> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
     {
         try
         {
             var assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId, cancellationToken);
-            if (assignment == null) return false;
+            if (assignment?.CompilationSection == null) return 0;
 
             var student = await _studentService.GetStudentByIdAsync(githubProfileId, cancellationToken);
-            if (student == null) return false;
+            if (student == null) return 0;
 
             var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
-            if (teacher == null) return false;
+            if (teacher == null) return 0;
             
             var lastCommitSha = await _commitService.GetLastCommitByAuthorAsync(
                 teacher.GithubUsername, 
@@ -90,15 +90,68 @@ public class GitHubService : IGitHubService
             if (string.IsNullOrEmpty(lastCommitSha))
             {
                 _logger.Log("No commits found for the specified author.");
-                return false;
+                return 0;
             }
             
-            return await _gitHubBuildService.CheckIfProjectCompiles(                
+            var isCompile = await _gitHubBuildService.CheckIfProjectCompilesAsync(                
                 teacher.GithubUsername, 
                 assignment.RepositoryName,  
                 branch, 
                 lastCommitSha, 
-                cancellationToken);
+                cancellationToken
+            );
+
+            return isCompile ? assignment.CompilationSection.MaxScore : assignment.CompilationSection.MinScore;
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Error verifying project compilation: {ex.InnerException}.");
+            throw new Exception("Error verifying project compilation", ex);
+        }
+    }
+    
+    public async Task<int> VerifyProjectQuality(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId, cancellationToken);
+            if (assignment?.QualitySection == null) return 0;
+
+            var student = await _studentService.GetStudentByIdAsync(githubProfileId, cancellationToken);
+            if (student == null) return 0;
+
+            var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
+            if (teacher == null) return 0;
+
+            var lastCommitSha = await _commitService.GetLastCommitByAuthorAsync(
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                student.GithubUsername,
+                cancellationToken: cancellationToken);
+
+            if (string.IsNullOrEmpty(lastCommitSha))
+            {
+                _logger.Log("No commits found for the specified author.");
+                return 0;
+            }
+
+            var percentage = await _gitHubBuildService.EvaluateProjectCodeQualityAsync(
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                lastCommitSha,
+                cancellationToken
+            );
+
+
+            var minScore = assignment.QualitySection.MinScore;
+            var maxScore = assignment.QualitySection.MaxScore;
+            
+            if (maxScore == minScore) return minScore; 
+
+            var finalScore = minScore + (percentage / 100.0) * (maxScore - minScore);
+            return (int)Math.Round(finalScore);
         }
         catch (Exception ex)
         {
