@@ -1,4 +1,4 @@
-﻿namespace HomeworkAssignment.Infrastructure.Abstractions;
+﻿namespace HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 
 public interface IGitHubBuildService
 {

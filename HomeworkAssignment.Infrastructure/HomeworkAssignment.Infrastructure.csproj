@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
-        <PackageReference Include="Microsoft.Build.Locator" Version="1.7.8" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0-3.final" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.12.0-3.final" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.12.0-3.final" />
+        <PackageReference Include="LibGit2Sharp" Version="0.30.0"/>
+        <PackageReference Include="Microsoft.Build.Locator" Version="1.7.8"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0-3.final"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.12.0-3.final"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.12.0-3.final"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0"/>
@@ -19,169 +19,173 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\cs\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\cs\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\de\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\de\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\es\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\es\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\fr\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\fr\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\it\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\it\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ja\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\ja\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ko\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\ko\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.Bcl.AsyncInterfaces.dll">
-        <Link>Properties\BuildHost-net472\Microsoft.Bcl.AsyncInterfaces.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.Build.Locator.dll">
-        <Link>Properties\BuildHost-net472\Microsoft.Build.Locator.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe">
-        <Link>Properties\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config">
-        <Link>Properties\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.IO.Redist.dll">
-        <Link>Properties\BuildHost-net472\Microsoft.IO.Redist.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Newtonsoft.Json.dll">
-        <Link>Properties\BuildHost-net472\Newtonsoft.Json.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\pl\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\pl\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\pt-BR\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\pt-BR\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ru\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\ru\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Buffers.dll">
-        <Link>Properties\BuildHost-net472\System.Buffers.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Collections.Immutable.dll">
-        <Link>Properties\BuildHost-net472\System.Collections.Immutable.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.CommandLine.dll">
-        <Link>Properties\BuildHost-net472\System.CommandLine.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Memory.dll">
-        <Link>Properties\BuildHost-net472\System.Memory.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Numerics.Vectors.dll">
-        <Link>Properties\BuildHost-net472\System.Numerics.Vectors.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Runtime.CompilerServices.Unsafe.dll">
-        <Link>Properties\BuildHost-net472\System.Runtime.CompilerServices.Unsafe.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Text.Encodings.Web.dll">
-        <Link>Properties\BuildHost-net472\System.Text.Encodings.Web.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Text.Json.dll">
-        <Link>Properties\BuildHost-net472\System.Text.Json.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Threading.Tasks.Extensions.dll">
-        <Link>Properties\BuildHost-net472\System.Threading.Tasks.Extensions.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.ValueTuple.dll">
-        <Link>Properties\BuildHost-net472\System.ValueTuple.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\tr\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\tr\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\zh-Hans\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\zh-Hans\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\zh-Hant\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-net472\zh-Hant\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\cs\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\cs\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\de\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\de\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\es\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\es\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\fr\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\fr\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\it\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\it\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ja\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\ja\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ko\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\ko\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.Build.Locator.dll">
-        <Link>Properties\BuildHost-netcore\Microsoft.Build.Locator.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json">
-        <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll">
-        <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll.config">
-        <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll.config</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json">
-        <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Newtonsoft.Json.dll">
-        <Link>Properties\BuildHost-netcore\Newtonsoft.Json.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\pl\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\pl\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\pt-BR\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\pt-BR\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll">
-        <Link>Properties\BuildHost-netcore\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ru\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\ru\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Collections.Immutable.dll">
-        <Link>Properties\BuildHost-netcore\System.Collections.Immutable.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.CommandLine.dll">
-        <Link>Properties\BuildHost-netcore\System.CommandLine.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Text.Encodings.Web.dll">
-        <Link>Properties\BuildHost-netcore\System.Text.Encodings.Web.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Text.Json.dll">
-        <Link>Properties\BuildHost-netcore\System.Text.Json.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\tr\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\tr\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\zh-Hans\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\zh-Hans\System.CommandLine.resources.dll</Link>
-      </Content>
-      <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll">
-        <Link>Properties\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll</Link>
-      </Content>
+        <ProjectReference Include="..\HomeworkAssignment.Domain\HomeworkAssignment.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HomeworkAssignment.Domain\HomeworkAssignment.Domain.csproj" />
+        <Folder Include="Properties\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\cs\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\cs\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\de\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\de\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\es\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\es\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\fr\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\fr\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\it\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\it\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ja\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\ja\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ko\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\ko\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.Bcl.AsyncInterfaces.dll">
+            <Link>Properties\BuildHost-net472\Microsoft.Bcl.AsyncInterfaces.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.Build.Locator.dll">
+            <Link>Properties\BuildHost-net472\Microsoft.Build.Locator.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe">
+            <Link>Properties\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config">
+            <Link>Properties\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Microsoft.IO.Redist.dll">
+            <Link>Properties\BuildHost-net472\Microsoft.IO.Redist.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\Newtonsoft.Json.dll">
+            <Link>Properties\BuildHost-net472\Newtonsoft.Json.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\pl\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\pl\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\pt-BR\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\pt-BR\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\ru\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\ru\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Buffers.dll">
+            <Link>Properties\BuildHost-net472\System.Buffers.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Collections.Immutable.dll">
+            <Link>Properties\BuildHost-net472\System.Collections.Immutable.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.CommandLine.dll">
+            <Link>Properties\BuildHost-net472\System.CommandLine.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Memory.dll">
+            <Link>Properties\BuildHost-net472\System.Memory.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Numerics.Vectors.dll">
+            <Link>Properties\BuildHost-net472\System.Numerics.Vectors.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Runtime.CompilerServices.Unsafe.dll">
+            <Link>Properties\BuildHost-net472\System.Runtime.CompilerServices.Unsafe.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Text.Encodings.Web.dll">
+            <Link>Properties\BuildHost-net472\System.Text.Encodings.Web.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Text.Json.dll">
+            <Link>Properties\BuildHost-net472\System.Text.Json.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.Threading.Tasks.Extensions.dll">
+            <Link>Properties\BuildHost-net472\System.Threading.Tasks.Extensions.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\System.ValueTuple.dll">
+            <Link>Properties\BuildHost-net472\System.ValueTuple.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\tr\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\tr\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\zh-Hans\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\zh-Hans\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-net472\zh-Hant\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-net472\zh-Hant\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\cs\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\cs\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\de\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\de\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\es\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\es\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\fr\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\fr\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\it\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\it\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ja\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\ja\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ko\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\ko\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.Build.Locator.dll">
+            <Link>Properties\BuildHost-netcore\Microsoft.Build.Locator.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json">
+            <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll">
+            <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll.config">
+            <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll.config</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json">
+            <Link>Properties\BuildHost-netcore\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\Newtonsoft.Json.dll">
+            <Link>Properties\BuildHost-netcore\Newtonsoft.Json.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\pl\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\pl\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\pt-BR\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\pt-BR\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll">
+            <Link>Properties\BuildHost-netcore\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\ru\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\ru\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Collections.Immutable.dll">
+            <Link>Properties\BuildHost-netcore\System.Collections.Immutable.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.CommandLine.dll">
+            <Link>Properties\BuildHost-netcore\System.CommandLine.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Text.Encodings.Web.dll">
+            <Link>Properties\BuildHost-netcore\System.Text.Encodings.Web.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\System.Text.Json.dll">
+            <Link>Properties\BuildHost-netcore\System.Text.Json.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\tr\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\tr\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\zh-Hans\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\zh-Hans\System.CommandLine.resources.dll</Link>
+        </Content>
+        <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll">
+            <Link>Properties\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll</Link>
+        </Content>
     </ItemGroup>
 
 </Project>

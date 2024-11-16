@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace HomeworkAssignment.Infrastructure.Abstractions;
+namespace HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 
 public interface IGitHubApiClient
 {

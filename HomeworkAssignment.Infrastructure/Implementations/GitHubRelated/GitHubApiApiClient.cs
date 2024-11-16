@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Net.Http.Headers;
-using HomeworkAssignment.Infrastructure.Abstractions;
+﻿using System.Net.Http.Headers;
+using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
+using Newtonsoft.Json.Linq;
 
-namespace HomeworkAssignment.Infrastructure.Implementations;
+namespace HomeworkAssignment.Infrastructure.Implementations.GitHubRelated;
 
 public class GitHubApiApiClient : IGitHubApiClient
 {
@@ -11,7 +11,8 @@ public class GitHubApiApiClient : IGitHubApiClient
     public GitHubApiApiClient(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+        _httpClient.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
     }
 
     public async Task<JArray> GetJsonArrayAsync(string url, CancellationToken cancellationToken = default)
@@ -26,7 +27,7 @@ public class GitHubApiApiClient : IGitHubApiClient
     public async Task<JObject> GetJsonObjectAsync(string url, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync(url, cancellationToken);
-        response.EnsureSuccessStatusCode(); 
+        response.EnsureSuccessStatusCode();
 
         var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
         return JObject.Parse(jsonResponse);

@@ -1,8 +1,8 @@
-﻿using HomeworkAssignment.Infrastructure.Abstractions;
-using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+﻿using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 using Microsoft.Extensions.Configuration;
 
-namespace HomeworkAssignment.Infrastructure.Implementations;
+namespace HomeworkAssignment.Infrastructure.Implementations.GitHubRelated;
 
 public class GitHubClientProvider : IGitHubClientProvider
 {

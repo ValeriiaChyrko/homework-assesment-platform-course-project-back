@@ -1,6 +1,8 @@
 ﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Infrastructure.Abstractions;
+using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
+using HomeworkAssignment.Infrastructure.Abstractions.GitRelated;
 
 namespace HomeworkAssignment.Application.Implementations;
 
@@ -50,7 +52,7 @@ public class GitHubService : IGitHubService
                 assignment.RepositoryName, 
                 cancellationToken);
 
-            var studentBranches = await _branchService.FilterBranchesByAuthorAsync(
+            var studentBranches = await _branchService.GetBranchesWithCommitsByAuthorAsync(
                 teacher.GithubUsername,
                 assignment.RepositoryName,
                 branches.Select(b => b["name"]?.ToString())!,

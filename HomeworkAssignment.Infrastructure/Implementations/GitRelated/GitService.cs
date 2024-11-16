@@ -1,16 +1,14 @@
-﻿using HomeworkAssignment.Infrastructure.Abstractions;
+﻿using HomeworkAssignment.Infrastructure.Abstractions.GitRelated;
 using LibGit2Sharp;
 
-namespace HomeworkAssignment.Infrastructure.Implementations;
+namespace HomeworkAssignment.Infrastructure.Implementations.GitRelated;
 
 public class GitService : IGitService
 {
     public void CloneRepository(string owner, string repositoryName, string targetDirectory)
     {
-        if (Directory.Exists(targetDirectory))
-        {
-            Directory.Delete(targetDirectory, true);
-        }
+        if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
+
         Repository.Clone($"https://github.com/{owner}/{repositoryName}.git", targetDirectory);
     }
 
