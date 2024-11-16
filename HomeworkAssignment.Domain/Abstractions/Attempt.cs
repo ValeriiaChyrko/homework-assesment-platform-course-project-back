@@ -2,13 +2,14 @@
 
 public class Attempt
 {
-    public Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, DateTime finishedAt,
+    private Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, string branchName, DateTime finishedAt,
         int compilationScore, int testsScore, int qualityScore, int finalScore)
     {
         Id = id;
         StudentId = studentId;
         AssignmentId = assignmentId;
         AttemptNumber = attemptNumber;
+        BranchName = branchName;
         FinishedAt = finishedAt;
         CompilationScore = compilationScore;
         TestsScore = testsScore;
@@ -20,13 +21,14 @@ public class Attempt
     public Guid StudentId { get; set; }
     public Guid AssignmentId { get; set; }
     public int AttemptNumber { get; set; }
+    public string BranchName { get; set; }
     public DateTime FinishedAt { get; set; }
     public int CompilationScore { get; set; }
     public int TestsScore { get; set; }
     public int QualityScore { get; set; }
     public int FinalScore { get; set; }
 
-    public static Attempt Create(Guid studentId, Guid assignmentId, int attemptNumber, int compilationScore,
+    public static Attempt Create(Guid studentId, Guid assignmentId, string branchName,  int attemptNumber, int compilationScore,
         int testsScore, int qualityScore)
     {
         var attemptId = Guid.NewGuid();
@@ -38,6 +40,7 @@ public class Attempt
             studentId,
             assignmentId,
             attemptNumber,
+            branchName,
             finishedAt,
             compilationScore,
             testsScore,
@@ -48,7 +51,7 @@ public class Attempt
         return newAttempt;
     }
 
-    public void Update(Guid studentId, Guid assignmentId, int attemptNumber, int compilationScore, int testsScore,
+    public void Update(Guid studentId, Guid assignmentId, string branchName, int attemptNumber, int compilationScore, int testsScore,
         int qualityScore)
     {
         var finalScore = compilationScore + testsScore + qualityScore;
@@ -57,6 +60,7 @@ public class Attempt
         StudentId = studentId;
         AssignmentId = assignmentId;
         AttemptNumber = attemptNumber;
+        BranchName = branchName;
         FinishedAt = finishedAt;
         CompilationScore = compilationScore;
         TestsScore = testsScore;

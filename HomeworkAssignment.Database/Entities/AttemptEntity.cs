@@ -4,6 +4,7 @@ public class AttemptEntity
 {
     public Guid Id { get; set; }
     public int AttemptNumber { get; set; }
+    public string BranchName { get; set; } = string.Empty;
     public DateTime FinishedAt { get; set; }
 
     public int CompilationScore { get; set; }

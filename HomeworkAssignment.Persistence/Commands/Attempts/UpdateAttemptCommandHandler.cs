@@ -26,6 +26,7 @@ public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttempt
         var attempt = Attempt.Create(
             command.AttemptDto.StudentId,
             command.AttemptDto.AssignmentId,
+            command.AttemptDto.BranchName,
             command.AttemptDto.AttemptNumber,
             command.AttemptDto.CompilationScore,
             command.AttemptDto.TestsScore,
