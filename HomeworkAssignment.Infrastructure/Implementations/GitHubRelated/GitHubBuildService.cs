@@ -1,5 +1,4 @@
-﻿using HomeAssignment.Domain.Abstractions.Contracts;
-using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
+﻿using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
 using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.GitRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
@@ -12,16 +11,14 @@ public class GitHubBuildService : IGitHubBuildService
     private readonly ICodeBuildService _codeBuildService;
     private readonly ICodeTestsService _codeTestsService;
     private readonly IGitService _gitService;
-    private readonly ILogger _logger;
     private readonly ICodeQualityService _qualityService;
 
     public GitHubBuildService(IGitService gitService, ICodeBuildService codeBuildService,
-        ICodeQualityService qualityService, ILogger logger, ICodeTestsService codeTestsService)
+        ICodeQualityService qualityService, ICodeTestsService codeTestsService)
     {
         _gitService = gitService;
         _codeBuildService = codeBuildService;
         _qualityService = qualityService;
-        _logger = logger;
         _codeTestsService = codeTestsService;
     }
 
@@ -35,24 +32,8 @@ public class GitHubBuildService : IGitHubBuildService
         _gitService.CheckoutBranch(repoDirectory, branch);
         _gitService.CheckoutCommit(repoDirectory, lastCommitSha);
 
-        var projectFiles = Directory.GetFiles(repoDirectory, "*.csproj", SearchOption.AllDirectories);
-        if (projectFiles.Length == 0) return false;
-
-        var overallSuccess = true;
-
-        foreach (var projectFile in projectFiles)
-            try
-            {
-                var exitCode = await _codeBuildService.BuildProjectAsync(projectFile, cancellationToken);
-                if (exitCode != 0) overallSuccess = false;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error building project {projectFile}: {ex.Message}");
-                overallSuccess = false;
-            }
-
-        return overallSuccess;
+        var isCompile = await _codeBuildService.VerifyProjectCompilation(repoDirectory, cancellationToken);
+        return isCompile;
     }
 
     public async Task<int> EvaluateProjectCodeQualityAsync(string owner, string repositoryName, string branch,

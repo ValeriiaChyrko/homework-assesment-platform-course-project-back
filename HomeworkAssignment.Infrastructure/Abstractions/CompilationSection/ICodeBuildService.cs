@@ -2,5 +2,5 @@
 
 public interface ICodeBuildService
 {
-    Task<int> BuildProjectAsync(string projectFile, CancellationToken cancellationToken = default);
+    Task<bool> VerifyProjectCompilation(string repositoryName, CancellationToken cancellationToken = default);
 }

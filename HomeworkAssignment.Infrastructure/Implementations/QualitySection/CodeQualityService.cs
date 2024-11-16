@@ -13,9 +13,9 @@ public class CodeQualityService : ICodeQualityService
 
     private static readonly Dictionary<DiagnosticSeverity, int> SeverityWeights = new()
     {
-        { DiagnosticSeverity.Error, 45 },
-        { DiagnosticSeverity.Warning, 25 },
-        { DiagnosticSeverity.Info, 15 }
+        { DiagnosticSeverity.Error, 35 },
+        { DiagnosticSeverity.Warning, 20 },
+        { DiagnosticSeverity.Info, 10 }
     };
 
     private readonly ILanguageDetector _languageDetector;
@@ -38,7 +38,7 @@ public class CodeQualityService : ICodeQualityService
         {
             "C#" => new DotNetCodeAnalyzer(_workspace, _logger),
             "Python" => new PythonCodeAnalyzer(),
-            "Java" => new JavaCodeAnalyzer(),
+            "Java" => new JavaCodeAnalyzer(_logger),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };
 
