@@ -15,10 +15,16 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
         _logger = logger;
     }
 
-    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string projectPath,
+    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
         CancellationToken cancellationToken = default)
     {
-        var javaFiles = Directory.GetFiles(projectPath, "*.java", SearchOption.AllDirectories);
+        var projectDirectory = Path.Combine(repositoryPath, "src");
+        if (!Directory.Exists(projectDirectory))
+        {
+            throw new DirectoryNotFoundException($"Source directory not found: {projectDirectory}");
+        }
+        
+        var javaFiles = Directory.GetFiles(projectDirectory, "*.java", SearchOption.AllDirectories);
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
         var tasks = javaFiles.Select(async javaFile =>
@@ -75,7 +81,7 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
 
         await process.WaitForExitAsync(cancellationToken);
 
-        return diagnostics;
+        return diagnostics.Distinct();
     }
     
     private static string? DetermineSeverity(string message)

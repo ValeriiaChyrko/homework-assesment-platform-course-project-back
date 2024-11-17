@@ -27,7 +27,7 @@ public class CodeTestsService : ICodeTestsService
         {
             "C#" => new DotNetTestsRunner(_logger),
             "Python" => new PythonTestsRunner(),
-            "Java" => new JavaTestsRunner(),
+            "Java" => new JavaTestsRunner(_logger),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };
 

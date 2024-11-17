@@ -20,12 +20,12 @@ public class DotNetCodeAnalyzer : ICodeAnalyzer
         _logger = logger;
     }
 
-    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string projectPath,
+    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
         CancellationToken cancellationToken = default)
     {
         if (!MSBuildLocator.IsRegistered) MSBuildLocator.RegisterDefaults();
 
-        var projects = Directory.GetFiles(projectPath, "*.csproj", SearchOption.AllDirectories);
+        var projects = Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
         var tasks = projects.Select(async projectFile =>
