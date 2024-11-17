@@ -26,7 +26,7 @@ public class CodeTestsService : ICodeTestsService
         ITestsRunner runner = language switch
         {
             "C#" => new DotNetTestsRunner(_logger),
-            "Python" => new PythonTestsRunner(),
+            "Python" => new PythonTestsRunner(_logger),
             "Java" => new JavaTestsRunner(_logger),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };
