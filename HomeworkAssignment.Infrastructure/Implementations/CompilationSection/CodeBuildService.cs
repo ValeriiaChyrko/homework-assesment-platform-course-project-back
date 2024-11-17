@@ -15,6 +15,8 @@ public class CodeBuildService : ICodeBuildService
     {
         _logger = logger;
         _languageDetector = languageDetector;
+        
+        Console.OutputEncoding = Encoding.UTF8;
     }
 
     public async Task<bool> VerifyProjectCompilation(string repositoryPath, CancellationToken cancellationToken = default)
