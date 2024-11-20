@@ -51,17 +51,6 @@ public class CodeBuildService : ICodeBuildService
         return overallSuccess;
     }
 
-    private static string[] GetProjectFilesByLanguage(string language, string repositoryPath)
-    {
-        return language switch
-        {
-            "C#" => Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories),
-            "Python" => Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories),
-            "Java" => Directory.GetFiles(repositoryPath, "*.java", SearchOption.AllDirectories),
-            _ => Array.Empty<string>()
-        };
-    }
-
     private static async Task<int> BuildProjectInDockerAsync(string projectFile, string language, string repositoryPath,
     CancellationToken cancellationToken = default)
 {
@@ -74,7 +63,7 @@ public class CodeBuildService : ICodeBuildService
     var relativeProjectPath = Path.GetRelativePath(repositoryPath, projectFile).Replace("\\", "/");
     var fileName = Path.GetFileName(relativeProjectPath);
     var arguments = GetBuildArguments(language, fileName);
-    var workingDirectory = Path.GetDirectoryName(relativeProjectPath)?.Replace("\\", "/");
+    var workingDirectory = GetWorkingDirectory(language, relativeProjectPath);
    
     var dockerCommand = $"docker run -it --rm -v \"{repositoryPath.Replace("\\", "/")}:/workspace\" -w /workspace/{workingDirectory} {dockerImage} {command} {arguments}";
     
@@ -136,18 +125,29 @@ public class CodeBuildService : ICodeBuildService
         {
             "C#" => "mcr.microsoft.com/dotnet/sdk:7.0",
             "Python" => "python:3.11",
-            "Java" => "openjdk:11",
+            "Java" => "maven:3.8.6-jdk-11",
             _ => throw new NotSupportedException($"Unsupported language: {language}")
         };
     }
 
+    private static string[] GetProjectFilesByLanguage(string language, string repositoryPath)
+    {
+        return language switch
+        {
+            "C#" => Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories),
+            "Python" => Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories),
+            "Java" => Directory.GetFiles(repositoryPath, "*.java", SearchOption.AllDirectories),
+            _ => Array.Empty<string>()
+        };
+    }
+    
     private static string GetBuildCommand(string language)
     {
         return language switch
         {
             "C#" => "dotnet",
             "Python" => "python3",
-            "Java" => "javac",
+            "Java" => "mvn",
             _ => throw new NotSupportedException($"Unsupported language: {language}")
         };
     }
@@ -157,8 +157,21 @@ public class CodeBuildService : ICodeBuildService
         return language switch
         {
             "C#" => $"build {projectFile}",
-            "Python" => $"\"{projectFile}\"",
-            "Java" => $"{projectFile}",
+            "Python" => $"-m py_compile {projectFile}",
+            "Java" => string.Empty,
+            _ => throw new NotSupportedException($"Unsupported language: {language}")
+        };
+    }
+    
+    private static string? GetWorkingDirectory(string language, string relativeProjectPath)
+    {
+        var workingDirectory = Path.GetDirectoryName(relativeProjectPath)?.Replace("\\", "/");
+        
+        return language switch
+        {
+            "C#" => workingDirectory,
+            "Python" => workingDirectory,
+            "Java" => workingDirectory,
             _ => throw new NotSupportedException($"Unsupported language: {language}")
         };
     }
