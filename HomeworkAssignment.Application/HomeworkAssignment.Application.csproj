@@ -10,11 +10,12 @@
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="MediatR" Version="12.4.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.20" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\HomeworkAssignment.DTOs\HomeworkAssignment.DTOs.csproj"/>
-        <ProjectReference Include="..\HomeworkAssignment.Infrastructure\HomeworkAssignment.Infrastructure.csproj" />
+        <ProjectReference Include="..\HomeworkAssignment.Infrastructure\HomeworkAssignment.Infrastructure.csproj"/>
         <ProjectReference Include="..\HomeworkAssignment.Persistence\HomeworkAssignment.Persistence.csproj"/>
     </ItemGroup>
 

@@ -13,7 +13,7 @@ public class RequestAttemptDtoValidator : AbstractValidator<RequestAttemptDto>
         RuleFor(x => x.AssignmentId)
             .NotEmpty().WithMessage("AssignmentId is required.")
             .Must(id => id != Guid.Empty).WithMessage("AssignmentId cannot be an empty GUID.");
-        
+
         RuleFor(x => x.BranchName)
             .NotNull().NotEmpty().WithMessage("Branch name is required.");
 

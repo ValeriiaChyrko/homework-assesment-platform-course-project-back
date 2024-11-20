@@ -2,7 +2,8 @@
 
 public class Assignment
 {
-    private Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
+    private Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName,
+        DateTime deadline, int maxScore,
         int maxAttemptsAmount,
         ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
     {
@@ -32,7 +33,8 @@ public class Assignment
     public ScoreSection TestsSection { get; set; }
     public ScoreSection QualitySection { get; set; }
 
-    public static Assignment Create(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
+    public static Assignment Create(Guid ownerId, string title, string? description, string repositoryName,
+        DateTime deadline, int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
         ScoreSection? qualitySection = null)
     {
@@ -53,7 +55,8 @@ public class Assignment
         );
     }
 
-    public void Update(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline, int maxScore,
+    public void Update(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline,
+        int maxScore,
         int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
         ScoreSection? qualitySection = null)
     {

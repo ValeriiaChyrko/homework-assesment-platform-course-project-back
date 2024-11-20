@@ -2,7 +2,8 @@
 
 public class Attempt
 {
-    private Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, string branchName, DateTime finishedAt,
+    private Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, string branchName,
+        DateTime finishedAt,
         int compilationScore, int testsScore, int qualityScore, int finalScore)
     {
         Id = id;
@@ -28,7 +29,8 @@ public class Attempt
     public int QualityScore { get; set; }
     public int FinalScore { get; set; }
 
-    public static Attempt Create(Guid studentId, Guid assignmentId, string branchName,  int attemptNumber, int compilationScore,
+    public static Attempt Create(Guid studentId, Guid assignmentId, string branchName, int attemptNumber,
+        int compilationScore,
         int testsScore, int qualityScore)
     {
         var attemptId = Guid.NewGuid();
@@ -51,7 +53,8 @@ public class Attempt
         return newAttempt;
     }
 
-    public void Update(Guid studentId, Guid assignmentId, string branchName, int attemptNumber, int compilationScore, int testsScore,
+    public void Update(Guid studentId, Guid assignmentId, string branchName, int attemptNumber, int compilationScore,
+        int testsScore,
         int qualityScore)
     {
         var finalScore = compilationScore + testsScore + qualityScore;

@@ -1,6 +1,5 @@
 ﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Application.Abstractions;
-using HomeworkAssignment.Infrastructure.Abstractions;
 using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.GitRelated;
 
@@ -8,33 +7,34 @@ namespace HomeworkAssignment.Application.Implementations;
 
 public class GitHubService : IGitHubService
 {
-    private readonly ILogger _logger;
-    private readonly IStudentService _studentService;
-    private readonly ITeacherService _teacherService;
     private readonly IAssignmentService _assignmentService;
     private readonly IBranchService _branchService;
     private readonly ICommitService _commitService;
     private readonly IGitHubBuildService _gitHubBuildService;
+    private readonly ILogger _logger;
+    private readonly IStudentService _studentService;
+    private readonly ITeacherService _teacherService;
 
     public GitHubService(
         IStudentService studentService,
         ILogger logger,
         IAssignmentService assignmentService,
-        IBranchService branchService, 
+        IBranchService branchService,
         ITeacherService teacherService,
-        IGitHubBuildService gitHubBuildService, 
-        ICommitService commitService) 
+        IGitHubBuildService gitHubBuildService,
+        ICommitService commitService)
     {
         _studentService = studentService;
         _logger = logger;
         _assignmentService = assignmentService;
-        _branchService = branchService; 
+        _branchService = branchService;
         _teacherService = teacherService;
         _gitHubBuildService = gitHubBuildService;
         _commitService = commitService;
     }
 
-    public async Task<IEnumerable<string>?> GetStudentBranches(Guid githubProfileId, Guid assignmentId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>?> GetStudentBranches(Guid githubProfileId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -46,10 +46,10 @@ public class GitHubService : IGitHubService
 
             var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
             if (teacher == null) return null;
-            
+
             var branches = await _branchService.GetBranchesAsync(
-                teacher.GithubUsername, 
-                assignment.RepositoryName, 
+                teacher.GithubUsername,
+                assignment.RepositoryName,
                 cancellationToken);
 
             var studentBranches = await _branchService.GetBranchesWithCommitsByAuthorAsync(
@@ -69,7 +69,8 @@ public class GitHubService : IGitHubService
         }
     }
 
-    public async Task<int> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+    public async Task<int> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -81,25 +82,25 @@ public class GitHubService : IGitHubService
 
             var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
             if (teacher == null) return 0;
-            
+
             var lastCommitSha = await _commitService.GetLastCommitByAuthorAsync(
-                teacher.GithubUsername, 
-                assignment.RepositoryName, 
-                branch, 
-                student.GithubUsername, 
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                student.GithubUsername,
                 cancellationToken: cancellationToken);
-            
+
             if (string.IsNullOrEmpty(lastCommitSha))
             {
                 _logger.Log("No commits found for the specified author.");
                 return 0;
             }
-            
-            var isCompile = await _gitHubBuildService.CheckIfProjectCompilesAsync(                
-                teacher.GithubUsername, 
-                assignment.RepositoryName,  
-                branch, 
-                lastCommitSha, 
+
+            var isCompile = await _gitHubBuildService.CheckIfProjectCompilesAsync(
+                teacher.GithubUsername,
+                assignment.RepositoryName,
+                branch,
+                lastCommitSha,
                 cancellationToken
             );
 
@@ -111,8 +112,9 @@ public class GitHubService : IGitHubService
             throw new Exception("Error verifying project compilation", ex);
         }
     }
-    
-    public async Task<int> VerifyProjectQuality(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+
+    public async Task<int> VerifyProjectQuality(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -149,10 +151,10 @@ public class GitHubService : IGitHubService
 
             var minScore = assignment.QualitySection.MinScore;
             var maxScore = assignment.QualitySection.MaxScore;
-            
-            if (maxScore == minScore) return minScore; 
 
-            var finalScore = minScore + (percentage / 100.0) * (maxScore - minScore);
+            if (maxScore == minScore) return minScore;
+
+            var finalScore = minScore + percentage / 100.0 * (maxScore - minScore);
             return (int)Math.Round(finalScore);
         }
         catch (Exception ex)
@@ -161,8 +163,9 @@ public class GitHubService : IGitHubService
             throw new Exception("Error verifying project quality", ex);
         }
     }
-    
-    public async Task<int> VerifyProjectTests(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
+
+    public async Task<int> VerifyProjectTests(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -199,10 +202,10 @@ public class GitHubService : IGitHubService
 
             var minScore = assignment.TestsSection.MinScore;
             var maxScore = assignment.TestsSection.MaxScore;
-            
-            if (maxScore == minScore) return minScore; 
 
-            var finalScore = minScore + (percentage / 100.0) * (maxScore - minScore);
+            if (maxScore == minScore) return minScore;
+
+            var finalScore = minScore + percentage / 100.0 * (maxScore - minScore);
             return (int)Math.Round(finalScore);
         }
         catch (Exception ex)

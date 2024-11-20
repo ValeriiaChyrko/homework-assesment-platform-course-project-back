@@ -44,23 +44,19 @@ public class PythonTestsRunner : ITestsRunner
                 if (string.IsNullOrEmpty(args.Data)) return;
 
                 if (Regex.IsMatch(args.Data, PassedPattern, RegexOptions.IgnoreCase))
-                {
                     testResults.Add(new TestResult
                     {
                         TestName = ExtractTestName(args.Data),
                         IsPassed = true,
                         ExecutionTimeMs = ExtractExecutionTime(args.Data)
                     });
-                }
                 else if (Regex.IsMatch(args.Data, FailedPattern, RegexOptions.IgnoreCase))
-                {
                     testResults.Add(new TestResult
                     {
                         TestName = ExtractTestName(args.Data),
                         IsPassed = false,
                         ExecutionTimeMs = ExtractExecutionTime(args.Data)
                     });
-                }
             };
 
             try

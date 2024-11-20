@@ -24,7 +24,7 @@ public sealed class GetUserByGithubProfileIdQueryHandler : IRequestHandler<GetUs
             .AsNoTracking()
             .FirstOrDefaultAsync(mr => mr.Id == query.GithubProfileId, cancellationToken);
         if (gitHubProfileEntity is null) return null;
-            
+
         var user = await _context
             .UserEntities
             .AsNoTracking()

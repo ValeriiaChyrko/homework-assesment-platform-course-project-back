@@ -1,0 +1,6 @@
+﻿services:
+  homeworkassignment.api:
+    image: homeworkassignment.api
+    build:
+      context: .
+      dockerfile: HomeworkAssignment.API/Dockerfile

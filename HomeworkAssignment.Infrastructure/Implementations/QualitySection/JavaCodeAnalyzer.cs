@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
-using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 using System.Diagnostics;
 using HomeAssignment.Domain.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
 
@@ -20,10 +20,8 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
     {
         var projectDirectory = Path.Combine(repositoryPath, "src");
         if (!Directory.Exists(projectDirectory))
-        {
             throw new DirectoryNotFoundException($"Source directory not found: {projectDirectory}");
-        }
-        
+
         var javaFiles = Directory.GetFiles(projectDirectory, "*.java", SearchOption.AllDirectories);
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
@@ -32,10 +30,7 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
             try
             {
                 var diagnostics = await AnalyzeJavaFileAsync(javaFile, cancellationToken);
-                foreach (var diagnostic in diagnostics)
-                {
-                    diagnosticsList.Add(diagnostic);
-                }
+                foreach (var diagnostic in diagnostics) diagnosticsList.Add(diagnostic);
             }
             catch (Exception ex)
             {
@@ -55,7 +50,7 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
         var processStartInfo = new ProcessStartInfo
         {
             FileName = "javac",
-            Arguments = $"-Xlint {javaFile}", 
+            Arguments = $"-Xlint {javaFile}",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -72,9 +67,9 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
             if (!string.IsNullOrEmpty(output))
             {
                 var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                diagnostics.AddRange(from line in lines 
-                    let severity = DetermineSeverity(line) 
-                    where !string.IsNullOrEmpty(severity) 
+                diagnostics.AddRange(from line in lines
+                    let severity = DetermineSeverity(line)
+                    where !string.IsNullOrEmpty(severity)
                     select new DiagnosticMessage { Message = line, Severity = severity });
             }
         }
@@ -83,7 +78,7 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
 
         return diagnostics.Distinct();
     }
-    
+
     private static string? DetermineSeverity(string message)
     {
         if (message.Contains("error:", StringComparison.OrdinalIgnoreCase))

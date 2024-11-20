@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
-using InvalidOperationException = System.InvalidOperationException;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection;
 
@@ -26,13 +25,12 @@ public class JavaTestsRunner : ITestsRunner
             .FirstOrDefault(p => File.Exists(Path.Combine(p, "mvn.cmd")));
 
         if (mvnPath == null)
-        {
-            throw new InvalidOperationException("Maven is not installed or is not available in PATH. Please ensure Maven is installed and added to PATH.");
-        }
+            throw new InvalidOperationException(
+                "Maven is not installed or is not available in PATH. Please ensure Maven is installed and added to PATH.");
 
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = mvnPath, 
+            FileName = mvnPath,
             Arguments = "test",
             WorkingDirectory = repositoryPath,
             RedirectStandardOutput = true,
@@ -87,10 +85,7 @@ public class JavaTestsRunner : ITestsRunner
     {
         const string timePattern = @"\((?<Time>\d+)\s+ms\)";
         var match = Regex.Match(output, timePattern);
-        if (match.Success && double.TryParse(match.Groups["Time"].Value, out var time))
-        {
-            return time;
-        }
+        if (match.Success && double.TryParse(match.Groups["Time"].Value, out var time)) return time;
         return 0;
     }
 }

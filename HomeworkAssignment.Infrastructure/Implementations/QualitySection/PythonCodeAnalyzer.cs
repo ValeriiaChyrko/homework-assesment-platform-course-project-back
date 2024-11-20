@@ -1,14 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Text.Json;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
-using System.Collections.Concurrent;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
 
 public class PythonCodeAnalyzer : ICodeAnalyzer
 {
-    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
+        CancellationToken cancellationToken = default)
     {
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
         var sourcePath = Path.Combine(repositoryPath, "src");
@@ -20,80 +21,76 @@ public class PythonCodeAnalyzer : ICodeAnalyzer
         return diagnosticsList.Distinct();
     }
 
-private static async Task AnalyzeFileAsync(string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList, CancellationToken cancellationToken)
-{
-    var processStartInfo = new ProcessStartInfo
+    private static async Task AnalyzeFileAsync(string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList,
+        CancellationToken cancellationToken)
     {
-        FileName = "pylint",
-        Arguments = $"\"{filePath}\" --output-format=json",
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        UseShellExecute = false,
-        CreateNoWindow = true
-    };
-
-    using var process = new Process();
-    process.StartInfo = processStartInfo;
-
-    try
-    {
-        process.Start();
-
-        using var reader = process.StandardOutput;
-        var output = await reader.ReadToEndAsync(cancellationToken);
-
-        if (!string.IsNullOrEmpty(output))
+        var processStartInfo = new ProcessStartInfo
         {
-            try
-            {
-                var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
-                if (pylintDiagnostics != null)
-                {
-                    var filteredDiagnostics = pylintDiagnostics
-                        .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
-                        .ToList();
+            FileName = "pylint",
+            Arguments = $"\"{filePath}\" --output-format=json",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
 
-                    foreach (var diagnostic in filteredDiagnostics)
+        using var process = new Process();
+        process.StartInfo = processStartInfo;
+
+        try
+        {
+            process.Start();
+
+            using var reader = process.StandardOutput;
+            var output = await reader.ReadToEndAsync(cancellationToken);
+
+            if (!string.IsNullOrEmpty(output))
+                try
+                {
+                    var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
+                    if (pylintDiagnostics != null)
                     {
-                        var severity = DetermineSeverity(diagnostic.Type);
-                        if (string.IsNullOrEmpty(severity)) continue;
-                        diagnosticsList.Add(new DiagnosticMessage
+                        var filteredDiagnostics = pylintDiagnostics
+                            .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
+                            .ToList();
+
+                        foreach (var diagnostic in filteredDiagnostics)
                         {
-                            Message = diagnostic.Message,
-                            Severity = severity
-                        });
+                            var severity = DetermineSeverity(diagnostic.Type);
+                            if (string.IsNullOrEmpty(severity)) continue;
+                            diagnosticsList.Add(new DiagnosticMessage
+                            {
+                                Message = diagnostic.Message,
+                                Severity = severity
+                            });
+                        }
                     }
                 }
-            }
-            catch (JsonException ex)
-            {
-                diagnosticsList.Add(new DiagnosticMessage
+                catch (JsonException ex)
                 {
-                    Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
-                    Severity = DiagnosticSeverity.Error.ToString()
-                });
-            }
-        }
+                    diagnosticsList.Add(new DiagnosticMessage
+                    {
+                        Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
+                        Severity = DiagnosticSeverity.Error.ToString()
+                    });
+                }
 
-        await process.WaitForExitAsync(cancellationToken);
-    }
-    catch (Exception ex) when (!(ex is OperationCanceledException))
-    {
-        diagnosticsList.Add(new DiagnosticMessage
+            await process.WaitForExitAsync(cancellationToken);
+        }
+        catch (Exception ex) when (!(ex is OperationCanceledException))
         {
-            Message = $"Error analyzing file {filePath}: {ex.Message}",
-            Severity = DiagnosticSeverity.Error.ToString()
-        });
-    }
-    finally
-    {
-        if (!process.HasExited)
+            diagnosticsList.Add(new DiagnosticMessage
+            {
+                Message = $"Error analyzing file {filePath}: {ex.Message}",
+                Severity = DiagnosticSeverity.Error.ToString()
+            });
+        }
+        finally
         {
-            process.Kill();
+            if (!process.HasExited) process.Kill();
         }
     }
-}
-    
+
     private static string? DetermineSeverity(string type)
     {
         return type.ToLower() switch
@@ -101,7 +98,7 @@ private static async Task AnalyzeFileAsync(string filePath, ConcurrentBag<Diagno
             "error" => DiagnosticSeverity.Error.ToString(),
             "warning" => DiagnosticSeverity.Warning.ToString(),
             "info" => DiagnosticSeverity.Info.ToString(),
-            _ => null 
+            _ => null
         };
     }
 }
