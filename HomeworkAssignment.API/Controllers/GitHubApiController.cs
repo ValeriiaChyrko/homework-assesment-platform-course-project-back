@@ -1,7 +1,7 @@
 ﻿using HomeworkAssignment.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication1.Controllers;
+namespace HomeworkAssignment.Controllers;
 
 [Route("api/github")]
 [Produces("application/json")]

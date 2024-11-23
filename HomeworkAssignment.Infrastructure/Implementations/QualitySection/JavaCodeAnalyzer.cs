@@ -42,7 +42,7 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
         return diagnosticsList;
     }
 
-    private async Task<IEnumerable<DiagnosticMessage>> AnalyzeJavaFileAsync(string javaFile,
+    private static async Task<IEnumerable<DiagnosticMessage>> AnalyzeJavaFileAsync(string javaFile,
         CancellationToken cancellationToken)
     {
         var diagnostics = new List<DiagnosticMessage>();
@@ -79,14 +79,11 @@ public class JavaCodeAnalyzer : ICodeAnalyzer
         return diagnostics.Distinct();
     }
 
-    private static string? DetermineSeverity(string message)
+    private static string DetermineSeverity(string message)
     {
         if (message.Contains("error:", StringComparison.OrdinalIgnoreCase))
             return DiagnosticSeverity.Error.ToString();
-        if (message.Contains("warning:", StringComparison.OrdinalIgnoreCase))
-            return DiagnosticSeverity.Warning.ToString();
-        if (message.Contains("info:", StringComparison.OrdinalIgnoreCase))
-            return DiagnosticSeverity.Info.ToString();
-        return null;
+        return message.Contains("warning:", StringComparison.OrdinalIgnoreCase) 
+            ? DiagnosticSeverity.Warning.ToString() : DiagnosticSeverity.Info.ToString();
     }
 }

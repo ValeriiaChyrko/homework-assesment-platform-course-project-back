@@ -1,6 +1,31 @@
-﻿services:
+﻿version: '3.8'
+
+services:
   homeworkassignment.api:
-    image: homeworkassignment.api
+    image: homework-assignment.api
     build:
       context: .
       dockerfile: HomeworkAssignment.API/Dockerfile
+    container_name: homework-assignment-api
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=HomeworkAssignmentDb;Username=admin;Password=admin
+    depends_on:
+      - db
+    networks:
+      - homework-assignment_network
+
+  db:
+    image: postgres:latest
+    container_name: homework-assignment-db  
+    environment:
+      POSTGRES_DB: HomeworkAssignmentDb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    networks:
+      - homework-assignment_network
+
+networks:
+  homework-assignment_network:
+    driver: bridge
