@@ -36,8 +36,8 @@ public class CodeQualityService : ICodeQualityService
         ICodeAnalyzer analyzer = language switch
         {
             "C#" => new DotNetCodeAnalyzer(_logger, _dockerService),
-            "Python" => new PythonCodeAnalyzer(_logger),
-            "Java" => new JavaCodeAnalyzer(_logger),
+            "Python" => new PythonCodeAnalyzer(_logger, _dockerService),
+            "Java" => new JavaCodeAnalyzer(_logger, _dockerService),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };
 

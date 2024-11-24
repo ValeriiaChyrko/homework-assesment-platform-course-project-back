@@ -1,120 +1,101 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
 {
     public class JavaCodeAnalyzer : ICodeAnalyzer
     {
+        private const string DockerImage = "maven:3.8.6-jdk-11";
+        private const string Command = "mvn";
         private readonly ILogger _logger;
+        private readonly IDockerService _dockerService;
 
-        public JavaCodeAnalyzer(ILogger logger)
+        public JavaCodeAnalyzer(ILogger logger, IDockerService dockerService)
         {
             _logger = logger;
+            _dockerService = dockerService;
         }
 
-        public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
+            CancellationToken cancellationToken = default)
         {
-            if (!Directory.Exists(repositoryPath))
-                throw new DirectoryNotFoundException($"Source directory not found: {repositoryPath}");
+            if (string.IsNullOrWhiteSpace(repositoryPath))
+                throw new ArgumentException("Repository path cannot be null or empty.", nameof(repositoryPath));
 
-            return await AnalyzeJavaCodeInDockerAsync(repositoryPath, cancellationToken);
-        }
-
-        private async Task<IEnumerable<DiagnosticMessage>> AnalyzeJavaCodeInDockerAsync(string projectDirectory, CancellationToken cancellationToken)
-        {
-            const string dockerImage = "maven"; 
-            var dockerCommand = $"docker run -v \"{projectDirectory.Replace("\\", "/")}:/app\" --rm -w /app {dockerImage} mvn compile -e";
-
-            var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
-            var shellFileName = isWindows ? "cmd.exe" : "/bin/sh";
-            var shellArguments = isWindows ? $"/c {dockerCommand}" : $"-c \"{dockerCommand}\"";
-
-            var processStartInfo = new ProcessStartInfo
+            var projectFiles = GetProjectFiles(repositoryPath);
+            if (projectFiles.Length == 0)
             {
-                FileName = shellFileName,
-                Arguments = shellArguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                _logger.Log($"No Maven project files found in the {repositoryPath}.");
+                return Enumerable.Empty<DiagnosticMessage>();
+            }
 
-            using var process = new Process();
-            process.StartInfo = processStartInfo;
+            var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
-            var outputBuilder = new StringBuilder();
-            var errorBuilder = new StringBuilder();
-
-            process.OutputDataReceived += (_, e) =>
+            foreach (var projectFile in projectFiles)
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                    outputBuilder.AppendLine(e.Data);
-            };
-
-            process.ErrorDataReceived += (_, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                    errorBuilder.AppendLine(e.Data);
-            };
-
-            try
-            {
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-
-                await process.WaitForExitAsync(cancellationToken);
-
-                var output = outputBuilder.ToString();
-                var error = errorBuilder.ToString();
-
-                if (process.ExitCode == 0)
+                try
                 {
-                    _logger.Log($"Docker analysis succeeded. Output:\n{output}");
-                    return ParseDiagnostics(output);
+                    var diagnostics = await AnalyzeProjectInDockerAsync(projectFile, repositoryPath, cancellationToken);
+                    foreach (var diagnostic in diagnostics)
+                    {
+                        diagnosticsList.Add(diagnostic);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Error analyzing project {projectFile}: {ex.Message}");
+                }
+            }
 
-                _logger.Log($"Docker analysis failed.\nOutput:\n{output}\nError:\n{error}");
-                throw new Exception($"Docker analysis failed. Output:\n{output}\nError:\n{error}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"An error occurred while analyzing Java code in Docker with message: {ex.Message}.");
-                throw new Exception("An error occurred while analyzing Java code in Docker.", ex);
-            }
-            finally
-            {
-                if (!process.HasExited) process.Kill();
-            }
+            return diagnosticsList.Distinct();
+        }
+
+        private async Task<IEnumerable<DiagnosticMessage>> AnalyzeProjectInDockerAsync(
+            string projectFile, 
+            string repositoryPath, 
+            CancellationToken cancellationToken)
+        {
+            var relativePath = Path.GetRelativePath(repositoryPath, projectFile);
+            const string arguments = "compile -e";
+            var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
+
+            var result = await _dockerService.RunCommandAsync(
+                repositoryPath,
+                workingDirectory,
+                DockerImage,
+                Command,
+                arguments,
+                cancellationToken
+            );
+            
+            return ParseDiagnostics(result.OutputDataReceived);
+        }
+
+        private static string[] GetProjectFiles(string repositoryPath)
+        {
+            return Directory.GetFiles(repositoryPath, "pom.xml", SearchOption.AllDirectories);
         }
 
         private static IEnumerable<DiagnosticMessage> ParseDiagnostics(string output)
         {
             var diagnostics = new List<DiagnosticMessage>();
-            var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
-                var severity = DetermineSeverity(line);
-                if (!string.IsNullOrEmpty(severity))
+                if (!line.Contains("error") && !line.Contains("warning")) continue;
+                var severity = line.Contains("error") ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+                diagnostics.Add(new DiagnosticMessage
                 {
-                    diagnostics.Add(new DiagnosticMessage { Message = line, Severity = severity });
-                }
+                    Message = line,
+                    Severity = severity.ToString()
+                });
             }
 
-            return diagnostics.Distinct();
-        }
-
-        private static string DetermineSeverity(string message)
-        {
-            if (message.Contains("error:", StringComparison.OrdinalIgnoreCase))
-                return DiagnosticSeverity.Error.ToString();
-            if (message.Contains("warning:", StringComparison.OrdinalIgnoreCase))
-                return DiagnosticSeverity.Warning.ToString();
-            return DiagnosticSeverity.Info.ToString();
+            return diagnostics;
         }
     }
 }

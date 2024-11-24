@@ -1,117 +1,79 @@
-﻿using System.Diagnostics;
-using System.Text;
-using HomeAssignment.Domain.Abstractions.Contracts;
+﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
+using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 
-namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection;
-
-public class PythonCodeBuilder : ICodeBuilder
+namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection
 {
-    private readonly ILogger _logger;
-
-    public PythonCodeBuilder(ILogger logger)
+    public class PythonCodeBuilder : ICodeBuilder
     {
-        _logger = logger;
-    }
+        private const string DockerImage = "python:3.11";
+        private const string Command = "python3";
+        private readonly ILogger _logger;
+        private readonly IDockerService _dockerService;
 
-    public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(repositoryPath))
-            throw new ArgumentException("Repository path cannot be null or empty.", nameof(repositoryPath));
-
-        var pythonFiles = GetPythonFiles(repositoryPath);
-        if (pythonFiles.Length == 0)
+        public PythonCodeBuilder(ILogger logger, IDockerService dockerService)
         {
-            _logger.Log("No Python files found.");
-            return false;
+            _logger = logger;
+            _dockerService = dockerService;
         }
 
-        var overallSuccess = true;
-
-        foreach (var pythonFile in pythonFiles)
+        public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
         {
-            try
+            var pythonFiles = GetPythonFiles(repositoryPath);
+            if (!pythonFiles.Any())
             {
-                var exitCode = await BuildProjectInDockerAsync(pythonFile, repositoryPath, cancellationToken);
-                if (exitCode != 0)
+                _logger.Log($"No Python files found in {repositoryPath}.");
+                return false;
+            }
+
+            var overallSuccess = true;
+
+            foreach (var pythonFile in pythonFiles)
+            {
+                try
                 {
+                    var result = await BuildPythonFileInDockerAsync(pythonFile, repositoryPath, cancellationToken);
+
+                    if (result.ExitCode == 0) continue;
+
+                    _logger.Log($"Build failed for {pythonFile} with message: {result.ErrorDataReceived}.");
+                    overallSuccess = false;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Error building Python file {pythonFile}: {ex.Message}");
                     overallSuccess = false;
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error building Python file {pythonFile}: {ex.Message}");
-                overallSuccess = false;
-            }
+
+            return overallSuccess;
         }
 
-        return overallSuccess;
-    }
-
-    private static string[] GetPythonFiles(string repositoryPath)
-    {
-        return Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories);
-    }
-
-    private async Task<int> BuildProjectInDockerAsync(string projectFile, string repositoryPath, CancellationToken cancellationToken)
-    {
-        const string dockerImage = "python:3.11";
-        const string command = "python3";
-
-        var relativeProjectPath = Path.GetRelativePath(repositoryPath, projectFile).Replace("\\", "/");
-        var fileName = Path.GetFileName(relativeProjectPath);
-        var arguments = $"-m py_compile {fileName}";
-        var workingDirectory = Path.GetDirectoryName(relativeProjectPath)?.Replace("\\", "/");
-
-        var dockerCommand = $"docker run -it --rm -v \"{repositoryPath.Replace("\\", "/")}:/workspace\" -w /workspace/{workingDirectory} {dockerImage} {command} {arguments}";
-        
-        var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
-        var shellFileName = isWindows ? "cmd.exe" : "sh";
-        var shellArguments = isWindows ? $"/c \"{dockerCommand}\"" : $"-c \"{dockerCommand}\"";
-
-        var processStartInfo = new ProcessStartInfo
+        private async Task<ProcessResult> BuildPythonFileInDockerAsync(
+            string pythonFile,
+            string repositoryPath,
+            CancellationToken cancellationToken)
         {
-            FileName = shellFileName,
-            Arguments = shellArguments,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+            var relativePath = Path.GetRelativePath(repositoryPath, pythonFile);
+            var arguments = $"-m py_compile {Path.GetFileName(relativePath)}";
+            var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
 
-        using var process = new Process();
-        process.StartInfo = processStartInfo;
+            var result = await _dockerService.RunCommandAsync(
+                repositoryPath,
+                workingDirectory,
+                DockerImage,
+                Command,
+                arguments,
+                cancellationToken
+            );
 
-        var outputBuilder = new StringBuilder();
-        var errorBuilder = new StringBuilder();
-
-        process.OutputDataReceived += (_, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data)) outputBuilder.AppendLine(e.Data);
-        };
-        process.ErrorDataReceived += (_, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data)) errorBuilder.AppendLine(e.Data);
-        };
-
-        try
-        {
-            process.Start();
-            process.BeginOutputReadLine();
-
-            await process.WaitForExitAsync(cancellationToken);
-
-            var output = outputBuilder.ToString();
-            var error = errorBuilder.ToString();
-
-            if (process.ExitCode == 0) return process.ExitCode;
-           
-            _logger.Log($"Docker build failed.\nOutput:\n{output}\nError:\n{error}\n");
-            throw new Exception($"Docker build failed.\nOutput:\n{output}\nError:\n{error}\n");
+            return result;
         }
-        catch (Exception ex)
+
+        private static string[] GetPythonFiles(string repositoryPath)
         {
-            throw new Exception("An error occurred while building the Python project in Docker.", ex);
+            return Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories);
         }
     }
 }

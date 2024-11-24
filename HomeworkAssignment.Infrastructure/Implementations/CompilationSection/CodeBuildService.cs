@@ -25,8 +25,8 @@ public class CodeBuildService : ICodeBuildService
         ICodeBuilder builder = language switch
         {
             "C#" => new DotNetCodeBuilder(_logger, _dockerService),
-            "Python" => new PythonCodeBuilder(_logger),
-            "Java" => new JavaCodeBuilder(_logger),
+            "Python" => new PythonCodeBuilder(_logger, _dockerService),
+            "Java" => new JavaCodeBuilder(_logger, _dockerService),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };
 

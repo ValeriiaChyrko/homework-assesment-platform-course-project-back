@@ -1,100 +1,62 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Text.Json;
-using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
+using HomeAssignment.Domain.Abstractions.Contracts;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
 {
     public class PythonCodeAnalyzer : ICodeAnalyzer
     {
+        private const string DockerImage = "python:3.11";
+        private const string Command = "pylint";
         private readonly ILogger _logger;
+        private readonly IDockerService _dockerService;
 
-        public PythonCodeAnalyzer(ILogger logger)
+        public PythonCodeAnalyzer(ILogger logger, IDockerService dockerService)
         {
             _logger = logger;
+            _dockerService = dockerService;
         }
 
-        public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
-            CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath, CancellationToken cancellationToken = default)
         {
             var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
             var sourcePath = Path.Combine(repositoryPath, "src");
             var pythonFiles = Directory.GetFiles(sourcePath, "*.py", SearchOption.AllDirectories);
 
-            var tasks = pythonFiles.Select(file => AnalyzeFileInDockerAsync(file, diagnosticsList, cancellationToken));
+            var tasks = pythonFiles.Select(
+                    file => AnalyzeFileInDockerAsync(file, repositoryPath, diagnosticsList, cancellationToken)
+                );
             await Task.WhenAll(tasks);
 
             return diagnosticsList.Distinct();
         }
 
-        private async Task AnalyzeFileInDockerAsync(string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList,
-            CancellationToken cancellationToken)
+        private async Task AnalyzeFileInDockerAsync(string filePath, string repositoryPath, ConcurrentBag<DiagnosticMessage> diagnosticsList, CancellationToken cancellationToken)
         {
-            const string dockerImage = "homework-assignment.api:dev"; 
+            var fileDirectory = Path.GetDirectoryName(filePath);
+            if (fileDirectory == null) return;
             
-            var dockerCommand = $"docker run --rm -v \"{Path.GetDirectoryName(filePath)?.Replace("\\", "/")}:/app\" {dockerImage} pylint --output-format=json /app/{Path.GetFileName(filePath)}";
-
-            var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
-            var shellFileName = isWindows ? "cmd.exe" : "/bin/sh";
-            var shellArguments = isWindows ? $"/c {dockerCommand}" : $"-c \"{dockerCommand}\"";
-
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = shellFileName,
-                Arguments = shellArguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = new Process();
-            process.StartInfo = processStartInfo;
+            var arguments = $"--output-format=json {Path.GetFileName(filePath)}";
+            var workingDirectory = Path.GetDirectoryName(fileDirectory) ?? string.Empty;
 
             try
             {
-                process.Start();
-
-                using var reader = process.StandardOutput;
-                var output = await reader.ReadToEndAsync(cancellationToken);
-
-                if (!string.IsNullOrEmpty(output))
+                var result = await _dockerService.RunCommandAsync(
+                    repositoryPath,
+                    workingDirectory,
+                    DockerImage,
+                    Command,
+                    arguments,
+                    cancellationToken
+                );
+                
+                if (!string.IsNullOrEmpty(result.OutputDataReceived))
                 {
-                    try
-                    {
-                        var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
-                        if (pylintDiagnostics != null)
-                        {
-                            var filteredDiagnostics = pylintDiagnostics
-                                .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
-                                .ToList();
-
-                            foreach (var diagnostic in filteredDiagnostics)
-                            {
-                                var severity = DetermineSeverity(diagnostic.Type);
-                                if (string.IsNullOrEmpty(severity)) continue;
-                                diagnosticsList.Add(new DiagnosticMessage
-                                {
-                                    Message = diagnostic.Message,
-                                    Severity = severity
-                                });
-                            }
-                        }
-                    }
-                    catch (JsonException ex)
-                    {
-                        _logger.Log($"Error deserializing pylint output for file {filePath}: {ex.Message}");
-                        diagnosticsList.Add(new DiagnosticMessage
-                        {
-                            Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
-                            Severity = DiagnosticSeverity.Error.ToString()
-                        });
-                    }
+                    ProcessPylintOutput(result.OutputDataReceived, filePath, diagnosticsList);
                 }
-
-                await process.WaitForExitAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -105,9 +67,40 @@ namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
                     Severity = DiagnosticSeverity.Error.ToString()
                 });
             }
-            finally
+        }
+
+        private void ProcessPylintOutput(string output, string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList)
+        {
+            try
             {
-                if (!process.HasExited) process.Kill();
+                var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
+                if (pylintDiagnostics != null)
+                {
+                    var filteredDiagnostics = pylintDiagnostics
+                        .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
+                        .ToList();
+
+                    foreach (var diagnostic in filteredDiagnostics)
+                    {
+                        var severity = DetermineSeverity(diagnostic.Type);
+                        if (string.IsNullOrEmpty(severity)) continue;
+
+                        diagnosticsList.Add(new DiagnosticMessage
+                        {
+                            Message = diagnostic.Message,
+                            Severity = severity
+                        });
+                    }
+                }
+            }
+            catch (JsonException ex)
+            {
+                _logger.Log($"Error deserializing pylint output for file {filePath}: {ex.Message}");
+                diagnosticsList.Add(new DiagnosticMessage
+                {
+                    Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
+                    Severity = DiagnosticSeverity.Error.ToString()
+                });
             }
         }
 
