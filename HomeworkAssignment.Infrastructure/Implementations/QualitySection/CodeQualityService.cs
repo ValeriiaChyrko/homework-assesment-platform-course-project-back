@@ -1,8 +1,8 @@
 ﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts.Interfaces;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
-using Microsoft.CodeAnalysis.MSBuild;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
 
@@ -19,15 +19,14 @@ public class CodeQualityService : ICodeQualityService
     };
 
     private readonly ILanguageDetector _languageDetector;
+    private readonly IDockerService _dockerService;
     private readonly ILogger _logger;
 
-    private readonly MSBuildWorkspace _workspace;
-
-    public CodeQualityService(MSBuildWorkspace workspace, ILogger logger, ILanguageDetector languageDetector)
+    public CodeQualityService(ILogger logger, ILanguageDetector languageDetector, IDockerService dockerService)
     {
-        _workspace = workspace;
         _logger = logger;
         _languageDetector = languageDetector;
+        _dockerService = dockerService;
     }
 
     public async Task<int> CheckCodeQualityAsync(string repositoryPath,
@@ -36,8 +35,8 @@ public class CodeQualityService : ICodeQualityService
         var language = _languageDetector.DetectMainLanguage(repositoryPath);
         ICodeAnalyzer analyzer = language switch
         {
-            "C#" => new DotNetCodeAnalyzer(_workspace, _logger),
-            "Python" => new PythonCodeAnalyzer(),
+            "C#" => new DotNetCodeAnalyzer(_logger, _dockerService),
+            "Python" => new PythonCodeAnalyzer(_logger),
             "Java" => new JavaCodeAnalyzer(_logger),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")
         };

@@ -1,50 +1,79 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
-using HomeAssignment.Domain.Abstractions.Contracts;
+﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
+using System.Text.RegularExpressions;
 
-namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection;
-
-public class DotNetTestsRunner : ITestsRunner
+namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection
 {
-    private const string PassedPattern = @"Passed\s+(?<TestName>[\w\.]+)\s+\[(?<Time>\d+(\.\d+)?\s+ms)\]";
-    private const string FailedPattern = @"Failed\s+(?<TestName>[\w\.]+)\s+\[(?<Time>\d+(\.\d+)?\s+ms)\]";
-
-    private readonly ILogger _logger;
-
-    public DotNetTestsRunner(ILogger logger)
+    public partial class DotNetTestsRunner : ITestsRunner
     {
-        _logger = logger;
-    }
+        private const string DockerImage = "mcr.microsoft.com/dotnet/sdk:7.0";
+        private const string Command = "dotnet";
+        private static readonly Regex PassedPattern = GeneratePassedPatternRegex();
+        private static readonly Regex FailedPattern = GenerateFailedPatternRegex();
 
-    public async Task<IEnumerable<TestResult>> RunTestsAsync(string repositoryPath, CancellationToken cancellationToken)
-    {
-        var testsDirectory = Path.Combine(repositoryPath, "tests");
-        var testFiles = Directory.GetFiles(testsDirectory, "*.csproj", SearchOption.AllDirectories);
-        var testResults = new List<TestResult>();
+        private readonly ILogger _logger;
+        private readonly IDockerService _dockerService;
 
-        foreach (var testFile in testFiles)
+        public DotNetTestsRunner(ILogger logger, IDockerService dockerService)
         {
-            var processStartInfo = new ProcessStartInfo
+            _logger = logger;
+            _dockerService = dockerService;
+        }
+
+        public async Task<IEnumerable<TestResult>> RunTestsAsync(string repositoryPath, CancellationToken cancellationToken)
+        {
+            var testFiles = Directory.GetFiles(Path.Combine(repositoryPath, "tests"), "*.csproj", SearchOption.AllDirectories);
+            var testResults = new List<TestResult>();
+
+            foreach (var testFile in testFiles)
             {
-                FileName = "dotnet",
-                Arguments = $"test \"{testFile}\" --verbosity normal",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = new Process();
-            process.StartInfo = processStartInfo;
-
-            process.OutputDataReceived += (_, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Data)) return;
-
-                if (Regex.IsMatch(args.Data, PassedPattern))
+                try
                 {
-                    var match = Regex.Match(args.Data, PassedPattern);
+                    var resultSet = await RunTestsInDockerAsync(testFile, repositoryPath, cancellationToken);
+                    testResults.AddRange(resultSet); 
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Error running tests for {testFile}: {ex.Message}");
+                }
+            }
+
+            return testResults;
+        }
+
+        private async Task<List<TestResult>> RunTestsInDockerAsync(
+            string testFile,
+            string repositoryPath,
+            CancellationToken cancellationToken)
+        {
+            var relativePath = Path.GetRelativePath(repositoryPath, testFile);
+            var arguments = $"test \"{Path.GetFileName(relativePath)}\" --verbosity normal";
+            var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
+
+            var result = await _dockerService.RunCommandAsync(
+                repositoryPath,
+                workingDirectory,
+                DockerImage,
+                Command,
+                arguments,
+                cancellationToken
+            );
+
+            return ParseTestResults(result.OutputDataReceived);
+        }
+
+        private static List<TestResult> ParseTestResults(string output)
+        {
+            var testResults = new List<TestResult>();
+
+            using var reader = new StringReader(output);
+            while (reader.ReadLine() is { } line)
+            {
+                var match = PassedPattern.Match(line);
+                if (match.Success)
+                {
                     testResults.Add(new TestResult
                     {
                         TestName = match.Groups["TestName"].Value,
@@ -52,36 +81,33 @@ public class DotNetTestsRunner : ITestsRunner
                         ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
                     });
                 }
-                else if (Regex.IsMatch(args.Data, FailedPattern))
+                else
                 {
-                    var match = Regex.Match(args.Data, FailedPattern);
-                    testResults.Add(new TestResult
+                    match = FailedPattern.Match(line);
+                    if (match.Success)
                     {
-                        TestName = match.Groups["TestName"].Value,
-                        IsPassed = false,
-                        ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                    });
+                        testResults.Add(new TestResult
+                        {
+                            TestName = match.Groups["TestName"].Value,
+                            IsPassed = false,
+                            ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+                        });
+                    }
                 }
-            };
+            }
 
-            try
-            {
-                process.Start();
-                process.BeginOutputReadLine();
-                await process.WaitForExitAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error running tests for {testFile}: {ex.Message}");
-            }
+            return testResults;
         }
 
-        return testResults;
-    }
+        private static double ExtractExecutionTime(string timeOutput)
+        {
+            var cleanTime = timeOutput.Replace("<", "").Replace(" ms", "").Trim();
+            return double.TryParse(cleanTime, out var time) ? time : 0;
+        }
 
-    private static double ExtractExecutionTime(string timeOutput)
-    {
-        if (double.TryParse(timeOutput.Replace(" ms", ""), out var time)) return time;
-        return 0;
+        [GeneratedRegex(@"Passed\s+(?<TestName>[^\s]+)\s+\[\<\s+(?<Time>\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
+        private static partial Regex GeneratePassedPatternRegex();
+        [GeneratedRegex(@"Failed\s+(?<TestName>[^\s]+)\s+\[(?<Time>\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
+        private static partial Regex GenerateFailedPatternRegex();
     }
 }

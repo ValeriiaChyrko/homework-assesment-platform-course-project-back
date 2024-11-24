@@ -1,6 +1,7 @@
 ﻿using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts.Interfaces;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection;
@@ -9,14 +10,16 @@ public class CodeTestsService : ICodeTestsService
 {
     private const int MaxScorePercentage = 100;
     private const int MinScorePercentage = 0;
+    
     private readonly ILanguageDetector _languageDetector;
-
+    private readonly IDockerService _dockerService;
     private readonly ILogger _logger;
 
-    public CodeTestsService(ILogger logger, ILanguageDetector languageDetector)
+    public CodeTestsService(ILogger logger, ILanguageDetector languageDetector, IDockerService dockerService)
     {
         _logger = logger;
         _languageDetector = languageDetector;
+        _dockerService = dockerService;
     }
 
     public async Task<int> CheckCodeTestsAsync(string repositoryDirectory,
@@ -25,7 +28,7 @@ public class CodeTestsService : ICodeTestsService
         var language = _languageDetector.DetectMainLanguage(repositoryDirectory);
         ITestsRunner runner = language switch
         {
-            "C#" => new DotNetTestsRunner(_logger),
+            "C#" => new DotNetTestsRunner(_logger, _dockerService),
             "Python" => new PythonTestsRunner(_logger),
             "Java" => new JavaTestsRunner(_logger),
             _ => throw new NotSupportedException($"Unsupported file type: {language}")

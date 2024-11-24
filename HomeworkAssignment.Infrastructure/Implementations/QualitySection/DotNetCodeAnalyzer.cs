@@ -1,69 +1,100 @@
 ﻿using System.Collections.Concurrent;
 using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
-using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
-using DiagnosticSeverity = HomeworkAssignment.Infrastructure.Abstractions.Contracts.DiagnosticSeverity;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
 
 public class DotNetCodeAnalyzer : ICodeAnalyzer
 {
+    private const string DockerImage = "mcr.microsoft.com/dotnet/sdk:7.0";
+    private const string Command = "dotnet";
     private readonly ILogger _logger;
-    private readonly MSBuildWorkspace _workspace;
+    private readonly IDockerService _dockerService;
 
-    public DotNetCodeAnalyzer(MSBuildWorkspace workspace, ILogger logger)
+    public DotNetCodeAnalyzer(ILogger logger, IDockerService dockerService)
     {
-        _workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
         _logger = logger;
+        _dockerService = dockerService;
     }
 
     public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
         CancellationToken cancellationToken = default)
     {
-        if (!MSBuildLocator.IsRegistered) MSBuildLocator.RegisterDefaults();
+        if (string.IsNullOrWhiteSpace(repositoryPath))
+            throw new ArgumentException("Repository path cannot be null or empty.", nameof(repositoryPath));
 
-        var projects = Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
+        var projectFiles = GetProjectFiles(repositoryPath);
+        if (projectFiles.Length == 0)
+        {
+            _logger.Log("No C# project files found.");
+            return Enumerable.Empty<DiagnosticMessage>();
+        }
+
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
-        var tasks = projects.Select(async projectFile =>
+        foreach (var projectFile in projectFiles)
         {
             try
             {
-                var project = await _workspace.OpenProjectAsync(projectFile, cancellationToken: cancellationToken);
-                var compilation = await project.GetCompilationAsync(cancellationToken);
-
-                if (compilation != null)
+                var diagnostics = await AnalyzeProjectInDockerAsync(projectFile, repositoryPath, cancellationToken);
+                foreach (var diagnostic in diagnostics)
                 {
-                    var diagnostics = compilation.GetDiagnostics(cancellationToken);
-                    AddDiagnosticsToList(diagnostics, diagnosticsList);
+                    diagnosticsList.Add(diagnostic);
                 }
             }
             catch (Exception ex)
             {
-                _logger.Log($"Error processing project {projectFile}: {ex.Message}");
+                _logger.Log($"Error analyzing project {projectFile}: {ex.Message}");
             }
-        });
+        }
 
-        await Task.WhenAll(tasks);
-        return diagnosticsList;
+        return diagnosticsList.Distinct();
     }
 
-    private static void AddDiagnosticsToList(IEnumerable<Diagnostic> diagnostics,
-        ConcurrentBag<DiagnosticMessage>? diagnosticsList)
+    private async Task<IEnumerable<DiagnosticMessage>> AnalyzeProjectInDockerAsync(
+        string projectFile, 
+        string repositoryPath, 
+        CancellationToken cancellationToken)
     {
-        foreach (var diagnostic in diagnostics)
-        {
-            if (!Enum.TryParse<DiagnosticSeverity>(diagnostic.Severity.ToString(), out var severity)) continue;
+        var relativePath = Path.GetRelativePath(repositoryPath, projectFile);
+        var arguments = $"msbuild {Path.GetFileName(relativePath)} /nologo /v:q";
+        var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
 
-            var message = diagnostic.ToString();
-            diagnosticsList?.Add(new DiagnosticMessage
+        var result = await _dockerService.RunCommandAsync(
+            repositoryPath,
+            workingDirectory,
+            DockerImage,
+            Command,
+            arguments,
+            cancellationToken
+        );
+        
+        return ParseDiagnostics(result.OutputDataReceived);
+    }
+
+    private static string[] GetProjectFiles(string repositoryPath)
+    {
+        return Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
+    }
+
+    private static IEnumerable<DiagnosticMessage> ParseDiagnostics(string output)
+    {
+        var diagnostics = new List<DiagnosticMessage>();
+
+        var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
+        {
+            if (!line.Contains("error") && !line.Contains("warning")) continue;
+            var severity = line.Contains("error") ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+            diagnostics.Add(new DiagnosticMessage
             {
-                Message = message,
+                Message = line,
                 Severity = severity.ToString()
             });
         }
+
+        return diagnostics;
     }
 }

@@ -184,6 +184,10 @@
         <Content Include="..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.12.0-3.final\contentFiles\any\any\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll">
             <Link>Properties\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll</Link>
         </Content>
+        <Content Include="..\.dockerignore">
+          <Link>DockerRelated\Python\.dockerignore</Link>
+          <DependentUpon>Dockerfile</DependentUpon>
+        </Content>
     </ItemGroup>
 
 </Project>

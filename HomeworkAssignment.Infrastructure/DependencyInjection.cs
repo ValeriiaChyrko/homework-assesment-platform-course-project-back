@@ -1,11 +1,13 @@
 ﻿using System.Net.Http.Headers;
 using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts.Interfaces;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.GitHubRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.GitRelated;
 using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 using HomeworkAssignment.Infrastructure.Implementations.CompilationSection;
+using HomeworkAssignment.Infrastructure.Implementations.DockerRelated;
 using HomeworkAssignment.Infrastructure.Implementations.GitHubRelated;
 using HomeworkAssignment.Infrastructure.Implementations.GitRelated;
 using HomeworkAssignment.Infrastructure.Implementations.Helpers;
@@ -48,6 +50,8 @@ public static class DependencyInjection
 
         services.AddScoped<IGitHubBuildService, GitHubBuildService>();
         services.AddScoped<ILanguageDetector, LanguageDetector>();
+        services.AddScoped<IProcessService, ProcessService>();
+        services.AddScoped<IDockerService, DockerService>();
 
         services.AddScoped<ICodeAnalyzer, DotNetCodeAnalyzer>();
         services.AddScoped<ICodeAnalyzer, PythonCodeAnalyzer>();
