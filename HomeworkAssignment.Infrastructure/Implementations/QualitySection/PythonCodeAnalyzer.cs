@@ -40,7 +40,7 @@ namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
             if (fileDirectory == null) return;
             
             var arguments = $"--output-format=json {Path.GetFileName(filePath)}";
-            var workingDirectory = Path.GetDirectoryName(fileDirectory) ?? string.Empty;
+            var workingDirectory = Path.GetFileName(fileDirectory);
 
             try
             {
@@ -74,23 +74,22 @@ namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
             try
             {
                 var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
-                if (pylintDiagnostics != null)
+                if (pylintDiagnostics == null) return;
+
+                var filteredDiagnostics = pylintDiagnostics
+                    .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
+                    .ToList();
+
+                foreach (var diagnostic in filteredDiagnostics)
                 {
-                    var filteredDiagnostics = pylintDiagnostics
-                        .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
-                        .ToList();
+                    var severity = DetermineSeverity(diagnostic.Type);
+                    if (string.IsNullOrEmpty(severity)) continue;
 
-                    foreach (var diagnostic in filteredDiagnostics)
+                    diagnosticsList.Add(new DiagnosticMessage
                     {
-                        var severity = DetermineSeverity(diagnostic.Type);
-                        if (string.IsNullOrEmpty(severity)) continue;
-
-                        diagnosticsList.Add(new DiagnosticMessage
-                        {
-                            Message = diagnostic.Message,
-                            Severity = severity
-                        });
-                    }
+                        Message = diagnostic.Message,
+                        Severity = severity
+                    });
                 }
             }
             catch (JsonException ex)

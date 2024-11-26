@@ -24,20 +24,16 @@ public partial class PythonTestsRunner : ITestsRunner
 
     public async Task<IEnumerable<TestResult>> RunTestsAsync(string repositoryPath, CancellationToken cancellationToken)
     {
-        var testFiles = Directory.GetFiles(Path.Combine(repositoryPath, "tests"), "*.py", SearchOption.AllDirectories);
         var testResults = new List<TestResult>();
 
-        foreach (var testFile in testFiles)
+        try
         {
-            try
-            {
-                var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
-                testResults.AddRange(resultSet); 
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error running tests for {testFile}: {ex.Message}");
-            }
+            var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
+            testResults.AddRange(resultSet); 
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Error running tests for {repositoryPath}: {ex.Message}");
         }
 
         return testResults;
@@ -61,37 +57,36 @@ public partial class PythonTestsRunner : ITestsRunner
 
     private static List<TestResult> ParseTestResults(string output)
     {
-        var testResults = new List<TestResult>();
+        var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-        using var reader = new StringReader(output);
-        while (reader.ReadLine() is { } line)
+        return lines.Select(ParseTestLine).OfType<TestResult>().ToList();
+    }
+
+    private static TestResult? ParseTestLine(string line)
+    {
+        var match = PassedPattern.Match(line);
+        if (match.Success)
         {
-            var match = PassedPattern.Match(line);
-            if (match.Success)
+            return new TestResult
             {
-                testResults.Add(new TestResult
-                {
-                    TestName = match.Groups["TestName"].Value,
-                    IsPassed = true,
-                    ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                });
-            }
-            else
-            {
-                match = FailedPattern.Match(line);
-                if (match.Success)
-                {
-                    testResults.Add(new TestResult
-                    {
-                        TestName = match.Groups["TestName"].Value,
-                        IsPassed = false,
-                        ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                    });
-                }
-            }
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = true,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
         }
 
-        return testResults;
+        match = FailedPattern.Match(line);
+        if (match.Success)
+        {
+            return new TestResult
+            {
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = false,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
+        }
+
+        return null;
     }
 
     private static double ExtractExecutionTime(string timeOutput)
@@ -99,10 +94,10 @@ public partial class PythonTestsRunner : ITestsRunner
         var cleanTime = timeOutput.Replace("<", "").Replace(" ms", "").Trim();
         return double.TryParse(cleanTime, out var time) ? time : 0;
     }
-        
-    [GeneratedRegex("(OK|PASSED)", RegexOptions.Compiled)]
-    private static partial Regex GeneratePassedPatternRegex();
-        
-    [GeneratedRegex("(FAIL|FAILED)", RegexOptions.Compiled)]
+    
+    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(FAIL|FAILED)",RegexOptions.IgnoreCase | RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
+
+    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(OK|PASSED)",RegexOptions.IgnoreCase | RegexOptions.Compiled)]
+    private static partial Regex GeneratePassedPatternRegex();
 }
