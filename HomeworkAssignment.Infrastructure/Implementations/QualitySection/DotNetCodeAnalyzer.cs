@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
@@ -6,7 +7,7 @@ using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
 
-public class DotNetCodeAnalyzer : ICodeAnalyzer
+public partial class DotNetCodeAnalyzer : ICodeAnalyzer
 {
     private const string DockerImage = "mcr.microsoft.com/dotnet/sdk:7.0";
     private const string Command = "dotnet";
@@ -59,7 +60,7 @@ public class DotNetCodeAnalyzer : ICodeAnalyzer
         CancellationToken cancellationToken)
     {
         var relativePath = Path.GetRelativePath(repositoryPath, projectFile);
-        var arguments = $"msbuild {Path.GetFileName(relativePath)} /nologo /v:q";
+        var arguments = $"build {Path.GetFileName(relativePath)} --no-incremental /nologo /v:q";
         var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
 
         var result = await _dockerService.RunCommandAsync(
@@ -78,23 +79,35 @@ public class DotNetCodeAnalyzer : ICodeAnalyzer
     {
         return Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
     }
-
+    
     private static IEnumerable<DiagnosticMessage> ParseDiagnostics(string output)
     {
         var diagnostics = new List<DiagnosticMessage>();
+        
+        var regex = MessageRegex();
 
         var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         foreach (var line in lines)
         {
-            if (!line.Contains("error") && !line.Contains("warning")) continue;
-            var severity = line.Contains("error") ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+            var match = regex.Match(line);
+            if (!match.Success) continue;
+
+            var severity = match.Groups["severity"].Value.Equals("error", StringComparison.OrdinalIgnoreCase) 
+                ? DiagnosticSeverity.Error 
+                : DiagnosticSeverity.Warning;
+
+            var message = $"{match.Groups["code"].Value}: {match.Groups["message"].Value} [{match.Groups["project"].Value}]";
+
             diagnostics.Add(new DiagnosticMessage
             {
-                Message = line,
+                Message = message,
                 Severity = severity.ToString()
             });
         }
 
         return diagnostics;
     }
+
+    [GeneratedRegex(@"(?<severity>error|warning) (?<code>CS\d*): (?<message>.+?) \[(?<project>.+?)\]", RegexOptions.IgnoreCase, "uk-UA")]
+    private static partial Regex MessageRegex();
 }

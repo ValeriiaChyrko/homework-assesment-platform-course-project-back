@@ -50,6 +50,7 @@ public partial class DotNetTestsRunner : ITestsRunner
     {
         var relativePath = Path.GetRelativePath(repositoryPath, testFile);
         var arguments = $"test \"{Path.GetFileName(relativePath)}\" --verbosity normal";
+        
         var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
 
         var result = await _dockerService.RunCommandAsync(
@@ -66,37 +67,40 @@ public partial class DotNetTestsRunner : ITestsRunner
 
     private static List<TestResult> ParseTestResults(string output)
     {
-        var testResults = new List<TestResult>();
+        var regex = CompileTestExecutionOutputRegex();
+        var match = regex.Match(output);
+        
+        var filteredOutput = match.Success ? match.Groups[1].Value : string.Empty;
 
-        using var reader = new StringReader(output);
-        while (reader.ReadLine() is { } line)
+        var lines = filteredOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        return lines.Select(ParseTestResult).OfType<TestResult>().ToList();
+    }
+
+    private static TestResult? ParseTestResult(string line)
+    {
+        var match = PassedPattern.Match(line);
+        if (match.Success)
         {
-            var match = PassedPattern.Match(line);
-            if (match.Success)
+            return new TestResult
             {
-                testResults.Add(new TestResult
-                {
-                    TestName = match.Groups["TestName"].Value,
-                    IsPassed = true,
-                    ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                });
-            }
-            else
-            {
-                match = FailedPattern.Match(line);
-                if (match.Success)
-                {
-                    testResults.Add(new TestResult
-                    {
-                        TestName = match.Groups["TestName"].Value,
-                        IsPassed = false,
-                        ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                    });
-                }
-            }
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = true,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
         }
 
-        return testResults;
+        match = FailedPattern.Match(line);
+        if (match.Success)
+        {
+            return new TestResult
+            {
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = false,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
+        }
+
+        return null;
     }
 
     private static double ExtractExecutionTime(string timeOutput)
@@ -109,4 +113,6 @@ public partial class DotNetTestsRunner : ITestsRunner
     private static partial Regex GeneratePassedPatternRegex();
     [GeneratedRegex(@"Failed\s+(?<TestName>[^\s]+)\s+\[(?<Time>\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
+    [GeneratedRegex(@"(?s).*?Starting test execution, please wait\.\.\.(.*)", RegexOptions.IgnoreCase, "uk-UA")]
+    private static partial Regex CompileTestExecutionOutputRegex();
 }
