@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts.Interfaces;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.Helpers;
 
-public class ProcessService : IProcessService
+public partial class ProcessService : IProcessService
 {
     public async Task<ProcessResult> RunProcessAsync(ProcessStartInfo startInfo, CancellationToken cancellationToken)
     {
@@ -32,12 +33,14 @@ public class ProcessService : IProcessService
             process.BeginErrorReadLine();
 
             await process.WaitForExitAsync(cancellationToken);
-
+            
+            var cleanedOutput = CompileAnsiEscapeRegex().Replace(outputBuilder.ToString(), "");
+            
             return new ProcessResult
             {
                 ExitCode = process.ExitCode,
                 ErrorDataReceived = errorBuilder.ToString(),
-                OutputDataReceived = outputBuilder.ToString()
+                OutputDataReceived = cleanedOutput
             };
         }
         catch (Exception ex)
@@ -45,4 +48,7 @@ public class ProcessService : IProcessService
             throw new Exception("An error occurred while running the process.", ex);
         }
     }
+
+    [GeneratedRegex(@"\x1B\[[0-?9;]*[mK]")]
+    private static partial Regex CompileAnsiEscapeRegex();
 }

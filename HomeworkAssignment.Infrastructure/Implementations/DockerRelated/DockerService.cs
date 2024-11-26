@@ -26,11 +26,11 @@ public class DockerService : IDockerService
         if (string.IsNullOrWhiteSpace(command))
             throw new ArgumentException("Command cannot be null or empty.", nameof(command));
         
-        var dockerCommand = $"docker run -it --rm -v \"{repositoryPath.Replace("\\", "/")}:/workspace\" -w /workspace/{workingDirectory} {dockerImage} {command} {arguments}";
+        var dockerCommand = $"docker run -it --rm -v \"{repositoryPath}:/workspace\" -w /workspace/{workingDirectory} {dockerImage} {command} {arguments}";
         
         var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
         var shellFileName = isWindows ? "cmd.exe" : "sh";
-        var shellArguments = isWindows ? $"/c \"{dockerCommand}\"" : $"-c \"{dockerCommand}\"";
+        var shellArguments = isWindows ? $"/c \"{dockerCommand.Replace("\\", "/")}\"" : $"-c \"{dockerCommand}\"";
 
         var processStartInfo = new ProcessStartInfo
         {
