@@ -9,7 +9,7 @@ namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection
     {
         private const string DockerImage = "maven:3.8.6-jdk-11";
         private const string Command = "mvn";
-        private const string Arguments = "compile";
+        private const string Arguments = "compile -q";
         private readonly ILogger _logger;
         private readonly IDockerService _dockerService;
 
@@ -42,11 +42,10 @@ namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection
 
         private async Task<ProcessResult> BuildProjectInDockerAsync(string repositoryPath, CancellationToken cancellationToken)
         {
-            var workingDirectory = Path.GetDirectoryName(Path.Combine(repositoryPath, "pom.xml")) ?? string.Empty;
 
             var result = await _dockerService.RunCommandAsync(
                 repositoryPath,
-                workingDirectory,
+                string.Empty,
                 DockerImage,
                 Command,
                 Arguments,

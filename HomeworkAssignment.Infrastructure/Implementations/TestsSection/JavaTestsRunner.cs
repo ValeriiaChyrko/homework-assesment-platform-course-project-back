@@ -24,20 +24,16 @@ public partial class JavaTestsRunner : ITestsRunner
 
     public async Task<IEnumerable<TestResult>> RunTestsAsync(string repositoryPath, CancellationToken cancellationToken)
     {
-        var testFiles = Directory.GetFiles(Path.Combine(repositoryPath, "src"), "*.java", SearchOption.AllDirectories);
         var testResults = new List<TestResult>();
 
-        foreach (var testFile in testFiles)
+        try
         {
-            try
-            {
-                var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
-                testResults.AddRange(resultSet); 
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error running tests for {testFile}: {ex.Message}");
-            }
+            var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
+            testResults.AddRange(resultSet); 
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Error running tests for {repositoryPath}: {ex.Message}");
         }
 
         return testResults;
@@ -62,37 +58,40 @@ public partial class JavaTestsRunner : ITestsRunner
 
     private static List<TestResult> ParseTestResults(string output)
     {
-        var testResults = new List<TestResult>();
+        var regex = CompileTestExecutionOutputRegex();
+        var match = regex.Match(output);
+        
+        var filteredOutput = match.Success ? match.Groups[1].Value : string.Empty;
 
-        using var reader = new StringReader(output);
-        while (reader.ReadLine() is { } line)
+        var lines = filteredOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        return lines.Select(ParseTestResult).OfType<TestResult>().ToList();
+    }
+
+    private static TestResult? ParseTestResult(string line)
+    {
+        var match = PassedPattern.Match(line);
+        if (match.Success)
         {
-            var match = PassedPattern.Match(line);
-            if (match.Success)
+            return new TestResult
             {
-                testResults.Add(new TestResult
-                {
-                    TestName = match.Groups["TestName"].Value,
-                    IsPassed = true,
-                    ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                });
-            }
-            else
-            {
-                match = FailedPattern.Match(line);
-                if (match.Success)
-                {
-                    testResults.Add(new TestResult
-                    {
-                        TestName = match.Groups["TestName"].Value,
-                        IsPassed = false,
-                        ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
-                    });
-                }
-            }
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = true,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
         }
 
-        return testResults;
+        match = FailedPattern.Match(line);
+        if (match.Success)
+        {
+            return new TestResult
+            {
+                TestName = match.Groups["TestName"].Value,
+                IsPassed = false,
+                ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
+            };
+        }
+
+        return null;
     }
 
     private static double ExtractExecutionTime(string timeOutput)
@@ -106,4 +105,7 @@ public partial class JavaTestsRunner : ITestsRunner
 
     [GeneratedRegex(@"(?<TestName>[\w\.]+)\s+\(\d+\s+ms\)\s+Failed", RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
+    
+    [GeneratedRegex(@"(?s).*?TESTS(.*)", RegexOptions.IgnoreCase, "uk-UA")]
+    private static partial Regex CompileTestExecutionOutputRegex();
 }
