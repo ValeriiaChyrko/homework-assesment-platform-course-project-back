@@ -21,7 +21,8 @@ public class TeacherService : BaseService, ITeacherService
     private readonly IMediator _mediator;
     private readonly IPasswordHasher _passwordHasher;
 
-    public TeacherService(ILogger logger, IMapper mapper, IPasswordHasher passwordHasher, IDatabaseTransactionManager transactionManager, IMediator mediator)
+    public TeacherService(ILogger logger, IMapper mapper, IPasswordHasher passwordHasher,
+        IDatabaseTransactionManager transactionManager, IMediator mediator)
         : base(logger, transactionManager)
     {
         _mapper = mapper;
@@ -29,7 +30,8 @@ public class TeacherService : BaseService, ITeacherService
         _mediator = mediator;
     }
 
-    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto,
+        CancellationToken cancellationToken = default)
     {
         return await ExecuteWithTransactionAsync(async () =>
         {
@@ -44,13 +46,15 @@ public class TeacherService : BaseService, ITeacherService
             );
 
             await _mediator.Send(new CreateUserCommand(_mapper.Map<UserDto>(teacher)), cancellationToken);
-            await _mediator.Send(new CreateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)), cancellationToken);
+            await _mediator.Send(new CreateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)),
+                cancellationToken);
 
             return _mapper.Map<RespondTeacherDto>(teacher);
         }, "creating teacher", cancellationToken);
     }
 
-    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId, RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId,
+        RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
     {
         return await ExecuteWithTransactionAsync(async () =>
         {
@@ -69,7 +73,8 @@ public class TeacherService : BaseService, ITeacherService
             teacher.GitHubProfileId = githubProfileId;
 
             await _mediator.Send(new UpdateUserCommand(_mapper.Map<UserDto>(teacher)), cancellationToken);
-            await _mediator.Send(new UpdateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)), cancellationToken);
+            await _mediator.Send(new UpdateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)),
+                cancellationToken);
 
             return _mapper.Map<RespondTeacherDto>(teacher);
         }, "updating teacher", cancellationToken);
@@ -84,14 +89,16 @@ public class TeacherService : BaseService, ITeacherService
         }, "deleting teacher", cancellationToken);
     }
 
-    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId, CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId,
+        CancellationToken cancellationToken = default)
     {
         return await ExecuteWithExceptionHandlingAsync(async () =>
         {
             var userDto = await _mediator.Send(new GetUserByGithubProfileIdQuery(githubProfileId), cancellationToken);
             if (userDto == null) return null;
 
-            var gitHubProfileDto = await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
+            var gitHubProfileDto =
+                await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
 
             var teacherDto = _mapper.Map<RespondTeacherDto>(userDto);
             if (gitHubProfileDto == null) return teacherDto;
@@ -115,7 +122,8 @@ public class TeacherService : BaseService, ITeacherService
             {
                 var teacherDto = _mapper.Map<RespondTeacherDto>(user);
 
-                var gitHubProfiles = await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
+                var gitHubProfiles =
+                    await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
                 var mainGitHubProfile = gitHubProfiles?.FirstOrDefault();
 
                 if (mainGitHubProfile == null) return teacherDto;

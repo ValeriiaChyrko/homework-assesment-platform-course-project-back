@@ -4,5 +4,5 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Assignments;
 
-public sealed record UpdateAssignmentCommand
-    (Guid Id, RequestAssignmentDto AssignmentDto) : IRequest<RespondAssignmentDto>;
+public sealed record UpdateAssignmentCommand(Guid Id, RequestAssignmentDto AssignmentDto)
+    : IRequest<RespondAssignmentDto>;

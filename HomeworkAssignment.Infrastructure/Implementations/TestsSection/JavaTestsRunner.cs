@@ -1,8 +1,8 @@
-﻿using HomeAssignment.Domain.Abstractions.Contracts;
+﻿using System.Text.RegularExpressions;
+using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
-using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
-using System.Text.RegularExpressions;
+using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection;
 
@@ -12,9 +12,9 @@ public partial class JavaTestsRunner : ITestsRunner
     private const string Command = "mvn";
     private static readonly Regex PassedPattern = GeneratePassedPatternRegex();
     private static readonly Regex FailedPattern = GenerateFailedPatternRegex();
+    private readonly IDockerService _dockerService;
 
     private readonly ILogger _logger;
-    private readonly IDockerService _dockerService;
 
     public JavaTestsRunner(ILogger logger, IDockerService dockerService)
     {
@@ -29,7 +29,7 @@ public partial class JavaTestsRunner : ITestsRunner
         try
         {
             var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
-            testResults.AddRange(resultSet); 
+            testResults.AddRange(resultSet);
         }
         catch (Exception ex)
         {
@@ -60,7 +60,7 @@ public partial class JavaTestsRunner : ITestsRunner
     {
         var regex = CompileTestExecutionOutputRegex();
         var match = regex.Match(output);
-        
+
         var filteredOutput = match.Success ? match.Groups[1].Value : string.Empty;
 
         var lines = filteredOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -71,25 +71,21 @@ public partial class JavaTestsRunner : ITestsRunner
     {
         var match = PassedPattern.Match(line);
         if (match.Success)
-        {
             return new TestResult
             {
                 TestName = match.Groups["TestName"].Value,
                 IsPassed = true,
                 ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
             };
-        }
 
         match = FailedPattern.Match(line);
         if (match.Success)
-        {
             return new TestResult
             {
                 TestName = match.Groups["TestName"].Value,
                 IsPassed = false,
                 ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
             };
-        }
 
         return null;
     }
@@ -105,7 +101,7 @@ public partial class JavaTestsRunner : ITestsRunner
 
     [GeneratedRegex(@"(?<TestName>[\w\.]+)\s+\(\d+\s+ms\)\s+Failed", RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
-    
+
     [GeneratedRegex(@"(?s).*?TESTS(.*)", RegexOptions.IgnoreCase, "uk-UA")]
     private static partial Regex CompileTestExecutionOutputRegex();
 }

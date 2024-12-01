@@ -11,8 +11,8 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
 {
     private const string DockerImage = "mcr.microsoft.com/dotnet/sdk:7.0";
     private const string Command = "dotnet";
-    private readonly ILogger _logger;
     private readonly IDockerService _dockerService;
+    private readonly ILogger _logger;
 
     public DotNetCodeAnalyzer(ILogger logger, IDockerService dockerService)
     {
@@ -36,27 +36,22 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
         var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
 
         foreach (var projectFile in projectFiles)
-        {
             try
             {
                 var diagnostics = await AnalyzeProjectInDockerAsync(projectFile, repositoryPath, cancellationToken);
-                foreach (var diagnostic in diagnostics)
-                {
-                    diagnosticsList.Add(diagnostic);
-                }
+                foreach (var diagnostic in diagnostics) diagnosticsList.Add(diagnostic);
             }
             catch (Exception ex)
             {
                 _logger.Log($"Error analyzing project {projectFile}: {ex.Message}");
             }
-        }
 
         return diagnosticsList.Distinct();
     }
 
     private async Task<IEnumerable<DiagnosticMessage>> AnalyzeProjectInDockerAsync(
-        string projectFile, 
-        string repositoryPath, 
+        string projectFile,
+        string repositoryPath,
         CancellationToken cancellationToken)
     {
         var relativePath = Path.GetRelativePath(repositoryPath, projectFile);
@@ -71,7 +66,7 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
             arguments,
             cancellationToken
         );
-        
+
         return ParseDiagnostics(result.OutputDataReceived);
     }
 
@@ -79,11 +74,11 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
     {
         return Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
     }
-    
+
     private static IEnumerable<DiagnosticMessage> ParseDiagnostics(string output)
     {
         var diagnostics = new List<DiagnosticMessage>();
-        
+
         var regex = MessageRegex();
 
         var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -92,11 +87,12 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
             var match = regex.Match(line);
             if (!match.Success) continue;
 
-            var severity = match.Groups["severity"].Value.Equals("error", StringComparison.OrdinalIgnoreCase) 
-                ? DiagnosticSeverity.Error 
+            var severity = match.Groups["severity"].Value.Equals("error", StringComparison.OrdinalIgnoreCase)
+                ? DiagnosticSeverity.Error
                 : DiagnosticSeverity.Warning;
 
-            var message = $"{match.Groups["code"].Value}: {match.Groups["message"].Value} [{match.Groups["project"].Value}]";
+            var message =
+                $"{match.Groups["code"].Value}: {match.Groups["message"].Value} [{match.Groups["project"].Value}]";
 
             diagnostics.Add(new DiagnosticMessage
             {
@@ -108,6 +104,7 @@ public partial class DotNetCodeAnalyzer : ICodeAnalyzer
         return diagnostics;
     }
 
-    [GeneratedRegex(@"(?<severity>error|warning) (?<code>CS\d*): (?<message>.+?) \[(?<project>.+?)\]", RegexOptions.IgnoreCase, "uk-UA")]
+    [GeneratedRegex(@"(?<severity>error|warning) (?<code>CS\d*): (?<message>.+?) \[(?<project>.+?)\]",
+        RegexOptions.IgnoreCase, "uk-UA")]
     private static partial Regex MessageRegex();
 }

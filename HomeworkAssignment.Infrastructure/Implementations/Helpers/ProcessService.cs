@@ -33,9 +33,9 @@ public partial class ProcessService : IProcessService
             process.BeginErrorReadLine();
 
             await process.WaitForExitAsync(cancellationToken);
-            
+
             var cleanedOutput = CompileAnsiEscapeRegex().Replace(outputBuilder.ToString(), "");
-            
+
             return new ProcessResult
             {
                 ExitCode = process.ExitCode,

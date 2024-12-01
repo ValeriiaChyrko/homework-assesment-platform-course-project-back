@@ -34,7 +34,7 @@ public abstract class BaseService
             throw new ServiceOperationException($"Error during {operationName}.", ex);
         }
     }
-    
+
     protected async Task ExecuteWithTransactionAsync(
         Func<Task> operation,
         string operationName,
@@ -68,5 +68,4 @@ public abstract class BaseService
             throw new ServiceOperationException($"Error during {operationName}.", ex);
         }
     }
-
 }

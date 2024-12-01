@@ -18,8 +18,9 @@ public class CodeQualityService : ICodeQualityService
         { DiagnosticSeverity.Info, 10 }
     };
 
-    private readonly ILanguageDetector _languageDetector;
     private readonly IDockerService _dockerService;
+
+    private readonly ILanguageDetector _languageDetector;
     private readonly ILogger _logger;
 
     public CodeQualityService(ILogger logger, ILanguageDetector languageDetector, IDockerService dockerService)

@@ -3,56 +3,55 @@ using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 
-namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection
+namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection;
+
+public class JavaCodeBuilder : ICodeBuilder
 {
-    public class JavaCodeBuilder : ICodeBuilder
+    private const string DockerImage = "maven:3.8.6-jdk-11";
+    private const string Command = "mvn";
+    private const string Arguments = "compile -q";
+    private readonly IDockerService _dockerService;
+    private readonly ILogger _logger;
+
+    public JavaCodeBuilder(ILogger logger, IDockerService dockerService)
     {
-        private const string DockerImage = "maven:3.8.6-jdk-11";
-        private const string Command = "mvn";
-        private const string Arguments = "compile -q";
-        private readonly ILogger _logger;
-        private readonly IDockerService _dockerService;
+        _logger = logger;
+        _dockerService = dockerService;
+    }
 
-        public JavaCodeBuilder(ILogger logger, IDockerService dockerService)
+    public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
+    {
+        var pomFilePath = Path.Combine(repositoryPath, "pom.xml");
+        if (!File.Exists(pomFilePath))
         {
-            _logger = logger;
-            _dockerService = dockerService;
+            _logger.Log("No pom.xml file found in the specified repository path.");
+            return false;
         }
 
-        public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
+        try
         {
-            var pomFilePath = Path.Combine(repositoryPath, "pom.xml");
-            if (!File.Exists(pomFilePath))
-            {
-                _logger.Log("No pom.xml file found in the specified repository path.");
-                return false;
-            }
-
-            try
-            {
-                var result = await BuildProjectInDockerAsync(repositoryPath, cancellationToken);
-                return result.ExitCode == 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error building Java project: {ex.Message}");
-                return false;
-            }
+            var result = await BuildProjectInDockerAsync(repositoryPath, cancellationToken);
+            return result.ExitCode == 0;
         }
-
-        private async Task<ProcessResult> BuildProjectInDockerAsync(string repositoryPath, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-
-            var result = await _dockerService.RunCommandAsync(
-                repositoryPath,
-                string.Empty,
-                DockerImage,
-                Command,
-                Arguments,
-                cancellationToken
-            );
-
-            return result;
+            _logger.Log($"Error building Java project: {ex.Message}");
+            return false;
         }
+    }
+
+    private async Task<ProcessResult> BuildProjectInDockerAsync(string repositoryPath,
+        CancellationToken cancellationToken)
+    {
+        var result = await _dockerService.RunCommandAsync(
+            repositoryPath,
+            string.Empty,
+            DockerImage,
+            Command,
+            Arguments,
+            cancellationToken
+        );
+
+        return result;
     }
 }

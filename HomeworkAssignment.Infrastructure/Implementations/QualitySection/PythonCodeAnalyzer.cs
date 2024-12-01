@@ -1,117 +1,116 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
-using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
-using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
-using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 using HomeAssignment.Domain.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
+using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
+using HomeworkAssignment.Infrastructure.Abstractions.QualitySection;
 
-namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection
+namespace HomeworkAssignment.Infrastructure.Implementations.QualitySection;
+
+public class PythonCodeAnalyzer : ICodeAnalyzer
 {
-    public class PythonCodeAnalyzer : ICodeAnalyzer
+    private const string DockerImage = "python:3.11";
+    private const string Command = "pylint";
+    private readonly IDockerService _dockerService;
+    private readonly ILogger _logger;
+
+    public PythonCodeAnalyzer(ILogger logger, IDockerService dockerService)
     {
-        private const string DockerImage = "python:3.11";
-        private const string Command = "pylint";
-        private readonly ILogger _logger;
-        private readonly IDockerService _dockerService;
+        _logger = logger;
+        _dockerService = dockerService;
+    }
 
-        public PythonCodeAnalyzer(ILogger logger, IDockerService dockerService)
+    public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath,
+        CancellationToken cancellationToken = default)
+    {
+        var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
+        var sourcePath = Path.Combine(repositoryPath, "src");
+        var pythonFiles = Directory.GetFiles(sourcePath, "*.py", SearchOption.AllDirectories);
+
+        var tasks = pythonFiles.Select(
+            file => AnalyzeFileInDockerAsync(file, repositoryPath, diagnosticsList, cancellationToken)
+        );
+        await Task.WhenAll(tasks);
+
+        return diagnosticsList.Distinct();
+    }
+
+    private async Task AnalyzeFileInDockerAsync(string filePath, string repositoryPath,
+        ConcurrentBag<DiagnosticMessage> diagnosticsList, CancellationToken cancellationToken)
+    {
+        var fileDirectory = Path.GetDirectoryName(filePath);
+        if (fileDirectory == null) return;
+
+        var arguments = $"--output-format=json {Path.GetFileName(filePath)}";
+        var workingDirectory = Path.GetFileName(fileDirectory);
+
+        try
         {
-            _logger = logger;
-            _dockerService = dockerService;
+            var result = await _dockerService.RunCommandAsync(
+                repositoryPath,
+                workingDirectory,
+                DockerImage,
+                Command,
+                arguments,
+                cancellationToken
+            );
+
+            if (!string.IsNullOrEmpty(result.OutputDataReceived))
+                ProcessPylintOutput(result.OutputDataReceived, filePath, diagnosticsList);
         }
-
-        public async Task<IEnumerable<DiagnosticMessage>> AnalyzeAsync(string repositoryPath, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            var diagnosticsList = new ConcurrentBag<DiagnosticMessage>();
-            var sourcePath = Path.Combine(repositoryPath, "src");
-            var pythonFiles = Directory.GetFiles(sourcePath, "*.py", SearchOption.AllDirectories);
-
-            var tasks = pythonFiles.Select(
-                    file => AnalyzeFileInDockerAsync(file, repositoryPath, diagnosticsList, cancellationToken)
-                );
-            await Task.WhenAll(tasks);
-
-            return diagnosticsList.Distinct();
+            _logger.Log($"Error analyzing file {filePath}: {ex.Message}");
+            diagnosticsList.Add(new DiagnosticMessage
+            {
+                Message = $"Error analyzing file {filePath}: {ex.Message}",
+                Severity = DiagnosticSeverity.Error.ToString()
+            });
         }
+    }
 
-        private async Task AnalyzeFileInDockerAsync(string filePath, string repositoryPath, ConcurrentBag<DiagnosticMessage> diagnosticsList, CancellationToken cancellationToken)
+    private void ProcessPylintOutput(string output, string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList)
+    {
+        try
         {
-            var fileDirectory = Path.GetDirectoryName(filePath);
-            if (fileDirectory == null) return;
-            
-            var arguments = $"--output-format=json {Path.GetFileName(filePath)}";
-            var workingDirectory = Path.GetFileName(fileDirectory);
+            var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
+            if (pylintDiagnostics == null) return;
 
-            try
+            var filteredDiagnostics = pylintDiagnostics
+                .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
+                .ToList();
+
+            foreach (var diagnostic in filteredDiagnostics)
             {
-                var result = await _dockerService.RunCommandAsync(
-                    repositoryPath,
-                    workingDirectory,
-                    DockerImage,
-                    Command,
-                    arguments,
-                    cancellationToken
-                );
-                
-                if (!string.IsNullOrEmpty(result.OutputDataReceived))
-                {
-                    ProcessPylintOutput(result.OutputDataReceived, filePath, diagnosticsList);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Error analyzing file {filePath}: {ex.Message}");
+                var severity = DetermineSeverity(diagnostic.Type);
+                if (string.IsNullOrEmpty(severity)) continue;
+
                 diagnosticsList.Add(new DiagnosticMessage
                 {
-                    Message = $"Error analyzing file {filePath}: {ex.Message}",
-                    Severity = DiagnosticSeverity.Error.ToString()
+                    Message = diagnostic.Message,
+                    Severity = severity
                 });
             }
         }
-
-        private void ProcessPylintOutput(string output, string filePath, ConcurrentBag<DiagnosticMessage> diagnosticsList)
+        catch (JsonException ex)
         {
-            try
+            _logger.Log($"Error deserializing pylint output for file {filePath}: {ex.Message}");
+            diagnosticsList.Add(new DiagnosticMessage
             {
-                var pylintDiagnostics = JsonSerializer.Deserialize<List<PylintMessage>>(output);
-                if (pylintDiagnostics == null) return;
-
-                var filteredDiagnostics = pylintDiagnostics
-                    .Where(d => !string.IsNullOrEmpty(d.Message) && !string.IsNullOrEmpty(d.Type))
-                    .ToList();
-
-                foreach (var diagnostic in filteredDiagnostics)
-                {
-                    var severity = DetermineSeverity(diagnostic.Type);
-                    if (string.IsNullOrEmpty(severity)) continue;
-
-                    diagnosticsList.Add(new DiagnosticMessage
-                    {
-                        Message = diagnostic.Message,
-                        Severity = severity
-                    });
-                }
-            }
-            catch (JsonException ex)
-            {
-                _logger.Log($"Error deserializing pylint output for file {filePath}: {ex.Message}");
-                diagnosticsList.Add(new DiagnosticMessage
-                {
-                    Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
-                    Severity = DiagnosticSeverity.Error.ToString()
-                });
-            }
+                Message = $"Error deserializing pylint output for file {filePath}: {ex.Message}",
+                Severity = DiagnosticSeverity.Error.ToString()
+            });
         }
+    }
 
-        private static string? DetermineSeverity(string type)
+    private static string? DetermineSeverity(string type)
+    {
+        return type.ToLower() switch
         {
-            return type.ToLower() switch
-            {
-                "error" => DiagnosticSeverity.Error.ToString(),
-                "warning" => DiagnosticSeverity.Warning.ToString(),
-                "info" => DiagnosticSeverity.Info.ToString(),
-                _ => null
-            };
-        }
+            "error" => DiagnosticSeverity.Error.ToString(),
+            "warning" => DiagnosticSeverity.Warning.ToString(),
+            "info" => DiagnosticSeverity.Info.ToString(),
+            _ => null
+        };
     }
 }

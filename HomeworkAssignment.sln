@@ -21,6 +21,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3BFB6409-4818-4FF4-B0FB-C69BD8C80580}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.API.Tests", "HomeworkAssignment.API.Tests\HomeworkAssignment.API.Tests.csproj", "{421A94B3-4CF6-473A-8A3F-F6CDC369611A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,10 @@ Global
 		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FF39CD4-F713-42F2-8B65-C7F85B32D541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{421A94B3-4CF6-473A-8A3F-F6CDC369611A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{421A94B3-4CF6-473A-8A3F-F6CDC369611A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{421A94B3-4CF6-473A-8A3F-F6CDC369611A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{421A94B3-4CF6-473A-8A3F-F6CDC369611A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{681E32BD-281B-4312-92E0-D40B3AF53A91} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
@@ -64,5 +72,6 @@ Global
 		{B87CECF0-0E74-4672-BDB2-A08B5B97BBD0} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 		{45BE986A-D6F3-40FD-B979-AACED7FC4ABB} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 		{5FF39CD4-F713-42F2-8B65-C7F85B32D541} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
+		{421A94B3-4CF6-473A-8A3F-F6CDC369611A} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 	EndGlobalSection
 EndGlobal

@@ -7,8 +7,8 @@ namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection;
 
 public class CodeBuildService : ICodeBuildService
 {
-    private readonly ILanguageDetector _languageDetector;
     private readonly IDockerService _dockerService;
+    private readonly ILanguageDetector _languageDetector;
     private readonly ILogger _logger;
 
     public CodeBuildService(ILogger logger, ILanguageDetector languageDetector, IDockerService dockerService)
@@ -33,5 +33,4 @@ public class CodeBuildService : ICodeBuildService
         var result = await builder.BuildProjectAsync(repositoryPath, cancellationToken);
         return result;
     }
-
 }

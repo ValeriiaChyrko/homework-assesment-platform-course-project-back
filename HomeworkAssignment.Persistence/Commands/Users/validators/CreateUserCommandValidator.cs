@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.SharedDTOs.validators;
-using HomeAssignment.Persistence.Commands.GitHubProfiles;
 
 namespace HomeAssignment.Persistence.Commands.Users.validators;
 

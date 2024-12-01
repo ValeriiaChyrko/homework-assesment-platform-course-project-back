@@ -1,8 +1,8 @@
-﻿using HomeAssignment.Domain.Abstractions.Contracts;
+﻿using System.Text.RegularExpressions;
+using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
-using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
-using System.Text.RegularExpressions;
+using HomeworkAssignment.Infrastructure.Abstractions.TestsSection;
 
 namespace HomeworkAssignment.Infrastructure.Implementations.TestsSection;
 
@@ -12,9 +12,9 @@ public partial class PythonTestsRunner : ITestsRunner
     private const string Command = "python3";
     private static readonly Regex PassedPattern = GeneratePassedPatternRegex();
     private static readonly Regex FailedPattern = GenerateFailedPatternRegex();
+    private readonly IDockerService _dockerService;
 
     private readonly ILogger _logger;
-    private readonly IDockerService _dockerService;
 
     public PythonTestsRunner(ILogger logger, IDockerService dockerService)
     {
@@ -29,7 +29,7 @@ public partial class PythonTestsRunner : ITestsRunner
         try
         {
             var resultSet = await RunTestsInDockerAsync(repositoryPath, cancellationToken);
-            testResults.AddRange(resultSet); 
+            testResults.AddRange(resultSet);
         }
         catch (Exception ex)
         {
@@ -39,7 +39,8 @@ public partial class PythonTestsRunner : ITestsRunner
         return testResults;
     }
 
-    private async Task<List<TestResult>> RunTestsInDockerAsync(string repositoryPath, CancellationToken cancellationToken)
+    private async Task<List<TestResult>> RunTestsInDockerAsync(string repositoryPath,
+        CancellationToken cancellationToken)
     {
         const string arguments = "-m unittest discover -v";
 
@@ -66,25 +67,21 @@ public partial class PythonTestsRunner : ITestsRunner
     {
         var match = PassedPattern.Match(line);
         if (match.Success)
-        {
             return new TestResult
             {
                 TestName = match.Groups["TestName"].Value,
                 IsPassed = true,
                 ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
             };
-        }
 
         match = FailedPattern.Match(line);
         if (match.Success)
-        {
             return new TestResult
             {
                 TestName = match.Groups["TestName"].Value,
                 IsPassed = false,
                 ExecutionTimeMs = ExtractExecutionTime(match.Groups["Time"].Value)
             };
-        }
 
         return null;
     }
@@ -94,10 +91,12 @@ public partial class PythonTestsRunner : ITestsRunner
         var cleanTime = timeOutput.Replace("<", "").Replace(" ms", "").Trim();
         return double.TryParse(cleanTime, out var time) ? time : 0;
     }
-    
-    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(FAIL|FAILED)",RegexOptions.IgnoreCase | RegexOptions.Compiled)]
+
+    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(FAIL|FAILED)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
 
-    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(OK|PASSED)",RegexOptions.IgnoreCase | RegexOptions.Compiled)]
+    [GeneratedRegex(@"(?<TestName>[\w_]+)\s+\((?<FullTestPath>[\w\.]+)\)\s+\.\.\.\s+(OK|PASSED)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled)]
     private static partial Regex GeneratePassedPatternRegex();
 }

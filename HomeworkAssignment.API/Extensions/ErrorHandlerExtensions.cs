@@ -33,7 +33,7 @@ public static class ErrorHandlerExtensions
                     statusCode = context.Response.StatusCode,
                     message = contextFeature.Error.Message,
                     innerException = contextFeature.Error.InnerException?.Message,
-                    clientException = GetErrorBody(contextFeature.Error),
+                    clientException = GetErrorBody(contextFeature.Error)
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
@@ -45,7 +45,7 @@ public static class ErrorHandlerExtensions
     {
         if (error is RequestValidationException validationException1)
             return validationException1.GetErrors()!;
-        
+
         return error switch
         {
             RequestValidationException validationException => validationException.GetErrors(),

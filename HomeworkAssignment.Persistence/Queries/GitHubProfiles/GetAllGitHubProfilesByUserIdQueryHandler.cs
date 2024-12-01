@@ -8,7 +8,7 @@ namespace HomeAssignment.Persistence.Queries.GitHubProfiles;
 
 public sealed class
     GetAllGitHubProfilesByUserIdQueryHandler : IRequestHandler<GetAllGitHubProfilesByUserIdQuery,
-        IEnumerable<GitHubProfileDto>?>
+    IEnumerable<GitHubProfileDto>?>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;

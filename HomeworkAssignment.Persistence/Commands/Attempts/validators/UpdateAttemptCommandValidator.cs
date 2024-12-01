@@ -10,7 +10,7 @@ public class UpdateAttemptCommandValidator : AbstractValidator<UpdateAttemptComm
         RuleFor(x => x.AttemptDto)
             .NotNull().WithMessage("The attempt object must be passed to the method.")
             .SetValidator(new RequestAttemptDtoValidator());
-        
+
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("The attempt Id is required.")
             .Must(id => id != Guid.Empty).WithMessage("The attempt Id cannot be an empty GUID.");

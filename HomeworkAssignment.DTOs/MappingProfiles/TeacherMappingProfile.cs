@@ -14,7 +14,7 @@ public class TeacherMappingProfile : Profile
         CreateMap<Teacher, UserDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
             .ReverseMap();
-        
+
         CreateMap<Teacher, RespondTeacherDto>()
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash));
 

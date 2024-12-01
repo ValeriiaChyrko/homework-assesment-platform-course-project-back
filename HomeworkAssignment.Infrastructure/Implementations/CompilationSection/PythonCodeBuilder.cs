@@ -3,77 +3,74 @@ using HomeworkAssignment.Infrastructure.Abstractions.CompilationSection;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
 
-namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection
+namespace HomeworkAssignment.Infrastructure.Implementations.CompilationSection;
+
+public class PythonCodeBuilder : ICodeBuilder
 {
-    public class PythonCodeBuilder : ICodeBuilder
+    private const string DockerImage = "python:3.11";
+    private const string Command = "python3";
+    private readonly IDockerService _dockerService;
+    private readonly ILogger _logger;
+
+    public PythonCodeBuilder(ILogger logger, IDockerService dockerService)
     {
-        private const string DockerImage = "python:3.11";
-        private const string Command = "python3";
-        private readonly ILogger _logger;
-        private readonly IDockerService _dockerService;
+        _logger = logger;
+        _dockerService = dockerService;
+    }
 
-        public PythonCodeBuilder(ILogger logger, IDockerService dockerService)
+    public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
+    {
+        var pythonFiles = GetPythonFiles(repositoryPath);
+        if (!pythonFiles.Any())
         {
-            _logger = logger;
-            _dockerService = dockerService;
+            _logger.Log($"No Python files found in {repositoryPath}.");
+            return false;
         }
 
-        public async Task<bool> BuildProjectAsync(string repositoryPath, CancellationToken cancellationToken)
-        {
-            var pythonFiles = GetPythonFiles(repositoryPath);
-            if (!pythonFiles.Any())
+        var overallSuccess = true;
+
+        foreach (var pythonFile in pythonFiles)
+            try
             {
-                _logger.Log($"No Python files found in {repositoryPath}.");
-                return false;
+                var result = await BuildPythonFileInDockerAsync(pythonFile, repositoryPath, cancellationToken);
+
+                if (result.ExitCode == 0) continue;
+
+                _logger.Log($"Build failed for {pythonFile} with message: {result.ErrorDataReceived}.");
+                overallSuccess = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Error building Python file {pythonFile}: {ex.Message}");
+                overallSuccess = false;
             }
 
-            var overallSuccess = true;
+        return overallSuccess;
+    }
 
-            foreach (var pythonFile in pythonFiles)
-            {
-                try
-                {
-                    var result = await BuildPythonFileInDockerAsync(pythonFile, repositoryPath, cancellationToken);
+    private async Task<ProcessResult> BuildPythonFileInDockerAsync(
+        string pythonFile,
+        string repositoryPath,
+        CancellationToken cancellationToken)
+    {
+        var relativePath = Path.GetRelativePath(repositoryPath, pythonFile);
+        var arguments = $"-m py_compile {Path.GetFileName(relativePath)}";
+        var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
 
-                    if (result.ExitCode == 0) continue;
+        var result = await _dockerService.RunCommandAsync(
+            repositoryPath,
+            workingDirectory,
+            DockerImage,
+            Command,
+            arguments,
+            cancellationToken
+        );
 
-                    _logger.Log($"Build failed for {pythonFile} with message: {result.ErrorDataReceived}.");
-                    overallSuccess = false;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"Error building Python file {pythonFile}: {ex.Message}");
-                    overallSuccess = false;
-                }
-            }
+        return result;
+    }
 
-            return overallSuccess;
-        }
-
-        private async Task<ProcessResult> BuildPythonFileInDockerAsync(
-            string pythonFile,
-            string repositoryPath,
-            CancellationToken cancellationToken)
-        {
-            var relativePath = Path.GetRelativePath(repositoryPath, pythonFile);
-            var arguments = $"-m py_compile {Path.GetFileName(relativePath)}";
-            var workingDirectory = Path.GetDirectoryName(relativePath) ?? string.Empty;
-
-            var result = await _dockerService.RunCommandAsync(
-                repositoryPath,
-                workingDirectory,
-                DockerImage,
-                Command,
-                arguments,
-                cancellationToken
-            );
-
-            return result;
-        }
-
-        private static string[] GetPythonFiles(string repositoryPath)
-        {
-            return Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories);
-        }
+    private static string[] GetPythonFiles(string repositoryPath)
+    {
+        return Directory.GetFiles(repositoryPath, "*.py", SearchOption.AllDirectories);
     }
 }

@@ -9,8 +9,8 @@ public class DotNetCodeBuilder : ICodeBuilder
 {
     private const string DockerImage = "mcr.microsoft.com/dotnet/sdk:7.0";
     private const string Command = "dotnet";
-    private readonly ILogger _logger;
     private readonly IDockerService _dockerService;
+    private readonly ILogger _logger;
 
     public DotNetCodeBuilder(ILogger logger, IDockerService dockerService)
     {
@@ -28,15 +28,14 @@ public class DotNetCodeBuilder : ICodeBuilder
         }
 
         var overallSuccess = true;
-        
+
         foreach (var projectFile in projectFiles)
-        {
             try
             {
                 var result = await BuildProjectFileInDockerAsync(projectFile, repositoryPath, cancellationToken);
 
                 if (result.ExitCode == 0) continue;
-                
+
                 _logger.Log($"Build failed for {projectFile} with message: {result.ErrorDataReceived}.");
                 overallSuccess = false;
             }
@@ -45,11 +44,10 @@ public class DotNetCodeBuilder : ICodeBuilder
                 _logger.Log($"Error building project {projectFile}: {ex.Message}");
                 overallSuccess = false;
             }
-        }
 
         return overallSuccess;
     }
-    
+
     private async Task<ProcessResult> BuildProjectFileInDockerAsync(
         string projectFile,
         string repositoryPath,
@@ -70,7 +68,7 @@ public class DotNetCodeBuilder : ICodeBuilder
 
         return result;
     }
-    
+
     private static string[] GetProjectFiles(string repositoryPath)
     {
         return Directory.GetFiles(repositoryPath, "*.csproj", SearchOption.AllDirectories);
