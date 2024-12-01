@@ -9,107 +9,60 @@ using MediatR;
 
 namespace HomeworkAssignment.Application.Implementations;
 
-public class AssignmentService : IAssignmentService
+public class AssignmentService : BaseService, IAssignmentService
 {
-    private readonly ILogger _logger;
     private readonly IMediator _mediator;
-    private readonly IDatabaseTransactionManager _transactionManager;
 
     public AssignmentService(ILogger logger, IDatabaseTransactionManager transactionManager, IMediator mediator)
+        : base(logger, transactionManager)
     {
-        _logger = logger;
-        _transactionManager = transactionManager;
         _mediator = mediator;
     }
 
     public async Task<RespondAssignmentDto> CreateAssignmentAsync(RequestAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
-        {
-            var assignment = await _mediator.Send(new CreateAssignmentCommand(assignmentDto), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
-            return assignment;
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackAsync(transaction, cancellationToken);
-            _logger.Log($"Error creating assignment {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error creating assignment", ex);
-        }
+        return await ExecuteWithTransactionAsync(
+            async () => await _mediator.Send(new CreateAssignmentCommand(assignmentDto), cancellationToken),
+            "creating assignment",
+            cancellationToken
+        );
     }
 
     public async Task<RespondAssignmentDto> UpdateAssignmentAsync(Guid id, RequestAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
-        {
-            var assignment = await _mediator.Send(new UpdateAssignmentCommand(id, assignmentDto), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
-            return assignment;
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error updating assignment {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error updating assignment", ex);
-        }
+        return await ExecuteWithTransactionAsync(
+            async () => await _mediator.Send(new UpdateAssignmentCommand(id, assignmentDto), cancellationToken),
+            "creating assignment",
+            cancellationToken
+        );
     }
 
     public async Task DeleteAssignmentAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
-        {
-            await _mediator.Send(new DeleteAssignmentCommand(id), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error deleting assignment {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error deleting assignment", ex);
-        }
+        await ExecuteWithTransactionAsync(
+            async () => await _mediator.Send(new DeleteAssignmentCommand(id), cancellationToken),
+            "deleting assignment",
+            cancellationToken
+        );
     }
 
     public async Task<RespondAssignmentDto?> GetAssignmentByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var assignment = await _mediator.Send(new GetAssignmentByIdQuery(id), cancellationToken);
-            return assignment;
-        }
-        catch (Exception ex)
-        {
-            _logger.Log($"Error getting assignment {ex.InnerException}.");
-
-            throw new Exception("Error getting assignment", ex);
-        }
+        return await ExecuteWithExceptionHandlingAsync(
+            async () => await _mediator.Send(new GetAssignmentByIdQuery(id), cancellationToken),
+            "getting assignment by ID"
+        );
     }
 
     public async Task<IReadOnlyList<RespondAssignmentDto>> GetAssignmentsAsync(
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var assignments = await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken);
-
-            return assignments.ToList();
-        }
-        catch (Exception ex)
-        {
-            _logger.Log($"Error getting assignments entities {ex.InnerException}.");
-
-            throw new Exception("Error getting assignments entities", ex);
-        }
+        return await ExecuteWithExceptionHandlingAsync(
+            async () => (await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken)).ToList(),
+            "getting all assignments"
+        );
     }
 }

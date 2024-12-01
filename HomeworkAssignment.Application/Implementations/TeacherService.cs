@@ -15,32 +15,25 @@ using MediatR;
 
 namespace HomeworkAssignment.Application.Implementations;
 
-public class TeacherService : ITeacherService
+public class TeacherService : BaseService, ITeacherService
 {
-    private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly IDatabaseTransactionManager _transactionManager;
 
-    public TeacherService(ILogger logger, IMapper mapper, IPasswordHasher passwordHasher,
-        IDatabaseTransactionManager transactionManager, IMediator mediator)
+    public TeacherService(ILogger logger, IMapper mapper, IPasswordHasher passwordHasher, IDatabaseTransactionManager transactionManager, IMediator mediator)
+        : base(logger, transactionManager)
     {
-        _logger = logger;
         _mapper = mapper;
         _passwordHasher = passwordHasher;
-        _transactionManager = transactionManager;
         _mediator = mediator;
     }
 
-    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto,
-        CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto> CreateTeacherAsync(RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
+        return await ExecuteWithTransactionAsync(async () =>
         {
             var passwordHash = _passwordHasher.HashPassword(teacherDto.Password);
-
             var teacher = Teacher.Create(
                 teacherDto.FullName,
                 teacherDto.Email,
@@ -50,29 +43,16 @@ public class TeacherService : ITeacherService
                 teacherDto.GithubPictureUrl
             );
 
-            var userDto = _mapper.Map<UserDto>(teacher);
-            await _mediator.Send(new CreateUserCommand(userDto), cancellationToken);
+            await _mediator.Send(new CreateUserCommand(_mapper.Map<UserDto>(teacher)), cancellationToken);
+            await _mediator.Send(new CreateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)), cancellationToken);
 
-            var profileDto = _mapper.Map<GitHubProfileDto>(teacher);
-            await _mediator.Send(new CreateGitHubProfileCommand(profileDto), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
             return _mapper.Map<RespondTeacherDto>(teacher);
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackAsync(transaction, cancellationToken);
-            _logger.Log($"Error creating teacher {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error creating teacher", ex);
-        }
+        }, "creating teacher", cancellationToken);
     }
 
-    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId,
-        RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto> UpdateTeacherAsync(Guid userId, Guid githubProfileId, RequestTeacherDto teacherDto, CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
+        return await ExecuteWithTransactionAsync(async () =>
         {
             var passwordHash = _passwordHasher.HashPassword(teacherDto.Password);
 
@@ -84,105 +64,71 @@ public class TeacherService : ITeacherService
                 teacherDto.GithubProfileUrl,
                 teacherDto.GithubPictureUrl
             );
+
             teacher.UserId = userId;
             teacher.GitHubProfileId = githubProfileId;
 
-            var userDto = _mapper.Map<UserDto>(teacher);
-            await _mediator.Send(new UpdateUserCommand(userDto), cancellationToken);
+            await _mediator.Send(new UpdateUserCommand(_mapper.Map<UserDto>(teacher)), cancellationToken);
+            await _mediator.Send(new UpdateGitHubProfileCommand(_mapper.Map<GitHubProfileDto>(teacher)), cancellationToken);
 
-            var profileDto = _mapper.Map<GitHubProfileDto>(teacher);
-            await _mediator.Send(new UpdateGitHubProfileCommand(profileDto), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
             return _mapper.Map<RespondTeacherDto>(teacher);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error updating teacher {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error updating teacher", ex);
-        }
+        }, "updating teacher", cancellationToken);
     }
 
     public async Task DeleteTeacherAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
+        await ExecuteWithTransactionAsync(async () =>
         {
             await _mediator.Send(new DeleteUserCommand(userId), cancellationToken);
-
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.Log($"Error deleting teacher {ex.InnerException}. Using rollback transaction.");
-
-            throw new Exception("Error getting teacher", ex);
-        }
+            return Task.CompletedTask;
+        }, "deleting teacher", cancellationToken);
     }
 
-    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId,
-        CancellationToken cancellationToken = default)
+    public async Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId, CancellationToken cancellationToken = default)
     {
-        try
+        return await ExecuteWithExceptionHandlingAsync(async () =>
         {
             var userDto = await _mediator.Send(new GetUserByGithubProfileIdQuery(githubProfileId), cancellationToken);
             if (userDto == null) return null;
 
-            var gitHubProfileDto =
-                await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
+            var gitHubProfileDto = await _mediator.Send(new GetGitHubProfileByIdQuery(githubProfileId), cancellationToken);
 
-            var teacherWithProfileDto = _mapper.Map<RespondTeacherDto>(userDto);
-            if (gitHubProfileDto == null) return teacherWithProfileDto;
+            var teacherDto = _mapper.Map<RespondTeacherDto>(userDto);
+            if (gitHubProfileDto == null) return teacherDto;
 
-            teacherWithProfileDto.GitHubProfileId = gitHubProfileDto.Id;
-            teacherWithProfileDto.GithubUsername = gitHubProfileDto.GithubUsername;
-            teacherWithProfileDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
-            teacherWithProfileDto.GithubPictureUrl = gitHubProfileDto.GithubPictureUrl;
+            teacherDto.GitHubProfileId = gitHubProfileDto.Id;
+            teacherDto.GithubUsername = gitHubProfileDto.GithubUsername;
+            teacherDto.GithubProfileUrl = gitHubProfileDto.GithubProfileUrl;
+            teacherDto.GithubPictureUrl = gitHubProfileDto.GithubPictureUrl;
 
-            return teacherWithProfileDto;
-        }
-        catch (Exception ex)
-        {
-            _logger.Log($"Error getting teacher {ex.InnerException}.");
-
-            throw new Exception("Error getting teacher", ex);
-        }
+            return teacherDto;
+        }, "getting teacher by ID");
     }
 
-    public async Task<IReadOnlyList<RespondTeacherDto>> GetTeacherAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<RespondTeacherDto>> GetTeachersAsync(CancellationToken cancellationToken = default)
     {
-        try
+        return await ExecuteWithExceptionHandlingAsync(async () =>
         {
             var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Teacher), cancellationToken);
 
-            var teacherDtos = await Task.WhenAll(userDtos.Select(async user =>
+            var teachers = await Task.WhenAll(userDtos.Select(async user =>
             {
-                var teacherWithProfileDto = _mapper.Map<RespondTeacherDto>(user);
+                var teacherDto = _mapper.Map<RespondTeacherDto>(user);
 
-                var gitHubProfiles =
-                    await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
+                var gitHubProfiles = await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
                 var mainGitHubProfile = gitHubProfiles?.FirstOrDefault();
 
-                if (mainGitHubProfile != null)
-                {
-                    teacherWithProfileDto.GitHubProfileId = mainGitHubProfile.Id;
-                    teacherWithProfileDto.GithubUsername = mainGitHubProfile.GithubUsername;
-                    teacherWithProfileDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
-                    teacherWithProfileDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
-                }
+                if (mainGitHubProfile == null) return teacherDto;
 
-                return teacherWithProfileDto;
+                teacherDto.GitHubProfileId = mainGitHubProfile.Id;
+                teacherDto.GithubUsername = mainGitHubProfile.GithubUsername;
+                teacherDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
+                teacherDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
+
+                return teacherDto;
             }));
 
-            return teacherDtos.ToList();
-        }
-        catch (Exception ex)
-        {
-            _logger.Log($"Error getting teachers entities {ex.InnerException}.");
-            throw new Exception("Error getting teachers entities", ex);
-        }
+            return teachers.ToList();
+        }, "getting teachers");
     }
 }

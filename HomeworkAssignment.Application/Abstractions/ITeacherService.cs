@@ -16,5 +16,5 @@ public interface ITeacherService
     Task<RespondTeacherDto?> GetTeacherByIdAsync(Guid githubProfileId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<RespondTeacherDto>> GetTeacherAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<RespondTeacherDto>> GetTeachersAsync(CancellationToken cancellationToken = default);
 }

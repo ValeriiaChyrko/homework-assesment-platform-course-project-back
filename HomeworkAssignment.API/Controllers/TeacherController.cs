@@ -22,7 +22,7 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<RespondStudentDto>>> Get()
     {
-        var result = await _teacherService.GetTeacherAsync();
+        var result = await _teacherService.GetTeachersAsync();
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
