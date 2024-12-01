@@ -7,7 +7,7 @@ namespace HomeAssignment.DTOs;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDtosServices(this IServiceCollection services)
+    public static void AddDtosServices(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddAutoMapper(cfg =>
@@ -18,7 +18,5 @@ public static class DependencyInjection
             cfg.AddProfile<StudentMappingProfile>();
             cfg.AddProfile<TeacherMappingProfile>();
         });
-
-        return services;
     }
 }

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using HomeAssignment.Persistence.Abstractions.Errors;
-using HomeAssignment.Persistence.Abstractions.Exceptions;
+using HomeworkAssignment.Application.Common.Errors;
+using HomeworkAssignment.Application.Common.Exceptions;
 using MediatR;
 
-namespace HomeAssignment.Persistence.Behaviors;
+namespace HomeworkAssignment.Application.Behaviors;
 
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -15,8 +15,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         _validators = validators;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any()) return await next();
 
@@ -33,9 +32,8 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             .ToList();
 
         if (!errors.Any()) return await next();
-
+        
         var errorMessage = $"Validation error for request {typeof(TRequest).Name}";
-        throw new RequestValidationException(errorMessage, errors,
-            new Exception("Fluent validation exception. See inner exceptions."));
+        throw new RequestValidationException(errorMessage, errors, new Exception("Fluent validation exception. See inner exceptions."));
     }
 }
