@@ -52,6 +52,8 @@ public class AttemptController : ControllerBase
     public async Task<ActionResult<RespondAttemptDto>> Get(Guid id)
     {
         var result = await _attemptService.GetAttemptByIdAsync(id);
+        if (result == null) return StatusCode(StatusCodes.Status404NotFound);
+        
         return StatusCode(StatusCodes.Status200OK, result);
     }
 

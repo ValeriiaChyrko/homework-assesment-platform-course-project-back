@@ -43,9 +43,6 @@ public static class ErrorHandlerExtensions
 
     private static Dictionary<string, List<string>>? GetErrorBody(Exception error)
     {
-        if (error is RequestValidationException validationException1)
-            return validationException1.GetErrors()!;
-
         return error switch
         {
             RequestValidationException validationException => validationException.GetErrors(),

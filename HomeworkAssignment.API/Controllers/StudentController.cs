@@ -34,6 +34,8 @@ public class StudentController : ControllerBase
     public async Task<ActionResult<RespondStudentDto>> Get(Guid githubProfileId)
     {
         var result = await _studentService.GetStudentByIdAsync(githubProfileId);
+        if (result == null) return StatusCode(StatusCodes.Status404NotFound);
+        
         return StatusCode(StatusCodes.Status200OK, result);
     }
 

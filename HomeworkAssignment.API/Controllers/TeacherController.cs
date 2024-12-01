@@ -20,7 +20,7 @@ public class TeacherController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<RespondStudentDto>>> Get()
+    public async Task<ActionResult<IReadOnlyList<RespondTeacherDto>>> Get()
     {
         var result = await _teacherService.GetTeachersAsync();
         return StatusCode(StatusCodes.Status200OK, result);
@@ -31,9 +31,11 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RespondStudentDto>> Get(Guid githubProfileId)
+    public async Task<ActionResult<RespondTeacherDto>> Get(Guid githubProfileId)
     {
         var result = await _teacherService.GetTeacherByIdAsync(githubProfileId);
+        if (result == null) return StatusCode(StatusCodes.Status404NotFound);
+        
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
@@ -63,7 +65,7 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<RespondStudentDto>> Update(Guid userId, Guid githubProfileId,
+    public async Task<ActionResult<RespondTeacherDto>> Update(Guid userId, Guid githubProfileId,
         RequestTeacherDto request)
     {
         var response = await _teacherService.UpdateTeacherAsync(userId, githubProfileId, request);

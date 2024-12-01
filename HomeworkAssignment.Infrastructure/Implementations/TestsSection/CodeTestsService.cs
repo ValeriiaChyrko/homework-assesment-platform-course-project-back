@@ -10,9 +10,9 @@ public class CodeTestsService : ICodeTestsService
 {
     private const int MaxScorePercentage = 100;
     private const int MinScorePercentage = 0;
-    
-    private readonly ILanguageDetector _languageDetector;
     private readonly IDockerService _dockerService;
+
+    private readonly ILanguageDetector _languageDetector;
     private readonly ILogger _logger;
 
     public CodeTestsService(ILogger logger, ILanguageDetector languageDetector, IDockerService dockerService)

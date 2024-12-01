@@ -8,7 +8,7 @@ namespace HomeAssignment.Persistence.Queries.Attempts;
 
 public sealed class
     GetAllAttemptsByAssignmentIdQueryHandler : IRequestHandler<GetAllAttemptsByAssignmentIdQuery,
-        IEnumerable<RespondAttemptDto>>
+    IEnumerable<RespondAttemptDto>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;

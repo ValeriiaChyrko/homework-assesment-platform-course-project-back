@@ -17,7 +17,7 @@ public class StudentMappingProfile : Profile
 
         CreateMap<Student, RespondStudentDto>()
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash));
-        
+
         CreateMap<UserDto, RespondStudentDto>()
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));

@@ -64,7 +64,8 @@ public class AttemptService : BaseService, IAttemptService
         CancellationToken cancellationToken = default)
     {
         return await ExecuteWithExceptionHandlingAsync(
-            async () => (await _mediator.Send(new GetAllAttemptsByAssignmentIdQuery(assignmentId), cancellationToken)).ToList(),
+            async () => (await _mediator.Send(new GetAllAttemptsByAssignmentIdQuery(assignmentId), cancellationToken))
+                .ToList(),
             "getting attempts by assignment ID"
         );
     }
@@ -82,7 +83,8 @@ public class AttemptService : BaseService, IAttemptService
         CancellationToken cancellationToken = default)
     {
         return await ExecuteWithExceptionHandlingAsync(
-            async () => (await _mediator.Send(new GetAllAttemptsByStudentIdQuery(studentId), cancellationToken)).ToList(),
+            async () =>
+                (await _mediator.Send(new GetAllAttemptsByStudentIdQuery(studentId), cancellationToken)).ToList(),
             "getting attempts by student ID"
         );
     }

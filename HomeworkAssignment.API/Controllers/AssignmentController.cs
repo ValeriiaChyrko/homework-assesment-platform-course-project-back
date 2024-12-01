@@ -34,6 +34,8 @@ public class AssignmentController : ControllerBase
     public async Task<ActionResult<RespondAssignmentDto>> Get(Guid id)
     {
         var result = await _assignmentService.GetAssignmentByIdAsync(id);
+        if (result == null) return StatusCode(StatusCodes.Status404NotFound);
+        
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
