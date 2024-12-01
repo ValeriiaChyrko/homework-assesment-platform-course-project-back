@@ -1,4 +1,4 @@
-﻿namespace HomeworkAssignment.Application.Common.Errors;
+﻿namespace HomeAssignment.Persistence.Common.Errors;
 
 public class ValidationError
 {

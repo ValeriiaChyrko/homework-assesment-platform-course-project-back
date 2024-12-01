@@ -1,6 +1,6 @@
-﻿using HomeworkAssignment.Application.Common.Errors;
+﻿using HomeAssignment.Persistence.Common.Errors;
 
-namespace HomeworkAssignment.Application.Common.Exceptions;
+namespace HomeAssignment.Persistence.Common.Exceptions;
 
 public class RequestValidationException : Exception
 {

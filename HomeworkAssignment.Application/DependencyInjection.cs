@@ -1,6 +1,5 @@
 ﻿using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
-using HomeworkAssignment.Application.Behaviors;
 using HomeworkAssignment.Application.Implementations;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +17,6 @@ public static class DependencyInjection
         services.AddScoped<IGitHubService, GitHubService>();
 
         services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
-        
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
     }

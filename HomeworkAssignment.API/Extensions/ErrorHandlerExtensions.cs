@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using HomeAssignment.Persistence.Abstractions.Exceptions;
-using HomeworkAssignment.Application.Common.Exceptions;
+using HomeAssignment.Persistence.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace HomeworkAssignment.Extensions;
@@ -43,6 +43,9 @@ public static class ErrorHandlerExtensions
 
     private static Dictionary<string, List<string>>? GetErrorBody(Exception error)
     {
+        if (error is RequestValidationException validationException1)
+            return validationException1.GetErrors()!;
+        
         return error switch
         {
             RequestValidationException validationException => validationException.GetErrors(),

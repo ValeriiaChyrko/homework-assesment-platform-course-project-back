@@ -1,4 +1,4 @@
-﻿namespace HomeworkAssignment.Application.Common.Exceptions;
+﻿namespace HomeAssignment.Persistence.Common.Exceptions;
 
 public class ServiceOperationException : Exception
 {

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using HomeworkAssignment.Application.Common.Errors;
-using HomeworkAssignment.Application.Common.Exceptions;
+using HomeAssignment.Persistence.Common.Errors;
+using HomeAssignment.Persistence.Common.Exceptions;
 using MediatR;
 
-namespace HomeworkAssignment.Application.Behaviors;
+namespace HomeAssignment.Persistence.Behaviors;
 
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
