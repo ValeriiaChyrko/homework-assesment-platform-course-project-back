@@ -1,4 +1,4 @@
-﻿namespace HomeAssignment.Persistence.Common.Exceptions;
+﻿namespace HomeAssignment.Persistence.Abstractions.Exceptions;
 
 public class ServiceOperationException : Exception
 {

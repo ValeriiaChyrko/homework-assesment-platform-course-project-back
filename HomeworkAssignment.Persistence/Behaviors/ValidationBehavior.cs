@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using HomeAssignment.Persistence.Common.Errors;
-using HomeAssignment.Persistence.Common.Exceptions;
+using HomeAssignment.Persistence.Abstractions.Errors;
+using HomeAssignment.Persistence.Abstractions.Exceptions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Behaviors;

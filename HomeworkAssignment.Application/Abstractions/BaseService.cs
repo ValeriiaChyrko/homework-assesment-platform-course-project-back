@@ -1,5 +1,5 @@
 ﻿using HomeAssignment.Domain.Abstractions.Contracts;
-using HomeAssignment.Persistence.Common.Exceptions;
+using HomeAssignment.Persistence.Abstractions.Exceptions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 
 namespace HomeworkAssignment.Application.Abstractions;

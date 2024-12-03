@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
 using HomeAssignment.Persistence.Abstractions.Exceptions;
-using HomeAssignment.Persistence.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace HomeworkAssignment.Extensions;

@@ -9,8 +9,6 @@ public class TeacherMappingProfile : Profile
 {
     public TeacherMappingProfile()
     {
-        CreateMap<Teacher, RespondTeacherDto>();
-
         CreateMap<Teacher, UserDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
             .ReverseMap();

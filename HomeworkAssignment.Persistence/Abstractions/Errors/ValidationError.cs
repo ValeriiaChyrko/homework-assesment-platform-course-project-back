@@ -1,4 +1,4 @@
-﻿namespace HomeAssignment.Persistence.Common.Errors;
+﻿namespace HomeAssignment.Persistence.Abstractions.Errors;
 
 public class ValidationError
 {

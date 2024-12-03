@@ -10,5 +10,25 @@
     &lt;TestId&gt;NUnit3x::421A94B3-4CF6-473A-8A3F-F6CDC369611A::net7.0::HomeworkAssignment.API.Tests.TeacherControllerTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::421A94B3-4CF6-473A-8A3F-F6CDC369611A::net7.0::HomeworkAssignment.API.Tests.GitHubApiControllerTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.AssignmentMappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.AttemptMappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.StudentMappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.TeacherMappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ScoreSectionMappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.MappingProfileTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_OwnerId_Is_Empty&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Not_Have_Error_When_OwnerId_Is_Valid&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_Title_Is_Empty&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_Title_Exceeds_Max_Length&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_Deadline_Is_In_Past&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Not_Have_Error_When_Deadline_Is_Valid&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_MaxScore_Is_Zero&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Not_Have_Error_When_MaxScore_Is_Valid&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Have_Error_When_MaxAttemptsAmount_Is_One&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests.Should_Validate_CompilationSection_Using_ScoreSectionDtoValidator&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAssignmentDtoValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.RequestAttemptDtoValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.GitHubProfileDtoValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.ScoreSectionDtoValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.UserDtoValidatorTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

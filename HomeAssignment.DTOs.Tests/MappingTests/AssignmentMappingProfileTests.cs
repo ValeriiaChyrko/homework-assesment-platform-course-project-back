@@ -4,21 +4,20 @@ using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.MappingProfiles;
 using HomeAssignment.DTOs.RespondDTOs;
-using HomeAssignment.DTOs.SharedDTOs;
 
-namespace HomeAssignment.DTOs.Tests;
+namespace HomeAssignment.DTOs.Tests.MappingTests;
 
 [TestFixture]
 public class AssignmentMappingProfileTests
 {
-    private IMapper _mapper;
-
     [SetUp]
     public void SetUp()
     {
         var config = new MapperConfiguration(cfg => cfg.AddProfile<AssignmentMappingProfile>());
         _mapper = config.CreateMapper();
     }
+
+    private IMapper _mapper;
 
     [Test]
     public void Should_Map_AssignmentEntity_To_RespondAssignmentDto()
@@ -58,10 +57,11 @@ public class AssignmentMappingProfileTests
         result.QualitySection?.IsEnabled.Should().BeTrue();
         result.QualitySection?.MaxScore.Should().Be(90);
         result.QualitySection?.MinScore.Should().Be(45);
-        
+
         result.Title.Should().Be("Example text");
         result.RepositoryName.Should().Be("Example repository");
     }
+
     [Test]
     public void Should_Map_AssignmentEntity_To_Assignment()
     {
@@ -101,6 +101,7 @@ public class AssignmentMappingProfileTests
         result.QualitySection.MaxScore.Should().Be(90);
         result.QualitySection.MinScore.Should().Be(45);
     }
+
     [Test]
     public void Should_Map_Assignment_To_RespondAssignmentDto()
     {
@@ -115,9 +116,9 @@ public class AssignmentMappingProfileTests
             DateTime.Now,
             270,
             10,
-            compilationSection: new ScoreSection(true, 100, 50),
-            testsSection: new ScoreSection(true, 80, 40),
-            qualitySection: new ScoreSection(true, 90, 45)
+            new ScoreSection(true, 100, 50),
+            new ScoreSection(true, 80, 40),
+            new ScoreSection(true, 90, 45)
         );
 
         // Act
@@ -133,17 +134,17 @@ public class AssignmentMappingProfileTests
         result.TestsSection.Should().NotBeNull();
         result.TestsSection!.IsEnabled.Should().BeTrue();
         result.TestsSection.MaxScore.Should().Be(80);
-        result.TestsSection.MinScore .Should().Be(40);
+        result.TestsSection.MinScore.Should().Be(40);
 
         result.QualitySection.Should().NotBeNull();
         result.QualitySection!.IsEnabled.Should().BeTrue();
         result.QualitySection.MaxScore.Should().Be(90);
         result.QualitySection.MinScore.Should().Be(45);
-        
+
         result.Title.Should().Be("Example text");
         result.RepositoryName.Should().Be("Example repository");
         result.Description.Should().Be("Example description");
-        
+
         result.MaxScore.Should().Be(270);
         result.MaxAttemptsAmount.Should().Be(10);
     }

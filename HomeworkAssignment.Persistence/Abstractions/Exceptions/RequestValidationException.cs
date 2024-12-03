@@ -1,6 +1,6 @@
-﻿using HomeAssignment.Persistence.Common.Errors;
+﻿using HomeAssignment.Persistence.Abstractions.Errors;
 
-namespace HomeAssignment.Persistence.Common.Exceptions;
+namespace HomeAssignment.Persistence.Abstractions.Exceptions;
 
 public class RequestValidationException : Exception
 {
