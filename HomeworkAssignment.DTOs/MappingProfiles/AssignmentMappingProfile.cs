@@ -10,7 +10,25 @@ public class AssignmentMappingProfile : Profile
 {
     public AssignmentMappingProfile()
     {
-        CreateMap<Assignment, RespondAssignmentDto>();
+        CreateMap<Assignment, RespondAssignmentDto>()
+            .ForMember(dest => dest.CompilationSection, opt => opt.MapFrom(src => new ScoreSectionDto
+            {
+                IsEnabled = src.CompilationSection.IsEnabled,
+                MaxScore = src.CompilationSection.MaxScore,
+                MinScore = src.CompilationSection.MinScore,
+            }))
+            .ForMember(dest => dest.TestsSection, opt => opt.MapFrom(src => new ScoreSectionDto
+            {
+                IsEnabled = src.TestsSection.IsEnabled,
+                MaxScore = src.TestsSection.MaxScore,
+                MinScore = src.TestsSection.MinScore,
+            }))
+            .ForMember(dest => dest.QualitySection, opt => opt.MapFrom(src => new ScoreSectionDto
+            {
+                IsEnabled = src.QualitySection.IsEnabled,
+                MaxScore = src.QualitySection.MaxScore,
+                MinScore = src.QualitySection.MinScore,
+            }));
 
         CreateMap<AssignmentEntity, RespondAssignmentDto>()
             .ForMember(dest => dest.CompilationSection, opt => opt.MapFrom(src => new ScoreSectionDto
@@ -33,36 +51,18 @@ public class AssignmentMappingProfile : Profile
             }));
 
         CreateMap<AssignmentEntity, Assignment>()
-            .ForMember(dest => dest.CompilationSection, opt => opt.MapFrom(src => new ScoreSectionDto
-            {
-                IsEnabled = src.AttemptCompilationSectionEnable,
-                MaxScore = src.AttemptCompilationMaxScore,
-                MinScore = src.AttemptCompilationMinScore
-            }))
-            .ForMember(dest => dest.TestsSection, opt => opt.MapFrom(src => new ScoreSectionDto
-            {
-                IsEnabled = src.AttemptTestsSectionEnable,
-                MaxScore = src.AttemptTestsMaxScore,
-                MinScore = src.AttemptTestsMinScore
-            }))
-            .ForMember(dest => dest.QualitySection, opt => opt.MapFrom(src => new ScoreSectionDto
-            {
-                IsEnabled = src.AttemptQualitySectionEnable,
-                MaxScore = src.AttemptQualityMaxScore,
-                MinScore = src.AttemptQualityMinScore
-            }))
-            .ReverseMap()
-            .ForPath(src => src.AttemptCompilationSectionEnable,
-                opt => opt.MapFrom(dest => dest.CompilationSection.IsEnabled))
-            .ForPath(src => src.AttemptCompilationMaxScore,
-                opt => opt.MapFrom(dest => dest.CompilationSection.MaxScore))
-            .ForPath(src => src.AttemptCompilationMinScore,
-                opt => opt.MapFrom(dest => dest.CompilationSection.MinScore))
-            .ForPath(src => src.AttemptTestsSectionEnable, opt => opt.MapFrom(dest => dest.TestsSection.IsEnabled))
-            .ForPath(src => src.AttemptTestsMaxScore, opt => opt.MapFrom(dest => dest.TestsSection.MaxScore))
-            .ForPath(src => src.AttemptTestsMinScore, opt => opt.MapFrom(dest => dest.TestsSection.MinScore))
-            .ForPath(src => src.AttemptQualitySectionEnable, opt => opt.MapFrom(dest => dest.QualitySection.IsEnabled))
-            .ForPath(src => src.AttemptQualityMaxScore, opt => opt.MapFrom(dest => dest.QualitySection.MaxScore))
-            .ForPath(src => src.AttemptQualityMinScore, opt => opt.MapFrom(dest => dest.QualitySection.MinScore));
+            .ConstructUsing(src => new Assignment(
+                src.Id,
+                src.OwnerId,
+                src.Title,
+                src.Description,
+                src.RepositoryName,
+                src.Deadline,
+                src.MaxScore,
+                src.MaxAttemptsAmount,
+                new ScoreSection(src.AttemptCompilationSectionEnable, src.AttemptCompilationMaxScore, src.AttemptCompilationMinScore),
+                new ScoreSection(src.AttemptTestsSectionEnable, src.AttemptTestsMaxScore,src.AttemptTestsMinScore),
+                new ScoreSection(src.AttemptQualitySectionEnable, src.AttemptQualityMaxScore, src.AttemptQualityMinScore)
+                ));
     }
 }

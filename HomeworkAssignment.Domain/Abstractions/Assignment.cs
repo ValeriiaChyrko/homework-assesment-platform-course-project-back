@@ -2,7 +2,7 @@
 
 public class Assignment
 {
-    private Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName,
+    public Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName,
         DateTime deadline, int maxScore,
         int maxAttemptsAmount,
         ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
