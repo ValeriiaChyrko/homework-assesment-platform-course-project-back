@@ -89,13 +89,14 @@ public class AttemptControllerTests
     {
         // Arrange
         var studentId = Guid.NewGuid();
+        var assignmentId = Guid.NewGuid();
         var mockAttempts = new List<RespondAttemptDto>
         {
             new()
             {
                 Id = Guid.NewGuid(),
                 StudentId = studentId,
-                AssignmentId = Guid.NewGuid(),
+                AssignmentId = assignmentId,
                 BranchName = "History",
                 FinishedAt = DateTime.UtcNow,
                 AttemptNumber = 1,
@@ -105,11 +106,11 @@ public class AttemptControllerTests
                 FinalScore = 75
             }
         };
-        _attemptService.GetAttemptsByStudentIdAsync(studentId)
+        _attemptService.GetStudentAttemptsAsync(assignmentId, studentId)
             .Returns(Task.FromResult<IReadOnlyList<RespondAttemptDto>>(mockAttempts));
 
         // Act
-        var result = await _controller.ByStudentId(studentId);
+        var result = await _controller.ByStudentId(assignmentId, studentId);
 
         // Assert
         result.Result.Should().BeOfType<ObjectResult>()

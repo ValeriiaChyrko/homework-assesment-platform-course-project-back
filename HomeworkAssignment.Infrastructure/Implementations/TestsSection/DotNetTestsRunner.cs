@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using HomeAssignment.Domain.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.Contracts;
 using HomeworkAssignment.Infrastructure.Abstractions.DockerRelated;
@@ -26,20 +27,20 @@ public partial class DotNetTestsRunner : ITestsRunner
     {
         var testFiles =
             Directory.GetFiles(Path.Combine(repositoryPath, "tests"), "*.csproj", SearchOption.AllDirectories);
-        var testResults = new List<TestResult>();
+        var testResults = new ConcurrentBag<TestResult>();
 
         foreach (var testFile in testFiles)
             try
             {
                 var resultSet = await RunTestsInDockerAsync(testFile, repositoryPath, cancellationToken);
-                testResults.AddRange(resultSet);
+                foreach (var result in resultSet) testResults.Add(result);
             }
             catch (Exception ex)
             {
                 _logger.Log($"Error running tests for {testFile}: {ex.Message}");
             }
 
-        return testResults;
+        return testResults.ToList();
     }
 
     private async Task<List<TestResult>> RunTestsInDockerAsync(
@@ -104,10 +105,10 @@ public partial class DotNetTestsRunner : ITestsRunner
         return double.TryParse(cleanTime, out var time) ? time : 0;
     }
 
-    [GeneratedRegex(@"Passed\s+(?<TestName>[^\s]+)\s+\[\<\s+(?<Time>\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
+    [GeneratedRegex(@"Passed\s+(?<TestName>[^\s]+)\s+\[\s*(?<Time>(?:<\s*)?\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
     private static partial Regex GeneratePassedPatternRegex();
 
-    [GeneratedRegex(@"Failed\s+(?<TestName>[^\s]+)\s+\[(?<Time>\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
+    [GeneratedRegex(@"Failed\s+(?<TestName>[^\s]+)\s+\[\s*(?<Time>(?:<\s*)?\d+(\.\d+)?\s+ms)\]", RegexOptions.Compiled)]
     private static partial Regex GenerateFailedPatternRegex();
 
     [GeneratedRegex(@"(?s).*?Starting test execution, please wait\.\.\.(.*)", RegexOptions.IgnoreCase, "uk-UA")]

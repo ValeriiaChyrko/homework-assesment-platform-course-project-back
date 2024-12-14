@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs.validators;
 
-namespace HomeAssignment.Persistence.Commands.Assignments.validators;
+namespace HomeAssignment.Persistence.Commands.Assignments.Validators;
 
 public class UpdateAssignmentCommandValidator : AbstractValidator<UpdateAssignmentCommand>
 {

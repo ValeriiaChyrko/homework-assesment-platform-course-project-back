@@ -35,7 +35,7 @@ public class TeacherController : ControllerBase
     {
         var result = await _teacherService.GetTeacherByIdAsync(githubProfileId);
         if (result == null) return StatusCode(StatusCodes.Status404NotFound);
-        
+
         return StatusCode(StatusCodes.Status200OK, result);
     }
 

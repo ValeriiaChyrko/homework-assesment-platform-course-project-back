@@ -16,7 +16,7 @@ public class DatabaseErrorException : Exception
     {
         var errorsDict = new Dictionary<string, List<string>>();
 
-        if (!_errors.Any())
+        if (_errors.Any())
             errorsDict.Add("Database processing error", new List<string> { "A database operation error occurred." });
 
         return errorsDict;

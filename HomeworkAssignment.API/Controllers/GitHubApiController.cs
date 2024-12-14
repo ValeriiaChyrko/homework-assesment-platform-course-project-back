@@ -1,4 +1,5 @@
-﻿using HomeworkAssignment.Application.Abstractions;
+﻿using System.Diagnostics.CodeAnalysis;
+using HomeworkAssignment.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeworkAssignment.Controllers;
@@ -27,6 +28,7 @@ public class GitHubApiController : ControllerBase
     [HttpGet("compilation/{githubProfileId:guid}/{assignmentId:guid}/{branch}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action")]
     public async Task<ActionResult<int>> GetProjectCompilationVerification(Guid githubProfileId, Guid assignmentId,
         string branch)
     {

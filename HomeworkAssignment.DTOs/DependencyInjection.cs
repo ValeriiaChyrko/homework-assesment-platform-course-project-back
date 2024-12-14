@@ -17,6 +17,7 @@ public static class DependencyInjection
             cfg.AddProfile<AttemptMappingProfile>();
             cfg.AddProfile<StudentMappingProfile>();
             cfg.AddProfile<TeacherMappingProfile>();
+            cfg.AddProfile<ScoreSectionMappingProfile>();
         });
     }
 }

@@ -1,8 +1,16 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ACastHelpers_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fa9b35bc5d5da43a49af8d74dac7ab37ccc1bb654cb7dfe8f9a21501181ed9b_003FCastHelpers_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ACouldNotSetReturnDueToTypeMismatchException_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F402b2077f38742cb9b381ab9e79e493229c00_003Ff0_003F8989dcbd_003FCouldNotSetReturnDueToTypeMismatchException_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADbContextOptionsBuilder_0060_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F88dc926c35aa123de453aad9d52d70a823677174c692fc447d5d7c9dabf744a_003FDbContextOptionsBuilder_0060_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADefaultValidatorExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Feec252cf40b8ff96a3a028a3eddc6ac8c0d3f385d85e6def3cfc7d63fbc5918e_003FDefaultValidatorExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADictionary_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F7641a1a0695522e81971758464776ba68659afdcd53575f6917f7593181d9345_003FDictionary_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AExceptionDispatchInfo_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fbd1d5c50194fea68ff3559c160230b0ab50f5acf4ce3061bffd6d62958e2182_003FExceptionDispatchInfo_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ALateBoundTestFramework_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F4192c016ac87865a13f36155d8104b1ccc818c55593b451cc2168ac54b76f6f_003FLateBoundTestFramework_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AManualResetEventSlim_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Ff9749fe3576a687c3c42f3794cefe8f8d91e62f939c66c0a32dbb3f74255_003FManualResetEventSlim_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ARuntimeHelpers_002ECoreCLR_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fb2e2569a599c90377c1a97627ad8774b6db45b50adadbf7ef077d29896d719_003FRuntimeHelpers_002ECoreCLR_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATaskAwaitAdapter_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F3fad8e3b42a0f7ae367986c4177c844d48c22c6e8a9ebc5ec7c60ad5e677267_003FTaskAwaitAdapter_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=072fa28a_002D04fc_002D4102_002D8bd5_002D743cb5bfce63/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AssignmentControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=072fa28a_002D04fc_002D4102_002D8bd5_002D743cb5bfce63/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AssignmentControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::421A94B3-4CF6-473A-8A3F-F6CDC369611A::net7.0::HomeworkAssignment.API.Tests.AssignmentControllerTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::421A94B3-4CF6-473A-8A3F-F6CDC369611A::net7.0::HomeworkAssignment.API.Tests.AttemptControllerTests&lt;/TestId&gt;&#xD;
@@ -30,5 +38,55 @@
     &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.GitHubProfileDtoValidatorTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.ScoreSectionDtoValidatorTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::62BF175E-9648-4571-A544-185DCEC92F95::net7.0::HomeAssignment.DTOs.Tests.ValidatorsTests.UserDtoValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.ValidatorsTests.AssignmentValidatorsTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=17ad831c_002D0b04_002D4ab0_002Da407_002D6cdc32afd0d0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Handle_DatabaseError_ThrowsDatabaseErrorException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.Behaviors.DatabaseErrorBehaviorDataSimulationTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.Behaviors.ValidationBehaviorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAllAssignmentsQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAssignmentByIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAllAttemptsByAssignmentIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAllAttemptsByStudentIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAttemptByIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetLastAttemptByAssignmentIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAllGitHubProfilesByUserIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetGitHubProfileByIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetAllUsersByRoleQueryHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.QueriesTests.GetUserByGithubProfileIdQueryHandlerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=58c56b00_002Df81e_002D48fd_002Da74f_002Dc8e84271fcf4/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" Name="Continuous Testing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.DeleteAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.UpdateAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=866d07b1_002Dbdfd_002D4d82_002Db6ce_002D11f85eb3dccd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateAttemptCommandHandlerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateAttemptCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.DeleteAttemptCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.UpdateAttemptCommandHandlerTests.Should_Update_Attempt_And_Return_RespondDto&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateGitHubProfileCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.DeleteGitHubProfileCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.UpdateGitHubProfileCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateUserCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.DeleteUserCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.UpdateUserCommandHandlerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c01e96b1_002D000e_002D4887_002D8539_002D3e395e63bc4a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateAssignmentCommandHandlerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.CreateAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.DeleteAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.CommandsTests.UpdateAssignmentCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.ValidatorsTests.AttemptValidatorsTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.ValidatorsTests.GitHubProfileCommandValidatorsTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.ValidatorsTests.UserCommandValidatorsTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.Behaviors.DatabaseErrorBehaviorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7F3B1B04-CABE-43B4-928E-4D6082E5CFEC::net7.0::HomeAssignment.Persistence.Tests.Behaviors.DatabaseErrorBehaviorDataSimulationTests.Handle_DatabaseError_ThrowsDatabaseErrorException&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -35,7 +35,7 @@ public class AssignmentController : ControllerBase
     {
         var result = await _assignmentService.GetAssignmentByIdAsync(id);
         if (result == null) return StatusCode(StatusCodes.Status404NotFound);
-        
+
         return StatusCode(StatusCodes.Status200OK, result);
     }
 

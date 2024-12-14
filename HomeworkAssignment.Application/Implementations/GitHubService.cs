@@ -35,14 +35,17 @@ public class GitHubService : IGitHubService
         _commitService = commitService;
     }
 
-    public async Task<IEnumerable<string>?> GetStudentBranches(Guid githubProfileId, Guid assignmentId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>?> GetStudentBranches(Guid githubProfileId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var (assignment, student, teacher) = await GetEntitiesAsync(githubProfileId, assignmentId, cancellationToken);
+            var (assignment, student, teacher) =
+                await GetEntitiesAsync(githubProfileId, assignmentId, cancellationToken);
             if (assignment == null || student == null || teacher == null) return null;
 
-            var branches = await _branchService.GetBranchesAsync(teacher.GithubUsername, assignment.RepositoryName, cancellationToken);
+            var branches = await _branchService.GetBranchesAsync(teacher.GithubUsername, assignment.RepositoryName,
+                cancellationToken);
             var branchNames = branches.Select(b => b["name"]?.ToString()!).Where(name => !string.IsNullOrEmpty(name));
 
             return await _branchService.GetBranchesWithCommitsByAuthorAsync(
@@ -59,28 +62,44 @@ public class GitHubService : IGitHubService
         }
     }
 
-    public async Task<int> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
-        => await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Compilation, cancellationToken);
+    public async Task<int> VerifyProjectCompilation(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
+    {
+        return await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Compilation,
+            cancellationToken);
+    }
 
-    public async Task<int> VerifyProjectQuality(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
-        => await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Quality, cancellationToken);
+    public async Task<int> VerifyProjectQuality(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
+    {
+        return await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Quality,
+            cancellationToken);
+    }
 
-    public async Task<int> VerifyProjectTests(Guid githubProfileId, Guid assignmentId, string branch, CancellationToken cancellationToken = default)
-        => await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Tests, cancellationToken);
+    public async Task<int> VerifyProjectTests(Guid githubProfileId, Guid assignmentId, string branch,
+        CancellationToken cancellationToken = default)
+    {
+        return await VerifyProjectScoreAsync(githubProfileId, assignmentId, branch, SectionType.Tests,
+            cancellationToken);
+    }
 
-    private async Task<(RespondAssignmentDto?, RespondStudentDto?, RespondTeacherDto?)> GetEntitiesAsync(Guid githubProfileId, Guid assignmentId, CancellationToken cancellationToken)
+    private async Task<(RespondAssignmentDto?, RespondStudentDto?, RespondTeacherDto?)> GetEntitiesAsync(
+        Guid githubProfileId, Guid assignmentId, CancellationToken cancellationToken)
     {
         var assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId, cancellationToken);
+        if (assignment == null) return (null, null, null);
         var student = await _studentService.GetStudentByIdAsync(githubProfileId, cancellationToken);
-        var teacher = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
+        var teacher = await _teacherService.GetTeacherByIdAsync(assignment.OwnerId, cancellationToken);
         return (assignment, student, teacher);
     }
 
-    private async Task<int> VerifyProjectScoreAsync(Guid githubProfileId, Guid assignmentId, string branch, SectionType sectionType, CancellationToken cancellationToken)
+    private async Task<int> VerifyProjectScoreAsync(Guid githubProfileId, Guid assignmentId, string branch,
+        SectionType sectionType, CancellationToken cancellationToken)
     {
         try
         {
-            var (assignment, student, teacher) = await GetEntitiesAsync(githubProfileId, assignmentId, cancellationToken);
+            var (assignment, student, teacher) =
+                await GetEntitiesAsync(githubProfileId, assignmentId, cancellationToken);
             if (assignment == null || student == null || teacher == null) return 0;
 
             var section = assignment.GetSection(sectionType);
@@ -91,7 +110,7 @@ public class GitHubService : IGitHubService
                 assignment.RepositoryName,
                 branch,
                 student.GithubUsername,
-                cancellationToken:cancellationToken);
+                cancellationToken: cancellationToken);
 
             if (string.IsNullOrEmpty(lastCommitSha))
             {
@@ -101,13 +120,18 @@ public class GitHubService : IGitHubService
 
             var percentage = sectionType switch
             {
-                SectionType.Compilation => await _gitHubBuildService.CheckIfProjectCompilesAsync(teacher.GithubUsername, assignment.RepositoryName, branch, lastCommitSha, cancellationToken) ? 100 : 0,
-                SectionType.Quality => await _gitHubBuildService.EvaluateProjectCodeQualityAsync(teacher.GithubUsername, assignment.RepositoryName, branch, lastCommitSha, cancellationToken),
-                SectionType.Tests => await _gitHubBuildService.EvaluateProjectCodePassedTestsAsync(teacher.GithubUsername, assignment.RepositoryName, branch, lastCommitSha, cancellationToken),
+                SectionType.Compilation => await _gitHubBuildService.CheckIfProjectCompilesAsync(teacher.GithubUsername,
+                    assignment.RepositoryName, branch, lastCommitSha, cancellationToken)
+                    ? 100
+                    : 0,
+                SectionType.Quality => await _gitHubBuildService.EvaluateProjectCodeQualityAsync(teacher.GithubUsername,
+                    assignment.RepositoryName, branch, lastCommitSha, cancellationToken),
+                SectionType.Tests => await _gitHubBuildService.EvaluateProjectCodePassedTestsAsync(
+                    teacher.GithubUsername, assignment.RepositoryName, branch, lastCommitSha, cancellationToken),
                 _ => 0
             };
 
-            return CalculateScore(section.MinScore, section.MaxScore, percentage);
+            return CalculateScore(section.MaxScore, percentage);
         }
         catch (Exception ex)
         {
@@ -116,10 +140,11 @@ public class GitHubService : IGitHubService
         }
     }
 
-    private static int CalculateScore(int minScore, int maxScore, int percentage)
+    private static int CalculateScore(int maxScore, int percentage)
     {
-        if (minScore == maxScore) return minScore;
-        return (int)Math.Round(minScore + percentage / 100.0 * (maxScore - minScore));
+        const int lowerLimit = 0;
+        if (percentage == lowerLimit) return lowerLimit;
+        return (int)Math.Round(lowerLimit + percentage / 100.0 * maxScore);
     }
 
     private void LogError(string message, Exception ex)

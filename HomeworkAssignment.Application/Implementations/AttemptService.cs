@@ -79,12 +79,13 @@ public class AttemptService : BaseService, IAttemptService
         );
     }
 
-    public async Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId,
+    public async Task<IReadOnlyList<RespondAttemptDto>> GetStudentAttemptsAsync(Guid assignmentId, Guid studentId,
         CancellationToken cancellationToken = default)
     {
         return await ExecuteWithExceptionHandlingAsync(
             async () =>
-                (await _mediator.Send(new GetAllAttemptsByStudentIdQuery(studentId), cancellationToken)).ToList(),
+                (await _mediator.Send(new GetAllAttemptsByStudentIdQuery(assignmentId, studentId), cancellationToken))
+                .ToList(),
             "getting attempts by student ID"
         );
     }

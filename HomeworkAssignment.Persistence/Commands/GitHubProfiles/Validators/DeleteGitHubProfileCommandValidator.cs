@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace HomeAssignment.Persistence.Commands.GitHubProfiles.validators;
+namespace HomeAssignment.Persistence.Commands.GitHubProfiles.Validators;
 
 public class DeleteGitHubProfileCommandValidator : AbstractValidator<DeleteGitHubProfileCommand>
 {

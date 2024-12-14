@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.SharedDTOs.validators;
 
-namespace HomeAssignment.Persistence.Commands.Users.validators;
+namespace HomeAssignment.Persistence.Commands.Users.Validators;
 
-public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
+public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
-    public UpdateUserCommandValidator()
+    public CreateUserCommandValidator()
     {
         RuleFor(x => x.UserDto)
             .NotNull().WithMessage("The User profile object must be passed to the method.")

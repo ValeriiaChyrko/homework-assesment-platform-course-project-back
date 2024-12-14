@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace HomeAssignment.Persistence.Commands.Users.validators;
+namespace HomeAssignment.Persistence.Commands.Users.Validators;
 
 public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
 {

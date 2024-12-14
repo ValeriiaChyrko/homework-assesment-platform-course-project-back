@@ -35,12 +35,12 @@ public class AttemptController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
-    [HttpGet("{studentId:guid}/student")]
+    [HttpGet("{assignmentId:guid}/{studentId:guid}/student")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> ByStudentId(Guid studentId)
+    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> ByStudentId(Guid assignmentId, Guid studentId)
     {
-        var result = await _attemptService.GetAttemptsByStudentIdAsync(studentId);
+        var result = await _attemptService.GetStudentAttemptsAsync(assignmentId, studentId);
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
@@ -53,7 +53,7 @@ public class AttemptController : ControllerBase
     {
         var result = await _attemptService.GetAttemptByIdAsync(id);
         if (result == null) return StatusCode(StatusCodes.Status404NotFound);
-        
+
         return StatusCode(StatusCodes.Status200OK, result);
     }
 

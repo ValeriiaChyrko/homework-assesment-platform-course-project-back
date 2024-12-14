@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.API.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.DTOs.Tests", "HomeAssignment.DTOs.Tests\HomeAssignment.DTOs.Tests.csproj", "{62BF175E-9648-4571-A544-185DCEC92F95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Persistence.Tests", "HomeAssignment.Persistence.Tests\HomeAssignment.Persistence.Tests.csproj", "{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{62BF175E-9648-4571-A544-185DCEC92F95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62BF175E-9648-4571-A544-185DCEC92F95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62BF175E-9648-4571-A544-185DCEC92F95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{681E32BD-281B-4312-92E0-D40B3AF53A91} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
@@ -80,5 +86,6 @@ Global
 		{5FF39CD4-F713-42F2-8B65-C7F85B32D541} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
 		{421A94B3-4CF6-473A-8A3F-F6CDC369611A} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 		{62BF175E-9648-4571-A544-185DCEC92F95} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
+		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 	EndGlobalSection
 EndGlobal

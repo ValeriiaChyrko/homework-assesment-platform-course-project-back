@@ -24,7 +24,7 @@ public sealed class
     {
         var attempts = await _context
             .AttemptEntities
-            .Where(a => a.StudentId == query.StudentId)
+            .Where(a => a.AssignmentId == query.AssignmentId && a.StudentId == query.StudentId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

@@ -20,6 +20,6 @@ public interface IAttemptService
     Task<RespondAttemptDto> GetLastAttemptByAssignmentIdAsync(Guid assignmentId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<RespondAttemptDto>> GetAttemptsByStudentIdAsync(Guid studentId,
+    Task<IReadOnlyList<RespondAttemptDto>> GetStudentAttemptsAsync(Guid assignmentId, Guid studentId,
         CancellationToken cancellationToken = default);
 }
