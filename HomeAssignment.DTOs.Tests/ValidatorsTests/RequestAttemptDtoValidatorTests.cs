@@ -53,7 +53,7 @@ public class RequestAttemptDtoValidatorTests
         var result = _validator.TestValidate(model);
 
         result.ShouldHaveValidationErrorFor(x => x.AttemptNumber)
-            .WithErrorMessage("The value of attempt number must be greater than one.");
+            .WithErrorMessage("The value of attempt number must be greater than zero.");
     }
     [Test]
     public void Should_Have_Error_When_CompilationScore_Is_Invalid()
@@ -63,17 +63,17 @@ public class RequestAttemptDtoValidatorTests
         var result = _validator.TestValidate(model);
 
         result.ShouldHaveValidationErrorFor(x => x.CompilationScore)
-            .WithErrorMessage("The value of compilation score must be greater than zero.");
+            .WithErrorMessage("The value of compilation score must be positive number.");
     }
     [Test]
     public void Should_Have_Error_When_TestsScore_Is_Invalid()
     {
-        var model = new RequestAttemptDto { TestsScore = 0 };
+        var model = new RequestAttemptDto { TestsScore = -1 };
 
         var result = _validator.TestValidate(model);
 
         result.ShouldHaveValidationErrorFor(x => x.TestsScore)
-            .WithErrorMessage("The value of tests score must be greater than zero.");
+            .WithErrorMessage("The value of tests score must be positive number.");
     }
     [Test]
     public void Should_Have_Error_When_QualityScore_Is_Invalid()
@@ -83,7 +83,7 @@ public class RequestAttemptDtoValidatorTests
         var result = _validator.TestValidate(model);
 
         result.ShouldHaveValidationErrorFor(x => x.QualityScore)
-            .WithErrorMessage("The value of quality score must be greater than zero.");
+            .WithErrorMessage("The value of quality score must be positive number.");
     }
     [Test]
     public void Should_Not_Have_Any_Errors_When_Model_Is_Valid()

@@ -33,7 +33,7 @@ public class DatabaseErrorBehaviorDataSimulationTests
         {
         }
 
-        public DbSet<TestEntity> TestEntities { get; } = null!;
+        public DbSet<TestEntity> TestEntities { get; set; } = null!;
     }
 
     private class TestEntity

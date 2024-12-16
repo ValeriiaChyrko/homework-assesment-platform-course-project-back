@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Persistence.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssignment.Database.Tests", "HomeAssignment.Database.Tests\HomeAssignment.Database.Tests.csproj", "{47A453F7-D70F-4DAE-98F3-B70147837B99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkAssignment.Application.Tests", "HomeworkAssignment.Application.Tests\HomeworkAssignment.Application.Tests.csproj", "{217F8A2F-4F76-40CB-A3D1-DCE19975D476}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{47A453F7-D70F-4DAE-98F3-B70147837B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47A453F7-D70F-4DAE-98F3-B70147837B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47A453F7-D70F-4DAE-98F3-B70147837B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{217F8A2F-4F76-40CB-A3D1-DCE19975D476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{217F8A2F-4F76-40CB-A3D1-DCE19975D476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{217F8A2F-4F76-40CB-A3D1-DCE19975D476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{217F8A2F-4F76-40CB-A3D1-DCE19975D476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{681E32BD-281B-4312-92E0-D40B3AF53A91} = {C5C0F829-1D76-48D1-8723-2FE9D314C741}
@@ -94,5 +100,6 @@ Global
 		{62BF175E-9648-4571-A544-185DCEC92F95} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 		{7F3B1B04-CABE-43B4-928E-4D6082E5CFEC} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 		{47A453F7-D70F-4DAE-98F3-B70147837B99} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
+		{217F8A2F-4F76-40CB-A3D1-DCE19975D476} = {3BFB6409-4818-4FF4-B0FB-C69BD8C80580}
 	EndGlobalSection
 EndGlobal

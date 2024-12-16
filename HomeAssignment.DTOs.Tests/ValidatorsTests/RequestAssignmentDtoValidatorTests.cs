@@ -185,6 +185,6 @@ public class RequestAssignmentDtoValidatorTests
         result.ShouldHaveValidationErrorFor("CompilationSection.MaxScore")
             .WithErrorMessage("The value of max score must be greater than zero.");
         result.ShouldHaveValidationErrorFor("CompilationSection.MinScore")
-            .WithErrorMessage("The value of min score must be greater than zero.");
+            .WithErrorMessage("The value of min score must be positive number.");
     }
 }

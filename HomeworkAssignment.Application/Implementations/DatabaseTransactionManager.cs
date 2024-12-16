@@ -98,5 +98,6 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
     public async ValueTask DisposeAsync()
     {
         if (_transaction != null) await _transaction.DisposeAsync();
+        _transaction = null;
     }
 }

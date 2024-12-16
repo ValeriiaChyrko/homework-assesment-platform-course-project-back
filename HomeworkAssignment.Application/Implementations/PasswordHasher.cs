@@ -11,6 +11,13 @@ public class PasswordHasher : IPasswordHasher
 
     public bool VerifyHashedPassword(string hashedPassword, string providedPassword)
     {
-        return BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
+        try
+        {
+            return BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
+        }
+        catch (BCrypt.Net.SaltParseException)
+        {
+            return false;
+        }
     }
 }
