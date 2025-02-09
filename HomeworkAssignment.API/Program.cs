@@ -4,7 +4,6 @@ using HomeAssignment.DTOs;
 using HomeAssignment.Persistence;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
-using HomeworkAssignment.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -17,7 +16,6 @@ builder.Services.AddDatabaseServices();
 builder.Services.AddDomainServices();
 builder.Services.AddDtosServices();
 builder.Services.AddPersistenceServices();
-builder.Services.AddInfrastructureServices();
 
 builder.Services.AddCors(options =>
 {

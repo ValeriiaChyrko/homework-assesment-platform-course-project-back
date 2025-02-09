@@ -15,7 +15,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HomeworkAssignment.DTOs\HomeworkAssignment.DTOs.csproj"/>
-        <ProjectReference Include="..\HomeworkAssignment.Infrastructure\HomeworkAssignment.Infrastructure.csproj"/>
         <ProjectReference Include="..\HomeworkAssignment.Persistence\HomeworkAssignment.Persistence.csproj"/>
     </ItemGroup>
 

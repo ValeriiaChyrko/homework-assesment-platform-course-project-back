@@ -13,7 +13,6 @@ public static class DependencyInjection
         services.AddScoped<IAttemptService, AttemptService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<ITeacherService, TeacherService>();
-        services.AddScoped<IGitHubService, GitHubService>();
 
         services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
 

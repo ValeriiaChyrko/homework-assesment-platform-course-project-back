@@ -94,7 +94,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HomeworkAssignment.Application\HomeworkAssignment.Application.csproj"/>
-        <ProjectReference Include="..\HomeworkAssignment.Infrastructure\HomeworkAssignment.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
