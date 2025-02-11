@@ -17,7 +17,7 @@ public class RequestBranchDtoValidator : AbstractValidator<RequestBranchDto>
         RuleFor(x => x.AuthorGitHubUsername)
             .NotEmpty()
             .WithMessage("Author GitHub username cannot be null or whitespace.");
-        
+
         RuleFor(x => x.Since)
             .Must((dto, since) => !dto.Until.HasValue || !since.HasValue || since <= dto.Until)
             .WithMessage("The 'Since' date cannot be later than the 'Until' date.");

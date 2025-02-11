@@ -52,13 +52,13 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Create(
         [FromQuery] RequestAssignmentDto request,
-        [FromServices] IValidator<RequestAssignmentDto> validator, 
+        [FromServices] IValidator<RequestAssignmentDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _assignmentService.CreateAssignmentAsync(request, cancellationToken);
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -81,9 +81,9 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RespondAssignmentDto>> Update(
-        Guid id, 
+        Guid id,
         [FromQuery] RequestAssignmentDto request,
-        [FromServices] IValidator<RequestAssignmentDto> validator, 
+        [FromServices] IValidator<RequestAssignmentDto> validator,
         CancellationToken cancellationToken = default
     )
     {

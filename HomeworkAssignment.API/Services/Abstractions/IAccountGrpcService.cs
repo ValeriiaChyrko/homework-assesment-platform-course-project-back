@@ -4,5 +4,6 @@ namespace HomeworkAssignment.Services.Abstractions;
 
 public interface IAccountGrpcService
 {
-    Task<IReadOnlyList<string>?> GetBranchesAsync(RequestBranchDto query, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<string>?>
+        GetBranchesAsync(RequestBranchDto query, CancellationToken cancellationToken = default);
 }

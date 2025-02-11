@@ -1,10 +1,9 @@
+using HomeAssignment.Database;
+using HomeAssignment.DTOs;
+using HomeAssignment.Persistence;
 using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
-using HomeAssignment.Database;
-using HomeAssignment.Domain;
-using HomeAssignment.DTOs;
-using HomeAssignment.Persistence;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
@@ -16,17 +15,13 @@ builder.Services.AddControllers();
 builder.Services.AddGrpcServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddDatabaseServices();
-builder.Services.AddDomainServices();
 builder.Services.AddDtosServices();
 builder.Services.AddPersistenceServices();
 
 // Configure CORS policy.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowMyOrigin", p =>
-    {
-        p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-    });
+    options.AddPolicy("AllowMyOrigin", p => { p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 });
 
 // Configure Swagger for API documentation.

@@ -53,13 +53,13 @@ public class StudentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Create(
         [FromQuery] RequestStudentDto request,
-        [FromServices] IValidator<RequestStudentDto> validator, 
+        [FromServices] IValidator<RequestStudentDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _studentService.CreateStudentAsync(request, cancellationToken);
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -82,10 +82,10 @@ public class StudentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RespondStudentDto>> Update(
-        Guid userId, 
+        Guid userId,
         Guid githubProfileId,
         [FromQuery] RequestStudentDto request,
-        [FromServices] IValidator<RequestStudentDto> validator, 
+        [FromServices] IValidator<RequestStudentDto> validator,
         CancellationToken cancellationToken = default
     )
     {

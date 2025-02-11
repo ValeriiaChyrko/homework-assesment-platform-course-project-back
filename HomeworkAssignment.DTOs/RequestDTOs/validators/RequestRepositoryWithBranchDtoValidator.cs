@@ -17,7 +17,7 @@ public class RequestRepositoryWithBranchDtoValidator : AbstractValidator<Request
         RuleFor(x => x.AuthorGitHubUsername)
             .NotEmpty()
             .WithMessage("Author GitHub username cannot be null or whitespace.");
-        
+
         RuleFor(x => x.BranchTitle)
             .NotEmpty()
             .WithMessage("Branch title cannot be null or whitespace.");

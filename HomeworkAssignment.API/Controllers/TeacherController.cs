@@ -52,7 +52,7 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Create(
         [FromQuery] RequestTeacherDto request,
-        [FromServices] IValidator<RequestTeacherDto> validator, 
+        [FromServices] IValidator<RequestTeacherDto> validator,
         CancellationToken cancellationToken = default
     )
     {
@@ -85,7 +85,7 @@ public class TeacherController : ControllerBase
         Guid userId,
         Guid githubProfileId,
         [FromQuery] RequestTeacherDto request,
-        [FromServices] IValidator<RequestTeacherDto> validator, 
+        [FromServices] IValidator<RequestTeacherDto> validator,
         CancellationToken cancellationToken = default
     )
     {

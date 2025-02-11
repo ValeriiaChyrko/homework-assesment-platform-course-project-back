@@ -21,7 +21,6 @@ public static class ErrorHandlerExtensions
 
                 context.Response.StatusCode = contextFeature.Error switch
                 {
-                    RequestValidationException => (int)HttpStatusCode.BadRequest,
                     OperationCanceledException => (int)HttpStatusCode.ServiceUnavailable,
                     DatabaseErrorException => (int)HttpStatusCode.InternalServerError,
                     _ => (int)HttpStatusCode.InternalServerError
@@ -44,7 +43,6 @@ public static class ErrorHandlerExtensions
     {
         return error switch
         {
-            RequestValidationException validationException => validationException.GetErrors(),
             DatabaseErrorException databaseErrorException => databaseErrorException.GetErrors(),
             _ => null
         };

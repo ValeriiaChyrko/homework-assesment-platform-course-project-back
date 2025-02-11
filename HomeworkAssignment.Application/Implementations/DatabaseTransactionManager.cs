@@ -11,15 +11,14 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
 
     public DatabaseTransactionManager(IHomeworkAssignmentDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public bool HasActiveTransaction => _transaction != null;
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-
+        cancellationToken.ThrowIfCancellationRequested();
         return await _context.SaveChangesAsync(cancellationToken);
     }
 
@@ -28,76 +27,67 @@ public class DatabaseTransactionManager : IDatabaseTransactionManager
         return _transaction;
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_transaction != null) throw new InvalidOperationException("Transaction is already active.");
 
-        _transaction = await _context.BeginTransactionAsync();
-
+        _transaction = await _context.BeginTransactionAsync(cancellationToken);
         return _transaction;
     }
 
-    public async Task CommitAsync(IDbContextTransaction transaction, CancellationToken cancellationToken)
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-
-        if (_transaction != transaction) throw new InvalidOperationException("Transaction is not current.");
+        if (_transaction == null) throw new InvalidOperationException("No active transaction to commit.");
 
         try
         {
-            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-
+            cancellationToken.ThrowIfCancellationRequested();
             await _context.SaveChangesAsync(cancellationToken);
             _context.DetachEntitiesInChangeTracker();
-
-            await transaction.CommitAsync(cancellationToken);
+            await _transaction.CommitAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            await RollbackAsync(transaction, cancellationToken);
-            throw new Exception("Error committing transaction", ex);
+            await RollbackAsync(cancellationToken);
+            throw new InvalidOperationException("Error committing transaction", ex);
         }
         finally
         {
-            if (_transaction != null)
-            {
-                await _transaction.DisposeAsync();
-                _transaction = null;
-            }
+            await DisposeTransactionAsync();
         }
     }
 
-    public async Task RollbackAsync(IDbContextTransaction transaction, CancellationToken cancellationToken)
+    public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-
-        if (_transaction != transaction) throw new InvalidOperationException("Transaction is not current.");
+        if (_transaction == null) throw new InvalidOperationException("No active transaction to rollback.");
 
         try
         {
-            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-
-            await transaction.RollbackAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            await _transaction.RollbackAsync(cancellationToken);
         }
         finally
         {
-            if (_transaction != null)
-            {
-                await _transaction.DisposeAsync();
-                _transaction = null;
-            }
+            await DisposeTransactionAsync();
         }
     }
 
     public void Dispose()
     {
-        _transaction?.Dispose();
-        _transaction = null;
+        DisposeTransactionAsync().GetAwaiter().GetResult();
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_transaction != null) await _transaction.DisposeAsync();
-        _transaction = null;
+        await DisposeTransactionAsync();
+    }
+
+    private async Task DisposeTransactionAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 }

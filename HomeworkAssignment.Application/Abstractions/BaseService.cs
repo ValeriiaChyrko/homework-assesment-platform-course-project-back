@@ -1,62 +1,56 @@
-﻿using HomeAssignment.Domain.Abstractions.Contracts;
+﻿using System.Runtime.CompilerServices;
 using HomeAssignment.Persistence.Abstractions.Exceptions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace HomeworkAssignment.Application.Abstractions;
 
-public abstract class BaseService
+public abstract class BaseService<T>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<T> _logger;
     private readonly IDatabaseTransactionManager _transactionManager;
 
-    protected BaseService(ILogger logger, IDatabaseTransactionManager transactionManager)
+    protected BaseService(ILogger<T> logger, IDatabaseTransactionManager transactionManager)
     {
-        _logger = logger;
-        _transactionManager = transactionManager;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _transactionManager = transactionManager ?? throw new ArgumentNullException(nameof(transactionManager));
     }
 
-    protected async Task<T> ExecuteWithTransactionAsync<T>(
-        Func<Task<T>> operation,
-        string operationName,
+    protected async Task<TResponse> ExecuteTransactionAsync<TResponse>(
+        Func<Task<TResponse>> operation,
+        [CallerMemberName] string? operationName = null,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
+        await using var transaction = await _transactionManager.BeginTransactionAsync(cancellationToken);
         try
         {
             var result = await operation();
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
+            await _transactionManager.CommitAsync(cancellationToken);
             return result;
         }
         catch (Exception ex)
         {
-            await _transactionManager.RollbackAsync(transaction, cancellationToken);
-            _logger.Log($"Error during {operationName}: {ex.Message}");
-            throw new ServiceOperationException($"Error during {operationName}.", ex);
+            await _transactionManager.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Error during {OperationName}: {Message}", operationName, ex.Message);
+            throw new ServiceOperationException($"Error during {operationName}. See inner exception for details.", ex);
         }
     }
 
-    protected async Task ExecuteWithTransactionAsync(
+    protected async Task ExecuteTransactionAsync(
         Func<Task> operation,
-        string operationName,
+        [CallerMemberName] string? operationName = null,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await _transactionManager.BeginTransactionAsync();
-        try
+        await ExecuteTransactionAsync(async () =>
         {
             await operation();
-            await _transactionManager.CommitAsync(transaction, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackAsync(transaction, cancellationToken);
-            _logger.Log($"Error during {operationName}: {ex.Message}");
-            throw new ServiceOperationException($"Error during {operationName}.", ex);
-        }
+            return Task.CompletedTask;
+        }, operationName, cancellationToken);
     }
 
-    protected async Task<T> ExecuteWithExceptionHandlingAsync<T>(
-        Func<Task<T>> operation,
-        string operationName)
+    protected async Task<TResponse> ExecuteWithExceptionHandlingAsync<TResponse>(
+        Func<Task<TResponse>> operation,
+        [CallerMemberName] string? operationName = null)
     {
         try
         {
@@ -64,8 +58,8 @@ public abstract class BaseService
         }
         catch (Exception ex)
         {
-            _logger.Log($"Error during {operationName}: {ex.Message}");
-            throw new ServiceOperationException($"Error during {operationName}.", ex);
+            _logger.LogError(ex, "Error during {OperationName}: {Message}", operationName, ex.Message);
+            throw new ServiceOperationException($"Error during {operationName}. See inner exception for details.", ex);
         }
     }
 }

@@ -16,9 +16,11 @@ public class AccountGrpcService : IAccountGrpcService
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<string>?> GetBranchesAsync(RequestBranchDto query, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<string>?> GetBranchesAsync(RequestBranchDto query,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Getting branches for repo: {RepoTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}", 
+        _logger.LogInformation(
+            "Getting branches for repo: {RepoTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}",
             query.RepoTitle, query.OwnerGitHubUsername, query.AuthorGitHubUsername);
 
         var request = new BranchQuery
@@ -34,7 +36,8 @@ public class AccountGrpcService : IAccountGrpcService
 
         var response = await _client.GetAuthorBranchesAsync(request, cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Received {BranchCount} branches for repo: {RepoTitle}.", response.BranchTitles.Count, query.RepoTitle);
+        _logger.LogInformation("Received {BranchCount} branches for repo: {RepoTitle}.", response.BranchTitles.Count,
+            query.RepoTitle);
 
         return response.BranchTitles.ToList();
     }

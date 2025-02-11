@@ -17,7 +17,7 @@ public class AttemptController : ControllerBase
     {
         _attemptService = attemptService;
     }
-    
+
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,7 +52,7 @@ public class AttemptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> GetByStudentId(
-        Guid assignmentId, 
+        Guid assignmentId,
         Guid studentId,
         CancellationToken cancellationToken = default
     )
@@ -60,7 +60,7 @@ public class AttemptController : ControllerBase
         var result = await _attemptService.GetStudentAttemptsAsync(assignmentId, studentId, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet("{assignmentId:guid}/assignment/last")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -81,7 +81,7 @@ public class AttemptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RespondAttemptDto>> Create(
         [FromQuery] RequestAttemptDto request,
-        [FromServices] IValidator<RequestAttemptDto> validator, 
+        [FromServices] IValidator<RequestAttemptDto> validator,
         CancellationToken cancellationToken = default
     )
     {
@@ -111,7 +111,7 @@ public class AttemptController : ControllerBase
     public async Task<ActionResult<RespondAttemptDto>> Update(
         Guid id,
         [FromQuery] RequestAttemptDto request,
-        [FromServices] IValidator<RequestAttemptDto> validator, 
+        [FromServices] IValidator<RequestAttemptDto> validator,
         CancellationToken cancellationToken = default
     )
     {

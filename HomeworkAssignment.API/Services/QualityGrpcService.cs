@@ -15,9 +15,11 @@ public class QualityGrpcService : IQualityGrpcService
         _logger = logger;
     }
 
-    public async Task<int> VerifyProjectQualityAsync(RequestRepositoryWithBranchDto query, CancellationToken cancellationToken = default)
+    public async Task<int> VerifyProjectQualityAsync(RequestRepositoryWithBranchDto query,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Verifying quality for repo: {RepoTitle}, branch: {BranchTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}", 
+        _logger.LogInformation(
+            "Verifying quality for repo: {RepoTitle}, branch: {BranchTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}",
             query.RepoTitle, query.BranchTitle, query.OwnerGitHubUsername, query.AuthorGitHubUsername);
 
         var request = new RepositoryWithBranchQuery
@@ -32,7 +34,8 @@ public class QualityGrpcService : IQualityGrpcService
 
         var response = await _client.VerifyProjectQualityAsync(request, cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Received project quality score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.", response.Score, query.RepoTitle, query.BranchTitle);
+        _logger.LogInformation("Received project quality score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.",
+            response.Score, query.RepoTitle, query.BranchTitle);
 
         return response.Score;
     }

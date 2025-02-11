@@ -15,9 +15,11 @@ public class TestsGrpcService : ITestsGrpcService
         _logger = logger;
     }
 
-    public async Task<int> VerifyProjectPassedTestsAsync(RequestRepositoryWithBranchDto query, CancellationToken cancellationToken = default)
+    public async Task<int> VerifyProjectPassedTestsAsync(RequestRepositoryWithBranchDto query,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Verifying tests for repo: {RepoTitle}, branch: {BranchTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}", 
+        _logger.LogInformation(
+            "Verifying tests for repo: {RepoTitle}, branch: {BranchTitle}, owner: {OwnerGithubUsername}, author: {AuthorGithubUsername}",
             query.RepoTitle, query.BranchTitle, query.OwnerGitHubUsername, query.AuthorGitHubUsername);
 
         var request = new RepositoryWithBranchQuery
@@ -31,8 +33,9 @@ public class TestsGrpcService : ITestsGrpcService
         _logger.LogInformation("Sending request to tests operator client to verify project tests.");
 
         var response = await _client.VerifyProjectPassedTestsAsync(request, cancellationToken: cancellationToken);
-        
-        _logger.LogInformation("Received tests score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.", response.Score, query.RepoTitle, query.BranchTitle);
+
+        _logger.LogInformation("Received tests score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.",
+            response.Score, query.RepoTitle, query.BranchTitle);
 
         return response.Score;
     }

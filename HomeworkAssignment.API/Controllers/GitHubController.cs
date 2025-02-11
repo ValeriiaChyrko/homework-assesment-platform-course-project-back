@@ -15,7 +15,8 @@ public class GitHubController : ControllerBase
     private readonly IQualityGrpcService _qualityGrpc;
     private readonly ITestsGrpcService _testsGrpc;
 
-    public GitHubController(IAccountGrpcService accountGrpc, ICompilationGrpcService compilationGrpc, IQualityGrpcService qualityGrpc, ITestsGrpcService testsGrpc)
+    public GitHubController(IAccountGrpcService accountGrpc, ICompilationGrpcService compilationGrpc,
+        IQualityGrpcService qualityGrpc, ITestsGrpcService testsGrpc)
     {
         _accountGrpc = accountGrpc;
         _compilationGrpc = compilationGrpc;
@@ -30,17 +31,17 @@ public class GitHubController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<string>>> GetAuthorBranches(
         [FromQuery] RequestBranchDto query,
-        [FromServices] IValidator<RequestBranchDto> validator, 
+        [FromServices] IValidator<RequestBranchDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _accountGrpc.GetBranchesAsync(query, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet("compilation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,17 +49,17 @@ public class GitHubController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> GetProjectCompilationVerificationScore(
         [FromQuery] RequestRepositoryWithBranchDto query,
-        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator, 
+        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _compilationGrpc.VerifyProjectCompilation(query, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet("quality")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,17 +67,17 @@ public class GitHubController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> GetProjectQualityVerificationScore(
         [FromQuery] RequestRepositoryWithBranchDto query,
-        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator, 
+        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _qualityGrpc.VerifyProjectQualityAsync(query, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
-    
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,13 +85,13 @@ public class GitHubController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> GetProjectTestsVerificationScore(
         [FromQuery] RequestRepositoryWithBranchDto query,
-        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator, 
+        [FromServices] IValidator<RequestRepositoryWithBranchDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
-        
+
         var result = await _testsGrpc.VerifyProjectPassedTestsAsync(query, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
