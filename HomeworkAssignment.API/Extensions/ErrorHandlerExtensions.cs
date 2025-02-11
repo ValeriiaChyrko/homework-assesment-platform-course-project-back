@@ -16,7 +16,7 @@ public static class ErrorHandlerExtensions
                 var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                 if (contextFeature == null) return;
 
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
                 context.Response.ContentType = "application/json";
 
                 context.Response.StatusCode = contextFeature.Error switch

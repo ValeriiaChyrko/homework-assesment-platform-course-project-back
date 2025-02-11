@@ -27,3 +27,9 @@
 networks:
   homework-assignment_network:
     driver: bridge
+
+  homeworkassignmentapi:
+    image: homeworkassignmentapi
+    build:
+      context: .
+      dockerfile: HomeworkAssignmentAPI/Dockerfile
