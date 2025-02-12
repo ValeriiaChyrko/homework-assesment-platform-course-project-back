@@ -1,4 +1,5 @@
-﻿using HomeAssignment.DTOs.RequestDTOs;
+﻿using Grpc.Core;
+using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Services.Abstractions;
 using RepoAnalisys.Grpc;
 
@@ -8,12 +9,13 @@ public class CompilationGrpcService : ICompilationGrpcService
 {
     private readonly CompilationOperator.CompilationOperatorClient _client;
     private readonly ILogger<CompilationGrpcService> _logger;
+    private readonly IAuthenticationService _authentication; 
 
-    public CompilationGrpcService(CompilationOperator.CompilationOperatorClient client,
-        ILogger<CompilationGrpcService> logger)
+    public CompilationGrpcService(CompilationOperator.CompilationOperatorClient client, ILogger<CompilationGrpcService> logger, IAuthenticationService authentication)
     {
-        _client = client;
-        _logger = logger;
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
     }
 
     public async Task<int> VerifyProjectCompilation(RequestRepositoryWithBranchDto query,
@@ -32,8 +34,14 @@ public class CompilationGrpcService : ICompilationGrpcService
         };
 
         _logger.LogInformation("Sending request to compilation operator client to verify project compilation.");
+        
+        var accessToken = await _authentication.GetAccessTokenAsync(cancellationToken);
+        var headers = new Metadata
+        {
+            { "Authorization", $"Bearer {accessToken}" }
+        };
 
-        var response = await _client.VerifyProjectCompilationAsync(request, cancellationToken: cancellationToken);
+        var response = await _client.VerifyProjectCompilationAsync(request, headers, cancellationToken: cancellationToken);
 
         _logger.LogInformation("Received compilation score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.",
             response.Score, query.RepoTitle, query.BranchTitle);

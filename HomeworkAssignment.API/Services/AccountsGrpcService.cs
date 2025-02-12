@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Services.Abstractions;
 using RepoAnalisys.Grpc;
@@ -9,11 +10,13 @@ public class AccountGrpcService : IAccountGrpcService
 {
     private readonly AccountsOperator.AccountsOperatorClient _client;
     private readonly ILogger<AccountGrpcService> _logger;
+    private readonly IAuthenticationService _authentication; 
 
-    public AccountGrpcService(AccountsOperator.AccountsOperatorClient client, ILogger<AccountGrpcService> logger)
+    public AccountGrpcService(AccountsOperator.AccountsOperatorClient client, ILogger<AccountGrpcService> logger, IAuthenticationService authentication)
     {
-        _client = client;
-        _logger = logger;
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
     }
 
     public async Task<IReadOnlyList<string>?> GetBranchesAsync(RequestBranchDto query,
@@ -33,8 +36,14 @@ public class AccountGrpcService : IAccountGrpcService
         };
 
         _logger.LogInformation("Sending request to accounts operator client to get author branches.");
+        
+        var accessToken = await _authentication.GetAccessTokenAsync(cancellationToken);
+        var headers = new Metadata
+        {
+            { "Authorization", $"Bearer {accessToken}" }
+        };
 
-        var response = await _client.GetAuthorBranchesAsync(request, cancellationToken: cancellationToken);
+        var response = await _client.GetAuthorBranchesAsync(request, headers, cancellationToken: cancellationToken);
 
         _logger.LogInformation("Received {BranchCount} branches for repo: {RepoTitle}.", response.BranchTitles.Count,
             query.RepoTitle);

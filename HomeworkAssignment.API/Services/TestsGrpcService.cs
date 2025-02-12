@@ -1,4 +1,5 @@
-﻿using HomeAssignment.DTOs.RequestDTOs;
+﻿using Grpc.Core;
+using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Services.Abstractions;
 using RepoAnalisys.Grpc;
 
@@ -8,11 +9,13 @@ public class TestsGrpcService : ITestsGrpcService
 {
     private readonly TestsOperator.TestsOperatorClient _client;
     private readonly ILogger<TestsGrpcService> _logger;
+    private readonly IAuthenticationService _authentication; 
 
-    public TestsGrpcService(TestsOperator.TestsOperatorClient client, ILogger<TestsGrpcService> logger)
+    public TestsGrpcService(TestsOperator.TestsOperatorClient client, ILogger<TestsGrpcService> logger, IAuthenticationService authentication)
     {
-        _client = client;
-        _logger = logger;
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
     }
 
     public async Task<int> VerifyProjectPassedTestsAsync(RequestRepositoryWithBranchDto query,
@@ -31,8 +34,14 @@ public class TestsGrpcService : ITestsGrpcService
         };
 
         _logger.LogInformation("Sending request to tests operator client to verify project tests.");
+        
+        var accessToken = await _authentication.GetAccessTokenAsync(cancellationToken);
+        var headers = new Metadata
+        {
+            { "Authorization", $"Bearer {accessToken}" }
+        };
 
-        var response = await _client.VerifyProjectPassedTestsAsync(request, cancellationToken: cancellationToken);
+        var response = await _client.VerifyProjectPassedTestsAsync(request, headers, cancellationToken: cancellationToken);
 
         _logger.LogInformation("Received tests score: {Score} for repo: {RepoTitle}, branch: {BranchTitle}.",
             response.Score, query.RepoTitle, query.BranchTitle);

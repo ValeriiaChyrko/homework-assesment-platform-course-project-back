@@ -1,10 +1,12 @@
 using HomeAssignment.Database;
+using HomeAssignment.Database.Contexts.Implementations;
 using HomeAssignment.DTOs;
 using HomeAssignment.Persistence;
 using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
 using Microsoft.OpenApi.Models;
+using OpenIddict.Abstractions;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -12,11 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddGrpcServices(builder.Configuration);
-builder.Services.AddApplicationServices();
 builder.Services.AddDatabaseServices();
-builder.Services.AddDtosServices();
 builder.Services.AddPersistenceServices();
+builder.Services.AddDtosServices();
+builder.Services.AddApplicationServices();
+builder.Services.AddGrpcServices(builder.Configuration);
 
 // Configure CORS policy.
 builder.Services.AddCors(options =>
@@ -53,6 +55,18 @@ app.UseSwaggerUI(c =>
 
 app.UseCors("AllowMyOrigin");
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+using (var scope = app.Services.CreateScope())
+{
+    var applicationManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+
+    // Seed the database with OpenIddict applications
+    DatabaseSeeder.SeedData(applicationManager).GetAwaiter().GetResult();
+}
+
 app.UseSerilogRequestLogging();
 app.UseErrorHandler();
 

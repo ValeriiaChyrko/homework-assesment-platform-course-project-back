@@ -47,6 +47,8 @@ public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbConte
     {
         modelBuilder
             .ApplyConfigurationsFromAssembly(typeof(HomeworkAssignmentDbContext).Assembly);
+        
+        modelBuilder.UseOpenIddict();
 
         base.OnModelCreating(modelBuilder);
     }
