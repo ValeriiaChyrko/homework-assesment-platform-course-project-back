@@ -44,6 +44,11 @@ public static class DependencyInjection
                        .SetIntrospectionEndpointUris("/connect/introspect");
                 
                 options.AllowClientCredentialsFlow();
+                options.AllowPasswordFlow();
+                options.AllowAuthorizationCodeFlow()
+                    .RequireProofKeyForCodeExchange(); 
+                options.AllowRefreshTokenFlow();
+                
                 options.AddDevelopmentEncryptionCertificate()
                        .AddDevelopmentSigningCertificate();
                 options.SetIssuer(new Uri(issuer!));
@@ -64,9 +69,9 @@ public static class DependencyInjection
 
         // Configure authorization policies
         services.AddAuthorizationBuilder()
-            .AddPolicy("repo_analysis_policy", policy =>
+            .AddPolicy("home_assignment_policy", policy =>
             {
-                policy.RequireClaim("scope", "repo_analysis");
+                policy.RequireClaim("scope", "openid_profile_email");
             });
         
         services.AddHttpClient<IAuthenticationService, AuthenticationService>(client =>

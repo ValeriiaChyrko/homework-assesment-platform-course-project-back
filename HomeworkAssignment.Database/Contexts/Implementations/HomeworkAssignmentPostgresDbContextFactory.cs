@@ -17,6 +17,7 @@ public class HomeworkAssignmentPostgresDbContextFactory : IHomeworkAssignmentDbC
     {
         var optionsBuilder = new DbContextOptionsBuilder<HomeworkAssignmentDbContext>();
         optionsBuilder.UseNpgsql(_config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseOpenIddict();
 
         return new HomeworkAssignmentDbContext(optionsBuilder.Options);
     }

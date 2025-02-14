@@ -1,5 +1,5 @@
 ﻿# Базовий образ для .NET SDK
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Копіюємо файли проектів для відновлення залежностей
@@ -9,7 +9,6 @@ COPY HomeworkAssignment.DTOs/HomeworkAssignment.DTOs.csproj HomeworkAssignment.D
 COPY HomeworkAssignment.Database/HomeworkAssignment.Database.csproj HomeworkAssignment.Database/
 COPY HomeworkAssignment.Domain/HomeworkAssignment.Domain.csproj HomeworkAssignment.Domain/
 COPY HomeworkAssignment.Persistence/HomeworkAssignment.Persistence.csproj HomeworkAssignment.Persistence/
-COPY HomeworkAssignment.Infrastructure/HomeworkAssignment.Infrastructure.csproj HomeworkAssignment.Infrastructure/
 
 # Відновлення залежностей
 RUN dotnet restore "HomeworkAssignment.API/HomeworkAssignment.API.csproj"

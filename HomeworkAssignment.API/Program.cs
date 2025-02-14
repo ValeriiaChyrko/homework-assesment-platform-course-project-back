@@ -64,7 +64,8 @@ using (var scope = app.Services.CreateScope())
     var applicationManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
     // Seed the database with OpenIddict applications
-    DatabaseSeeder.SeedData(applicationManager).GetAwaiter().GetResult();
+    DatabaseSeeder.SeedDataHomeAssignment(applicationManager).GetAwaiter().GetResult();
+    DatabaseSeeder.SeedDataRepoAnalysis(applicationManager).GetAwaiter().GetResult();
 }
 
 app.UseSerilogRequestLogging();
