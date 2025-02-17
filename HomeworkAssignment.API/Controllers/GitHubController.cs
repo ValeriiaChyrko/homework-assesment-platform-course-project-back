@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeworkAssignment.Controllers;
 
+[Authorize]
 [Route("api/github")]
 [Produces("application/json")]
 [ApiController]

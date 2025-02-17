@@ -2,10 +2,12 @@
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeworkAssignment.Application.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeworkAssignment.Controllers;
 
+[Authorize]
 [Route("api/teachers")]
 [Produces("application/json")]
 [ApiController]

@@ -16,7 +16,8 @@ public class DatabaseErrorBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
         _logger = logger;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -37,17 +38,17 @@ public class DatabaseErrorBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
                 {
                     var uniqueErrors = new HashSet<string?>();
 
-                    foreach (var _ in members)
-                    {
-                        uniqueErrors.Add(innerMessage);
-                    }
+                    foreach (var _ in members) uniqueErrors.Add(innerMessage);
 
-                    errors.AddRange(uniqueErrors.Select(message => new DataBaseError { Table = tableName, Message = message }));
+                    errors.AddRange(uniqueErrors.Select(message => new DataBaseError
+                        { Table = tableName, Message = message }));
                 }
                 else
                 {
-                    _logger.LogWarning("No database values found for entity of type {EntityType}. This may indicate a data integrity issue.", tableName);
-                    
+                    _logger.LogWarning(
+                        "No database values found for entity of type {EntityType}. This may indicate a data integrity issue.",
+                        tableName);
+
                     errors.Add(new DataBaseError
                     {
                         Table = tableName,
@@ -56,7 +57,9 @@ public class DatabaseErrorBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
                 }
             }
 
-            _logger.LogError(ex, "Database error occurred while processing request of type {RequestType}. Number of errors: {ErrorCount}.", typeof(TRequest).Name, errors.Count);
+            _logger.LogError(ex,
+                "Database error occurred while processing request of type {RequestType}. Number of errors: {ErrorCount}.",
+                typeof(TRequest).Name, errors.Count);
 
             var errorMessage = $"Database error for query: {typeof(TRequest).Name}";
             throw new DatabaseErrorException(errorMessage, errors, ex.InnerException);

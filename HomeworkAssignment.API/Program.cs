@@ -44,7 +44,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         o.MetadataAddress = builder.Configuration["Authorization:MetadataAddress"]!;
         o.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuer = builder.Configuration["Authorization:ValidIssuer"]
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Authorization:ValidIssuer"],
+            ValidAudience = builder.Configuration["Authorization:Audience"],
+            RoleClaimType = "role"
         };
     });
 
@@ -73,9 +79,11 @@ app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseErrorHandler();
 
-app.MapGet("users/me", (ClaimsPrincipal claimsPrincipal) =>
-{
-    return claimsPrincipal.Claims.ToDictionary(claim => claim.Type, claim => claim.Value);
-}).RequireAuthorization();
+app.MapControllers();
+app.MapGet("users/me",
+    (ClaimsPrincipal claimsPrincipal) =>
+    {
+        return claimsPrincipal.Claims.ToDictionary(claim => claim.Type, claim => claim.Value);
+    }).RequireAuthorization();
 
 app.Run();

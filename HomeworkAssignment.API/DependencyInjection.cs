@@ -13,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<ICompilationGrpcService, CompilationGrpcService>();
         services.AddScoped<IQualityGrpcService, QualityGrpcService>();
         services.AddScoped<ITestsGrpcService, TestsGrpcService>();
+        services.AddScoped<IKeycloakTokenService, KeycloakTokenService>();
 
         var grpcBaseUrl = configuration
             .GetRequiredSection("GrpcSettings")
@@ -44,7 +45,7 @@ public static class DependencyInjection
                     }
                 }
             });
-            
+
             var securityRequirement = new OpenApiSecurityRequirement
             {
                 {

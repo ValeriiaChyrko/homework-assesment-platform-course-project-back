@@ -26,11 +26,11 @@ public static class ErrorHandlerExtensions
                 {
                     context.Response.StatusCode,
                     Message = "An unexpected error occurred. Please try again later.",
-                    Detailed = exception?.Message 
+                    Detailed = exception?.Message
                 };
 
                 var jsonResponse = JsonSerializer.Serialize(response);
-                
+
                 await context.Response.WriteAsync(jsonResponse);
             });
         });
