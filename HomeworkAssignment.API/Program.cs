@@ -1,22 +1,25 @@
+using System.Security.Claims;
 using HomeAssignment.Database;
 using HomeAssignment.DTOs;
 using HomeAssignment.Persistence;
 using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
-using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDtosServices();
+builder.Services.AddDatabaseServices();
+builder.Services.AddPersistenceServices();
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 builder.Services.AddGrpcServices(builder.Configuration);
-builder.Services.AddApplicationServices();
-builder.Services.AddDatabaseServices();
-builder.Services.AddDtosServices();
-builder.Services.AddPersistenceServices();
 
 // Configure CORS policy.
 builder.Services.AddCors(options =>
@@ -25,21 +28,35 @@ builder.Services.AddCors(options =>
 });
 
 // Configure Swagger for API documentation.
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HomeworkAssignment API v1", Version = "v1" });
-    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
-    c.OperationFilter<SecurityRequirementsOperationFilter>();
-});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGenWithAuth(builder.Configuration);
 
 // Configure logging with Serilog.
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.RequireHttpsMetadata = false;
+        o.Audience = builder.Configuration["Authorization:Audience"];
+        o.MetadataAddress = builder.Configuration["Authorization:MetadataAddress"]!;
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = builder.Configuration["Authorization:ValidIssuer"]
+        };
+    });
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("Keycloak.Auth.Api"))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation();
+        tracing.AddOtlpExporter();
+    });
 
 var app = builder.Build();
 
@@ -56,8 +73,9 @@ app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseErrorHandler();
 
-app.MapControllerRoute(
-    "default",
-    "{controller=Home}/{action=Index}/{id?}");
+app.MapGet("users/me", (ClaimsPrincipal claimsPrincipal) =>
+{
+    return claimsPrincipal.Claims.ToDictionary(claim => claim.Type, claim => claim.Value);
+}).RequireAuthorization();
 
 app.Run();
