@@ -1,68 +1,82 @@
-﻿using HomeAssignment.Domain.Abstractions.Contracts;
-using HomeAssignment.DTOs.RequestDTOs;
+﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace HomeworkAssignment.Application.Implementations;
 
-public class AssignmentService : BaseService, IAssignmentService
+public class AssignmentService : BaseService<AssignmentService>, IAssignmentService
 {
+    private readonly ILogger<AssignmentService> _logger;
     private readonly IMediator _mediator;
 
-    public AssignmentService(ILogger logger, IDatabaseTransactionManager transactionManager, IMediator mediator)
+    public AssignmentService(IDatabaseTransactionManager transactionManager, IMediator mediator,
+        ILogger<AssignmentService> logger)
         : base(logger, transactionManager)
     {
-        _mediator = mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<RespondAssignmentDto> CreateAssignmentAsync(RequestAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default)
     {
-        return await ExecuteWithTransactionAsync(
+        _logger.LogInformation("Started creating assignment: {@AssignmentDto}", assignmentDto);
+        var result = await ExecuteTransactionAsync(
             async () => await _mediator.Send(new CreateAssignmentCommand(assignmentDto), cancellationToken),
-            "creating assignment",
-            cancellationToken
-        );
+            cancellationToken: cancellationToken);
+        _logger.LogInformation("Successfully created assignment with ID: {AssignmentId}", result.Id);
+        return result;
     }
 
     public async Task<RespondAssignmentDto> UpdateAssignmentAsync(Guid id, RequestAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default)
     {
-        return await ExecuteWithTransactionAsync(
+        _logger.LogInformation("Started updating assignment with ID: {AssignmentId}", id);
+        var result = await ExecuteTransactionAsync(
             async () => await _mediator.Send(new UpdateAssignmentCommand(id, assignmentDto), cancellationToken),
-            "creating assignment",
-            cancellationToken
-        );
+            cancellationToken: cancellationToken);
+        _logger.LogInformation("Successfully updated assignment with ID: {AssignmentId}", id);
+        return result;
     }
 
     public async Task DeleteAssignmentAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await ExecuteWithTransactionAsync(
+        _logger.LogInformation("Started deleting assignment with ID: {AssignmentId}", id);
+        await ExecuteTransactionAsync(
             async () => await _mediator.Send(new DeleteAssignmentCommand(id), cancellationToken),
-            "deleting assignment",
-            cancellationToken
-        );
+            cancellationToken: cancellationToken);
+        _logger.LogInformation("Successfully deleted assignment with ID: {AssignmentId}", id);
     }
 
     public async Task<RespondAssignmentDto?> GetAssignmentByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
-        return await ExecuteWithExceptionHandlingAsync(
-            async () => await _mediator.Send(new GetAssignmentByIdQuery(id), cancellationToken),
-            "getting assignment by ID"
+        _logger.LogInformation("Started retrieving assignment by ID: {AssignmentId}", id);
+        var result = await ExecuteWithExceptionHandlingAsync(
+            async () => await _mediator.Send(new GetAssignmentByIdQuery(id), cancellationToken)
         );
+
+        if (result != null)
+            _logger.LogInformation("Successfully retrieved assignment with ID: {AssignmentId}", id);
+        else
+            _logger.LogWarning("No assignment found with ID: {AssignmentId}", id);
+
+        return result;
     }
 
     public async Task<IReadOnlyList<RespondAssignmentDto>> GetAssignmentsAsync(
         CancellationToken cancellationToken = default)
     {
-        return await ExecuteWithExceptionHandlingAsync(
-            async () => (await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken)).ToList(),
-            "getting all assignments"
+        _logger.LogInformation("Started retrieving all assignments");
+        var result = await ExecuteWithExceptionHandlingAsync(
+            async () => (await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken)).ToList()
         );
+        _logger.LogInformation("Successfully retrieved all assignments");
+        return result;
     }
 }

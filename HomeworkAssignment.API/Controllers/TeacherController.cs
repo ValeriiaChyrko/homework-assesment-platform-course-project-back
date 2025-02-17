@@ -1,10 +1,13 @@
-﻿using HomeAssignment.DTOs.RequestDTOs;
+﻿using FluentValidation;
+using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeworkAssignment.Application.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeworkAssignment.Controllers;
 
+[Authorize]
 [Route("api/teachers")]
 [Produces("application/json")]
 [ApiController]
@@ -20,9 +23,11 @@ public class TeacherController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<RespondTeacherDto>>> Get()
+    public async Task<ActionResult<IReadOnlyList<RespondTeacherDto>>> Get(
+        CancellationToken cancellationToken = default
+    )
     {
-        var result = await _teacherService.GetTeachersAsync();
+        var result = await _teacherService.GetTeachersAsync(cancellationToken);
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
@@ -31,9 +36,12 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RespondTeacherDto>> Get(Guid githubProfileId)
+    public async Task<ActionResult<RespondTeacherDto>> GetById(
+        Guid githubProfileId,
+        CancellationToken cancellationToken = default
+    )
     {
-        var result = await _teacherService.GetTeacherByIdAsync(githubProfileId);
+        var result = await _teacherService.GetTeacherByIdAsync(githubProfileId, cancellationToken);
         if (result == null) return StatusCode(StatusCodes.Status404NotFound);
 
         return StatusCode(StatusCodes.Status200OK, result);
@@ -44,31 +52,49 @@ public class TeacherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Guid>> Create([FromBody] RequestTeacherDto request)
+    public async Task<ActionResult<Guid>> Create(
+        [FromQuery] RequestTeacherDto request,
+        [FromServices] IValidator<RequestTeacherDto> validator,
+        CancellationToken cancellationToken = default
+    )
     {
-        var result = await _teacherService.CreateTeacherAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+
+        var result = await _teacherService.CreateTeacherAsync(request, cancellationToken);
         return StatusCode(StatusCodes.Status201Created, result);
     }
 
     [HttpDelete("{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Guid>> Delete(Guid userId)
+    public async Task<ActionResult<Guid>> Delete(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    )
     {
-        await _teacherService.DeleteTeacherAsync(userId);
+        await _teacherService.DeleteTeacherAsync(userId, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, userId);
     }
 
     [HttpPut("{userId:guid}/{githubProfileId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<RespondTeacherDto>> Update(Guid userId, Guid githubProfileId,
-        RequestTeacherDto request)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<RespondTeacherDto>> Update
+    (
+        Guid userId,
+        Guid githubProfileId,
+        [FromQuery] RequestTeacherDto request,
+        [FromServices] IValidator<RequestTeacherDto> validator,
+        CancellationToken cancellationToken = default
+    )
     {
-        var response = await _teacherService.UpdateTeacherAsync(userId, githubProfileId, request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+
+        var response = await _teacherService.UpdateTeacherAsync(userId, githubProfileId, request, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, response);
     }
 }

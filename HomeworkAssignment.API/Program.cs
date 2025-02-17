@@ -1,46 +1,68 @@
+using System.Security.Claims;
 using HomeAssignment.Database;
-using HomeAssignment.Domain;
 using HomeAssignment.DTOs;
 using HomeAssignment.Persistence;
+using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
-using HomeworkAssignment.Infrastructure;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddApplicationServices();
-builder.Services.AddDatabaseServices();
-builder.Services.AddDomainServices();
 builder.Services.AddDtosServices();
+builder.Services.AddDatabaseServices();
 builder.Services.AddPersistenceServices();
-builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
+builder.Services.AddControllers();
+builder.Services.AddGrpcServices(builder.Configuration);
 
+// Configure CORS policy.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowMyOrigin", p =>
-    {
-        p.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    options.AddPolicy("AllowMyOrigin", p => { p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 });
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HomeworkAssignment API v1", Version = "v1" });
-    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+// Configure Swagger for API documentation.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGenWithAuth(builder.Configuration);
+
+// Configure logging with Serilog.
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
     {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
+        o.RequireHttpsMetadata = false;
+        o.Audience = builder.Configuration["Authorization:Audience"];
+        o.MetadataAddress = builder.Configuration["Authorization:MetadataAddress"]!;
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Authorization:ValidIssuer"],
+            ValidAudience = builder.Configuration["Authorization:Audience"],
+            RoleClaimType = "role"
+        };
     });
 
-    c.OperationFilter<SecurityRequirementsOperationFilter>();
-});
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("Keycloak.Auth.Api"))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation();
+        tracing.AddOtlpExporter();
+    });
 
 var app = builder.Build();
 
@@ -54,9 +76,14 @@ app.UseSwaggerUI(c =>
 
 app.UseCors("AllowMyOrigin");
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
 app.UseErrorHandler();
-app.MapControllerRoute(
-    "default",
-    "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllers();
+app.MapGet("users/me",
+    (ClaimsPrincipal claimsPrincipal) =>
+    {
+        return claimsPrincipal.Claims.ToDictionary(claim => claim.Type, claim => claim.Value);
+    }).RequireAuthorization();
 
 app.Run();

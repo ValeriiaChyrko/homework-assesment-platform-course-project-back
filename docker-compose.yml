@@ -1,4 +1,20 @@
 ﻿services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.0.1
+    container_name: keycloak
+    command:
+      - "start-dev"
+    environment:
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./.containers/identity:/opt/keycloak/data
+    ports:
+      - "8080:8080"
+    networks:
+      - homework-assignment_network
+  
   db:
     image: postgres:latest
     container_name: homework-assignment-db
@@ -10,19 +26,31 @@
       - "5432:5432"
     networks:
       - homework-assignment_network
-              
+  
   homework-assignment:
     image: homework-assignment.api
     container_name: homework-assignment-api
     build:
       context: .
       dockerfile: HomeworkAssignment.API/Dockerfile
+    ports:
+      - "7285:8080"
+      - "5169:8081"
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=HomeworkAssignmentDb;Username=admin;Password=admin
+      - OTEL_EXPORTER_OTLP_ENDPOINT="http://jaeger:4317"
     depends_on:
       - db
     networks:
       - homework-assignment_network
+        
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "16686:16686"
 
 networks:
   homework-assignment_network:
