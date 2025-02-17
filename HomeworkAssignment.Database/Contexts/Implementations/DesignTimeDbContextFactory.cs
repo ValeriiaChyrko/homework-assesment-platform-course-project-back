@@ -15,6 +15,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<HomeworkAs
 
         var optionsBuilder = new DbContextOptionsBuilder<HomeworkAssignmentDbContext>();
         optionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseOpenIddict();
 
         return new HomeworkAssignmentDbContext(optionsBuilder.Options);
     }

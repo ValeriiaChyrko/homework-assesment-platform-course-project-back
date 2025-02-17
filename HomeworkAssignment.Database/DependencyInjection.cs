@@ -16,10 +16,12 @@ public static class DependencyInjection
             return contextFactoryProvider!.GetFactory();
         });
 
-        services.AddScoped<IHomeworkAssignmentDbContext>(provider =>
+        services.AddScoped<IHomeworkAssignmentDbContext, HomeworkAssignmentDbContext>(provider =>
         {
             var contextFactory = provider.GetService<IHomeworkAssignmentDbContextFactory>();
             return contextFactory!.CreateDbContext();
         });
+
+        services.AddTransient<ClientSeeder>();
     }
 }
