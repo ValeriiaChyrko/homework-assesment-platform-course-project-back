@@ -1,5 +1,6 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.SharedDTOs;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
 using HomeworkAssignment.Application.Abstractions;
@@ -69,13 +70,18 @@ public class AssignmentService : BaseService<AssignmentService>, IAssignmentServ
         return result;
     }
 
-    public async Task<IReadOnlyList<RespondAssignmentDto>> GetAssignmentsAsync(
+    public async Task<PagedList<RespondAssignmentDto>> GetAssignmentsAsync(
+        RequestAssignmentFilterParameters filterParameters,
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started retrieving all assignments");
+
+        var query = new GetAllAssignmentsQuery(filterParameters);
+
         var result = await ExecuteWithExceptionHandlingAsync(
-            async () => (await _mediator.Send(new GetAllAssignmentsQuery(), cancellationToken)).ToList()
+            async () => await _mediator.Send(query, cancellationToken)
         );
+
         _logger.LogInformation("Successfully retrieved all assignments");
         return result;
     }

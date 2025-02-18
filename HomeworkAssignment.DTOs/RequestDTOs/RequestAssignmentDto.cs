@@ -4,7 +4,7 @@ namespace HomeAssignment.DTOs.RequestDTOs;
 
 public class RequestAssignmentDto
 {
-    public Guid OwnerId { get; init; }
+    public Guid OwnerGitHubAccountId { get; init; }
     public required string Title { get; init; }
     public required string RepositoryName { get; init; }
     public string? Description { get; init; }

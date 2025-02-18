@@ -22,13 +22,19 @@ public class AssignmentController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<RespondAssignmentDto>>> Get(
+    public async Task<ActionResult<RespondAssignmentDto>> Get(
+        [FromQuery] RequestAssignmentFilterParameters filterParameters,
+        [FromServices] IValidator<RequestAssignmentFilterParameters> validator,
         CancellationToken cancellationToken = default
     )
     {
-        var result = await _assignmentService.GetAssignmentsAsync(cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, result);
+        var validationResult = await validator.ValidateAsync(filterParameters, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+
+        var response = await _assignmentService.GetAssignmentsAsync(filterParameters, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, response);
     }
 
     [HttpGet("{id:guid}")]

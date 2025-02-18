@@ -10,7 +10,7 @@ public class RequestAssignmentDtoValidator : AbstractValidator<RequestAssignment
 
     public RequestAssignmentDtoValidator()
     {
-        RuleFor(x => x.OwnerId)
+        RuleFor(x => x.OwnerGitHubAccountId)
             .NotEmpty().WithMessage("OwnerId is required.")
             .Must(id => id != Guid.Empty).WithMessage("OwnerId cannot be an empty GUID.");
 

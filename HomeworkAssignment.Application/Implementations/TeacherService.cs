@@ -132,13 +132,14 @@ public class TeacherService : BaseService<TeacherService>, ITeacherService
         return result;
     }
 
-    public async Task<IReadOnlyList<RespondTeacherDto>> GetTeachersAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedList<RespondTeacherDto>> GetTeachersAsync(RequestUserFilterParameters filterParameters, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started retrieving all teachers");
+        var query = new GetAllUsersByRoleQuery(filterParameters, UserRoles.Teacher);
         var result = await ExecuteWithExceptionHandlingAsync(async () =>
         {
-            var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Teacher), cancellationToken);
-            var teachers = await Task.WhenAll(userDtos.Select(async user =>
+            var userDtos = await _mediator.Send(query, cancellationToken);
+            var teachers = await Task.WhenAll(userDtos.Items.Select(async user =>
             {
                 var teacherDto = _mapper.Map<RespondTeacherDto>(user);
                 var gitHubProfiles =
@@ -155,7 +156,7 @@ public class TeacherService : BaseService<TeacherService>, ITeacherService
                 return teacherDto;
             }));
 
-            return teachers.ToList();
+            return new PagedList<RespondTeacherDto>(teachers.ToList(), userDtos.TotalCount, userDtos.Page, userDtos.PageSize);
         });
 
         _logger.LogInformation("Successfully retrieved all teachers");

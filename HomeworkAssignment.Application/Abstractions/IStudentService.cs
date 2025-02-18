@@ -1,5 +1,6 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.SharedDTOs;
 
 namespace HomeworkAssignment.Application.Abstractions;
 
@@ -16,5 +17,6 @@ public interface IStudentService
     Task<RespondStudentDto?> GetStudentByIdAsync(Guid githubProfileId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<RespondStudentDto>> GetStudentsAsync(CancellationToken cancellationToken = default);
+    Task<PagedList<RespondStudentDto>> GetStudentsAsync(RequestUserFilterParameters filterParameters,
+        CancellationToken cancellationToken = default);
 }

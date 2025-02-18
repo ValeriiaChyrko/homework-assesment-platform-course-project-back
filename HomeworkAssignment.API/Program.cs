@@ -5,6 +5,7 @@ using HomeAssignment.Persistence;
 using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;

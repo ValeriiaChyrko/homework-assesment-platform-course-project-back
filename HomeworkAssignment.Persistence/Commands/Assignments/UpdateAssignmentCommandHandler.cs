@@ -28,7 +28,7 @@ public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssi
         var qualitySection = _mapper.Map<ScoreSection>(command.AssignmentDto.QualitySection);
 
         var assignment = Assignment.Create(
-            command.AssignmentDto.OwnerId,
+            command.AssignmentDto.OwnerGitHubAccountId,
             command.AssignmentDto.Title,
             command.AssignmentDto.Description,
             command.AssignmentDto.RepositoryName,

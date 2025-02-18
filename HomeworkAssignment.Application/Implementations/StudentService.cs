@@ -133,31 +133,31 @@ public class StudentService : BaseService<StudentService>, IStudentService
         return result;
     }
 
-    public async Task<IReadOnlyList<RespondStudentDto>> GetStudentsAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedList<RespondStudentDto>> GetStudentsAsync(RequestUserFilterParameters filterParameters, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started retrieving all students");
+        var query = new GetAllUsersByRoleQuery(filterParameters, UserRoles.Student);
         var result = await ExecuteWithExceptionHandlingAsync(async () =>
         {
-            var userDtos = await _mediator.Send(new GetAllUsersByRoleQuery(UserRoles.Student), cancellationToken);
-            var students = await Task.WhenAll(userDtos.Select(async user =>
+            var userDtos = await _mediator.Send(query, cancellationToken);
+            var students = await Task.WhenAll(userDtos.Items.Select(async user =>
             {
                 var studentDto = _mapper.Map<RespondStudentDto>(user);
                 var gitHubProfiles =
                     await _mediator.Send(new GetAllGitHubProfilesByUserIdQuery(user.Id), cancellationToken);
                 var mainGitHubProfile = gitHubProfiles?.FirstOrDefault();
 
-                if (mainGitHubProfile != null)
-                {
-                    studentDto.GitHubProfileId = mainGitHubProfile.Id;
-                    studentDto.GithubUsername = mainGitHubProfile.GithubUsername;
-                    studentDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
-                    studentDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
-                }
+                if (mainGitHubProfile == null) return studentDto;
+                
+                studentDto.GitHubProfileId = mainGitHubProfile.Id;
+                studentDto.GithubUsername = mainGitHubProfile.GithubUsername;
+                studentDto.GithubProfileUrl = mainGitHubProfile.GithubProfileUrl;
+                studentDto.GithubPictureUrl = mainGitHubProfile.GithubPictureUrl;
 
                 return studentDto;
             }));
 
-            return students.ToList();
+            return new PagedList<RespondStudentDto>(students.ToList(), userDtos.TotalCount, userDtos.Page, userDtos.PageSize);
         });
 
         _logger.LogInformation("Successfully retrieved all students");
