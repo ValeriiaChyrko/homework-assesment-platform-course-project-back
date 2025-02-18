@@ -23,12 +23,17 @@ public class TeacherController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<RespondTeacherDto>>> Get(
+    public async Task<ActionResult<RespondStudentDto>> Get(
+        [FromQuery] RequestUserFilterParameters filterParameters,
+        [FromServices] IValidator<RequestUserFilterParameters> validator,
         CancellationToken cancellationToken = default
     )
     {
-        var result = await _teacherService.GetTeachersAsync(cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, result);
+        var validationResult = await validator.ValidateAsync(filterParameters, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+
+        var response = await _teacherService.GetTeachersAsync(filterParameters, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, response);
     }
 
     [HttpGet("{githubProfileId:guid}")]
