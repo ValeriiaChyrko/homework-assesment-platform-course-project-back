@@ -5,26 +5,35 @@ public sealed class AssignmentEntity
     public Guid Id { get; set; }
     public required string Title { get; set; }
     public string? Description { get; set; }
-    public required string RepositoryName { get; set; }
-    public DateTime Deadline { get; set; }
-    public int MaxScore { get; set; }
-    public int MaxAttemptsAmount { get; set; }
+    public string? RepositoryName { get; set; }
+    public string? RepositoryOwner { get; set; }
+    public string? RepositoryUrl { get; set; }
+    public DateTime Deadline { get; set; } = DateTime.Now;
 
-    public bool AttemptCompilationSectionEnable { get; set; }
-    public bool AttemptTestsSectionEnable { get; set; }
-    public bool AttemptQualitySectionEnable { get; set; }
+    public int MaxScore { get; set; } = 100;
+    public int MaxAttemptsAmount { get; set; } = 5;
 
-    public int AttemptCompilationMaxScore { get; set; }
-    public int AttemptCompilationMinScore { get; set; }
+    public int Position { get; set; }
+    public bool IsPublished { get; set; } = false;
 
-    public int AttemptTestsMaxScore { get; set; }
-    public int AttemptTestsMinScore { get; set; }
+    public bool AttemptCompilationSectionEnable { get; set; } = false;
+    public bool AttemptTestsSectionEnable { get; set; } = false;
+    public bool AttemptQualitySectionEnable { get; set; } = false;
 
-    public int AttemptQualityMaxScore { get; set; }
-    public int AttemptQualityMinScore { get; set; }
+    public int AttemptCompilationMaxScore { get; set; } = 5;
+    public int AttemptCompilationMinScore { get; set; } = 0;
 
-    public Guid OwnerId { get; set; }
-    public GitHubProfilesEntity OwnerEntity { get; set; } = null!;
+    public int AttemptTestsMaxScore { get; set; } = 65;
+    public int AttemptTestsMinScore { get; set; } = 0;
 
-    public ICollection<AttemptEntity>? Attempts { get; set; }
+    public int AttemptQualityMaxScore { get; set; } = 30;
+    public int AttemptQualityMinScore { get; set; } = 0;
+    
+    public DateTime CreatedAt { get; set; } 
+    public DateTime UpdatedAt { get; set; }
+
+    public Guid ChapterId { get; set; }
+    public ChapterEntity? Chapter { get; set; }
+
+    public ICollection<AttemptProgressEntity>? Attempts { get; set; } 
 }

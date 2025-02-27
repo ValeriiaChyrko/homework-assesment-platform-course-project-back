@@ -39,9 +39,15 @@ public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbConte
     }
 
     public DbSet<AssignmentEntity> AssignmentEntities { get; set; } = null!;
-    public DbSet<AttemptEntity> AttemptEntities { get; set; } = null!;
-    public DbSet<GitHubProfilesEntity> GitHubProfilesEntities { get; set; } = null!;
+    public DbSet<AttachmentEntity> AttachmentEntities { get; set; } = null!;
+    public DbSet<AttemptProgressEntity> AttemptProgressEntities { get; set; } = null!;
+    public DbSet<CategoryEntity> CategoryEntities { get; set; } = null!;
+    public DbSet<ChapterEntity> ChapterEntities { get; set; } = null!;
+    public DbSet<CourseEntity> CourseEntities { get; set; } = null!;
+    public DbSet<EnrollmentEntity> EnrollmentEntities { get; set; } = null!;
+    public DbSet<MuxDataEntity> MuxDataEntities { get; set; } = null!;
     public DbSet<UserEntity> UserEntities { get; set; } = null!;
+    public DbSet<UserProgressEntity> UserProgressEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
