@@ -1,73 +1,103 @@
-﻿namespace HomeAssignment.Domain.Abstractions;
+﻿using HomeAssignment.Domain.Abstractions.Enums;
+
+namespace HomeAssignment.Domain.Abstractions;
 
 public class Attempt
 {
-    private Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, string branchName,
-        DateTime finishedAt,
-        int compilationScore, int testsScore, int qualityScore, int finalScore)
+    public Attempt(Guid id, int position, string? branchName, int finalScore, int compilationScore, int qualityScore, int testsScore, string progressStatus, bool isCompleted, DateTime createdAt, DateTime updatedAt, Guid userId, Guid assignmentId)
     {
         Id = id;
-        StudentId = studentId;
-        AssignmentId = assignmentId;
-        AttemptNumber = attemptNumber;
+        Position = position;
         BranchName = branchName;
-        FinishedAt = finishedAt;
-        CompilationScore = compilationScore;
-        TestsScore = testsScore;
-        QualityScore = qualityScore;
         FinalScore = finalScore;
+        CompilationScore = compilationScore;
+        QualityScore = qualityScore;
+        TestsScore = testsScore;
+        ProgressStatus = progressStatus;
+        IsCompleted = isCompleted;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+        UserId = userId;
+        AssignmentId = assignmentId;
     }
 
-    public Guid Id { get; set; }
-    public Guid StudentId { get; set; }
+    public Guid Id { get; set; } 
+    public int Position { get; set; }
+
+    public string? BranchName { get; set; }
+    
+    public int FinalScore { get; set; } = 0;
+    
+    public int CompilationScore { get; set; } = 0;
+    public int QualityScore { get; set; } = 0;
+    public int TestsScore { get; set; } = 0;
+
+    public string ProgressStatus { get; set; }
+    public bool IsCompleted { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    public Guid UserId { get; set; }
     public Guid AssignmentId { get; set; }
-    public int AttemptNumber { get; set; }
-    public string BranchName { get; set; }
-    public DateTime FinishedAt { get; set; }
-    public int CompilationScore { get; set; }
-    public int TestsScore { get; set; }
-    public int QualityScore { get; set; }
-    public int FinalScore { get; set; }
 
-    public static Attempt Create(Guid studentId, Guid assignmentId, string branchName, int attemptNumber,
-        int compilationScore,
-        int testsScore, int qualityScore)
+    public static Attempt Create(int position, string? branchName, int finalScore, int compilationScore,
+        int qualityScore, int testsScore, bool isCompleted, Guid userId, Guid assignmentId)
     {
-        var attemptId = Guid.NewGuid();
-        var finalScore = compilationScore + testsScore + qualityScore;
-        var finishedAt = DateTime.UtcNow;
-
-        var newAttempt = new Attempt(
-            attemptId,
-            studentId,
-            assignmentId,
-            attemptNumber,
+        if (compilationScore + qualityScore + testsScore != finalScore)
+        {
+            throw new ArgumentException($"The sum of scores (compilation: {compilationScore}, quality: {qualityScore}, tests: {testsScore}) does not equal the final score ({finalScore}).");
+        }
+        
+        return new Attempt(
+            Guid.NewGuid(), 
+            position,
             branchName,
-            finishedAt,
+            finalScore,
             compilationScore,
-            testsScore,
             qualityScore,
-            finalScore
+            testsScore,
+            ProgressStatuses.Started.ToString().ToLower(),
+            isCompleted,
+            DateTime.UtcNow, 
+            DateTime.UtcNow,
+            userId,
+            assignmentId
         );
-
-        return newAttempt;
     }
 
-    public void Update(Guid studentId, Guid assignmentId, string branchName, int attemptNumber, int compilationScore,
-        int testsScore,
-        int qualityScore)
+    public void Update(int position, string? branchName, int finalScore, int compilationScore,
+        int qualityScore, int testsScore, Guid userId, Guid assignmentId)
     {
-        var finalScore = compilationScore + testsScore + qualityScore;
-        var finishedAt = DateTime.UtcNow;
-
-        StudentId = studentId;
-        AssignmentId = assignmentId;
-        AttemptNumber = attemptNumber;
+        Position = position;
         BranchName = branchName;
-        FinishedAt = finishedAt;
-        CompilationScore = compilationScore;
-        TestsScore = testsScore;
-        QualityScore = qualityScore;
         FinalScore = finalScore;
+        CompilationScore = compilationScore;
+        QualityScore = qualityScore;
+        TestsScore = testsScore;
+        UpdatedAt = DateTime.UtcNow;
+        UserId = userId;
+        AssignmentId = assignmentId;
+    }
+
+    public void Start()
+    {
+        UpdatedAt = DateTime.UtcNow;
+        IsCompleted = false;
+        ProgressStatus = ProgressStatuses.InProgress.ToString().ToLower();
+    }
+
+    public void Submit()
+    {
+        UpdatedAt = DateTime.UtcNow;
+        IsCompleted = false;
+        ProgressStatus = ProgressStatuses.Submitted.ToString().ToLower();
+    }
+    
+    public void Complete()
+    {
+        UpdatedAt = DateTime.UtcNow;
+        IsCompleted = true;
+        ProgressStatus = ProgressStatuses.Finished.ToString().ToLower();
     }
 }
