@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
+using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.SharedDTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Users;
 
-public sealed class GetAllUsersByRoleQueryHandler : IRequestHandler<GetAllUsersByRoleQuery, PagedList<UserDto>>
+public sealed class GetAllUsersByRoleQueryHandler : IRequestHandler<GetAllUsersByRoleQuery, PagedList<User>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -17,7 +18,7 @@ public sealed class GetAllUsersByRoleQueryHandler : IRequestHandler<GetAllUsersB
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<PagedList<UserDto>> Handle(GetAllUsersByRoleQuery query, CancellationToken cancellationToken)
+    public async Task<PagedList<User>> Handle(GetAllUsersByRoleQuery query, CancellationToken cancellationToken)
     {
         var usersQuery = _context.UserEntities
             .AsNoTracking()
@@ -40,7 +41,7 @@ public sealed class GetAllUsersByRoleQueryHandler : IRequestHandler<GetAllUsersB
                 : usersQuery.OrderByDescending(a => EF.Property<object>(a, query.FilterParameters.SortBy));
         }
         
-        var userDtos = usersQuery.Select(entityModel => _mapper.Map<UserDto>(entityModel));
-        return await PagedList<UserDto>.CreateAsync(userDtos, query.FilterParameters.PageNumber, query.FilterParameters.PageSize);
+        var users = usersQuery.Select(entityModel => _mapper.Map<User>(entityModel));
+        return await PagedList<User>.CreateAsync(users, query.FilterParameters.PageNumber, query.FilterParameters.PageSize, cancellationToken);
     }
 }

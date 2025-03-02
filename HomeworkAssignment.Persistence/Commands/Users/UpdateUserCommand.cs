@@ -1,6 +1,6 @@
-﻿using HomeAssignment.DTOs.SharedDTOs;
+﻿using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Users;
 
-public sealed record UpdateUserCommand(UserDto UserDto) : IRequest<UserDto>;
+public sealed record UpdateUserCommand(User User) : IRequest<User>;

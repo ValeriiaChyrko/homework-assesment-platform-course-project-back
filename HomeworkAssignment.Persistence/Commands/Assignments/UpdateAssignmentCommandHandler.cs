@@ -2,12 +2,11 @@
 using HomeAssignment.Database.Contexts.Abstractions;
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RespondDTOs;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Assignments;
 
-public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssignmentCommand, RespondAssignmentDto>
+public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssignmentCommand, Assignment>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -18,32 +17,15 @@ public sealed record UpdateAssignmentCommandHandler : IRequestHandler<UpdateAssi
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public Task<RespondAssignmentDto> Handle(UpdateAssignmentCommand command,
+    public Task<Assignment> Handle(UpdateAssignmentCommand command,
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var compilationSection = _mapper.Map<ScoreSection>(command.AssignmentDto.CompilationSection);
-        var testsSection = _mapper.Map<ScoreSection>(command.AssignmentDto.TestsSection);
-        var qualitySection = _mapper.Map<ScoreSection>(command.AssignmentDto.QualitySection);
-
-        var assignment = Assignment.Create(
-            command.AssignmentDto.OwnerGitHubAccountId,
-            command.AssignmentDto.Title,
-            command.AssignmentDto.Description,
-            command.AssignmentDto.RepositoryName,
-            command.AssignmentDto.Deadline,
-            command.AssignmentDto.MaxScore,
-            command.AssignmentDto.MaxAttemptsAmount,
-            compilationSection,
-            testsSection,
-            qualitySection
-        );
-
-        var assignmentEntity = _mapper.Map<AssignmentEntity>(assignment);
+        var assignmentEntity = _mapper.Map<AssignmentEntity>(command.Assignment);
         assignmentEntity.Id = command.Id;
         _context.AssignmentEntities.Update(assignmentEntity);
 
-        return Task.FromResult(_mapper.Map<RespondAssignmentDto>(assignmentEntity));
+        return Task.FromResult(_mapper.Map<Assignment>(assignmentEntity));
     }
 }

@@ -13,9 +13,9 @@ public class RequestAssignmentFilterParametersValidator : AbstractValidator<Requ
             .WithMessage($"Full name cannot exceed {MaxLengthTitlePropertyLength} characters.")
             .When(dto => dto.Title != null);
         
-        RuleFor(x => x.OwnerId)
-            .Must(id => id != Guid.Empty).WithMessage("OwnerId cannot be an empty GUID.")
-            .When(dto => dto.OwnerId != null);
+        RuleFor(x => x.ChapterId)
+            .Must(id => id != Guid.Empty).WithMessage("ChapterId cannot be an empty GUID.")
+            .When(dto => dto.ChapterId != null);
         
         RuleFor(x => x.SortBy)
             .Must(BeAValidPropertyName!).WithMessage("SortBy must be a valid property name.")
@@ -31,8 +31,8 @@ public class RequestAssignmentFilterParametersValidator : AbstractValidator<Requ
     private static readonly HashSet<string> ValidProperties =
     [
         "Title",
-        "OwnerId",
-        "Deadline",
+        "ChapterId",
+        "Position",
         "RepositoryName"
     ];
 

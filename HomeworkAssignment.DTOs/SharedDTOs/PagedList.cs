@@ -19,10 +19,10 @@ public class PagedList<T>
         PageSize = pageSize;
     }
 
-    public static async Task<PagedList<T>> CreateAsync(IQueryable<T> query, int page, int pageSize)
+    public static async Task<PagedList<T>> CreateAsync(IQueryable<T> query, int page, int pageSize, CancellationToken cancellationToken = default)
     {
-        var totalCount = await query.CountAsync();
-        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        var totalCount = await query.CountAsync(cancellationToken: cancellationToken);
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken: cancellationToken);
 
         return new PagedList<T>(items, totalCount, page, pageSize);
     }

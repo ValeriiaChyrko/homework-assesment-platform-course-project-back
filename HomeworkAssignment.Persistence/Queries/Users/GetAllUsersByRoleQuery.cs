@@ -1,11 +1,12 @@
-﻿using HomeAssignment.Domain.Abstractions.Enums;
+﻿using HomeAssignment.Domain.Abstractions;
+using HomeAssignment.Domain.Abstractions.Enums;
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.SharedDTOs;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Users;
 
-public class GetAllUsersByRoleQuery : IRequest<PagedList<UserDto>>
+public class GetAllUsersByRoleQuery : IRequest<PagedList<User>>
 {
     public RequestUserFilterParameters FilterParameters { get; init; }
     public UserRoles UserRole { get; init; }

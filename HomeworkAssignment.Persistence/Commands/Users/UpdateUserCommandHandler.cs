@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
 using HomeAssignment.Database.Entities;
-using HomeAssignment.DTOs.SharedDTOs;
+using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Users;
 
-public sealed record UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserDto>
+public sealed record UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, User>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -17,14 +17,14 @@ public sealed record UpdateUserCommandHandler : IRequestHandler<UpdateUserComman
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public Task<UserDto> Handle(UpdateUserCommand command,
+    public Task<User> Handle(UpdateUserCommand command,
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var userEntity = _mapper.Map<UserEntity>(command.UserDto);
+        var userEntity = _mapper.Map<UserEntity>(command.User);
         _context.UserEntities.Update(userEntity);
 
-        return Task.FromResult(_mapper.Map<UserDto>(userEntity));
+        return Task.FromResult(_mapper.Map<User>(userEntity));
     }
 }

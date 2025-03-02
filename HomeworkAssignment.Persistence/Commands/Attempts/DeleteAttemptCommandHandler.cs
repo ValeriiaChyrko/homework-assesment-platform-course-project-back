@@ -16,7 +16,7 @@ public sealed class DeleteAttemptCommandHandler : IRequestHandler<DeleteAttemptC
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var attemptEntity = await _context.AttemptEntities.FindAsync(command.Id, cancellationToken);
-        if (attemptEntity != null) _context.AttemptEntities.Remove(attemptEntity);
+        var attemptEntity = await _context.AttemptProgressEntities.FindAsync([command.Id], cancellationToken: cancellationToken);
+        if (attemptEntity != null) _context.AttemptProgressEntities.Remove(attemptEntity);
     }
 }

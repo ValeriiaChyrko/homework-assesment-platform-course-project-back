@@ -2,12 +2,11 @@
 using HomeAssignment.Database.Contexts.Abstractions;
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RespondDTOs;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attempts;
 
-public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttemptCommand, RespondAttemptDto>
+public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttemptCommand, Attempt>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -18,25 +17,15 @@ public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttempt
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public Task<RespondAttemptDto> Handle(UpdateAttemptCommand command,
+    public Task<Attempt> Handle(UpdateAttemptCommand command,
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-
-        var attempt = Attempt.Create(
-            command.AttemptDto.StudentId,
-            command.AttemptDto.AssignmentId,
-            command.AttemptDto.BranchName,
-            command.AttemptDto.AttemptNumber,
-            command.AttemptDto.CompilationScore,
-            command.AttemptDto.TestsScore,
-            command.AttemptDto.QualityScore
-        );
-
-        var attemptEntity = _mapper.Map<AttemptEntity>(attempt);
+        
+        var attemptEntity = _mapper.Map<AttemptProgressEntity>(command.Attempt);
         attemptEntity.Id = command.Id;
-        _context.AttemptEntities.Update(attemptEntity);
+        _context.AttemptProgressEntities.Update(attemptEntity);
 
-        return Task.FromResult(_mapper.Map<RespondAttemptDto>(attemptEntity));
+        return Task.FromResult(_mapper.Map<Attempt>(attemptEntity));
     }
 }

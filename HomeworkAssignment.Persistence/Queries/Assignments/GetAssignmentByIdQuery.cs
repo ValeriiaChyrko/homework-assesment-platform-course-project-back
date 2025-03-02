@@ -1,6 +1,6 @@
-﻿using HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public record GetAssignmentByIdQuery(Guid Id) : IRequest<RespondAssignmentDto?>;
+public record GetAssignmentByIdQuery(Guid Id, Guid ChapterId) : IRequest<Assignment?>;

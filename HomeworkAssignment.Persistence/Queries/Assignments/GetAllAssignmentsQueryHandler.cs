@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
-using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.SharedDTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
 public sealed class
-    GetAllAssignmentsQueryHandler : IRequestHandler<GetAllAssignmentsQuery, PagedList<RespondAssignmentDto>>
+    GetAllAssignmentsQueryHandler : IRequestHandler<GetAllAssignmentsQuery, PagedList<Assignment>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ public sealed class
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<PagedList<RespondAssignmentDto>> Handle(GetAllAssignmentsQuery query,
+    public async Task<PagedList<Assignment>> Handle(GetAllAssignmentsQuery query,
         CancellationToken cancellationToken)
     {
         var assignmentsQuery = _context.AssignmentEntities.AsNoTracking();
@@ -29,9 +29,14 @@ public sealed class
             assignmentsQuery = assignmentsQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
         }
         
-        if (query.FilterParameters.OwnerGithubAccountId.HasValue)
+        if (query.FilterParameters.ChapterId.HasValue)
         {
-            assignmentsQuery = assignmentsQuery.Where(a => a.OwnerId == query.FilterParameters.OwnerGithubAccountId.Value);
+            assignmentsQuery = assignmentsQuery.Where(a => a.ChapterId == query.FilterParameters.ChapterId.Value);
+        }
+        
+        if (query.FilterParameters.IsPublished.HasValue)
+        {
+            assignmentsQuery = assignmentsQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished.Value);
         }
         
         if (!string.IsNullOrEmpty(query.FilterParameters.SortBy))
@@ -41,7 +46,7 @@ public sealed class
                 : assignmentsQuery.OrderByDescending(a => EF.Property<object>(a, query.FilterParameters.SortBy));
         }
         
-        var assignmentDtos = assignmentsQuery.Select(entityModel => _mapper.Map<RespondAssignmentDto>(entityModel));
-        return await PagedList<RespondAssignmentDto>.CreateAsync(assignmentDtos, query.FilterParameters.PageNumber, query.FilterParameters.PageSize);
+        var assignmentDtos = assignmentsQuery.Select(entityModel => _mapper.Map<Assignment>(entityModel));
+        return await PagedList<Assignment>.CreateAsync(assignmentDtos, query.FilterParameters.PageNumber, query.FilterParameters.PageSize, cancellationToken);
     }
 }
