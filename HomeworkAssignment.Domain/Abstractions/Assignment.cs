@@ -43,7 +43,7 @@ public class Assignment
     public int Position { get; set; }
     public bool IsPublished { get; set; } 
     
-    public Guid? ChapterId { get; init; }
+    public Guid? ChapterId { get; set; }
     
     public IReadOnlyList<Guid> AttemptProgressIds => _attemptIds.AsReadOnly();
     
@@ -107,6 +107,13 @@ public class Assignment
         UpdatedAt = DateTime.UtcNow;
         
         IsPublished = true;
+    }
+    
+    public void Unpublish()
+    {
+        UpdatedAt = DateTime.UtcNow;
+        
+        IsPublished = false;
     }
     
     public void AddAttempt(Guid attemptId)
