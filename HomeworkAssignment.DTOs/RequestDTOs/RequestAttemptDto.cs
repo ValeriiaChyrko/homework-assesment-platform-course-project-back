@@ -2,11 +2,19 @@
 
 public class RequestAttemptDto
 {
-    public Guid StudentId { get; init; }
-    public Guid AssignmentId { get; init; }
-    public int AttemptNumber { get; init; }
-    public string BranchName { get; init; } = string.Empty;
-    public int CompilationScore { get; init; }
-    public int TestsScore { get; init; }
-    public int QualityScore { get; init; }
+    public Guid UserId { get; set; }
+    public Guid AssignmentId { get; set; }
+    
+    public int Position { get; set; }
+    public string? BranchName { get; set; }
+    
+    
+    public int FinalScore { get; set; }
+    
+    public int CompilationScore { get; set; } 
+    public int QualityScore { get; set; }
+    public int TestsScore { get; set; } 
+    
+    public bool IsCompleted { get; set; }
+    public required string ProgressStatus { get; set; }
 }

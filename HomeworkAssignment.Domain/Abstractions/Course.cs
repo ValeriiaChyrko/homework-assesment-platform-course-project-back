@@ -3,10 +3,10 @@
 public class Course
 {
     private readonly List<Guid> _attachmentIds;
-    private readonly List<Guid> _enrollmenttIds;
+    private readonly List<Guid> _enrollmentIds;
 
     public Course(Guid id, string title, string? description, string? imageUrl, bool isPublished, 
-        Guid userId, Guid? categoryId, List<Guid>? attachmentIds, List<Guid>? enrollmenttIds,
+        Guid userId, Guid? categoryId, List<Guid>? attachmentIds, List<Guid>? enrollmentIds,
         DateTime createdAt, DateTime updatedAt)
     {
         Id = id;
@@ -17,7 +17,7 @@ public class Course
         UserId = userId;
         CategoryId = categoryId;
         _attachmentIds = attachmentIds ?? [];
-        _enrollmenttIds = enrollmenttIds ?? [];
+        _enrollmentIds = enrollmentIds ?? [];
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
     }
@@ -37,7 +37,7 @@ public class Course
     public DateTime UpdatedAt { get; set; }
 
     public static Course Create(string title, string? description, string? imageUrl, bool isPublished, 
-        Guid userId, Guid? categoryId, List<Guid>? attachmentIds = null, List<Guid>? enrollmenttIds = null)
+        Guid userId, Guid? categoryId, List<Guid>? attachmentIds = null, List<Guid>? enrollmentIds = null)
     {
         var courseId = Guid.NewGuid();
         var createdAt = DateTime.UtcNow;
@@ -51,7 +51,7 @@ public class Course
             userId,
             categoryId,
             attachmentIds ?? [],
-            enrollmenttIds ?? [],
+            enrollmentIds ?? [],
             createdAt,
             createdAt
         );
@@ -92,15 +92,15 @@ public class Course
     
     public void AddEnrollment(Guid enrollmentId)
     {
-        if (_enrollmenttIds.Contains(enrollmentId)) return;
+        if (_enrollmentIds.Contains(enrollmentId)) return;
         
-        _enrollmenttIds.Add(enrollmentId);
+        _enrollmentIds.Add(enrollmentId);
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void RemoveEnrollment(Guid enrollmentId)
     {
-        if (_enrollmenttIds.Remove(enrollmentId))
+        if (_enrollmentIds.Remove(enrollmentId))
         {
             UpdatedAt = DateTime.UtcNow;
         }

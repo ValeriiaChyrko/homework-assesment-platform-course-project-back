@@ -2,13 +2,13 @@
 
 namespace HomeAssignment.DTOs.RequestDTOs.validators;
 
-public class RequestStudentDtoValidator : AbstractValidator<RequestStudentDto>
+public class RequestUserDtoValidator : AbstractValidator<RequestUserDto>
 {
     private const int MaxLengthFullNamePropertyLength = 128;
     private const int MaxLengthGithubUsernamePropertyLength = 64;
-    private const int MaxLengthPasswordPropertyLength = 8;
+    private const int MinPasswordLength = 8;
     
-    public RequestStudentDtoValidator()
+    public RequestUserDtoValidator()
     {
         RuleFor(x => x.FullName)
             .NotEmpty().WithMessage("Full Name is required.")
@@ -19,8 +19,13 @@ public class RequestStudentDtoValidator : AbstractValidator<RequestStudentDto>
             .EmailAddress().WithMessage("Email must be a valid email address.");
         
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(MaxLengthPasswordPropertyLength).WithMessage($"Password must be at least {MaxLengthPasswordPropertyLength} characters long.");
+            .NotNull().NotEmpty().WithMessage("Password cannot be empty.")
+            .MinimumLength(MinPasswordLength)
+            .WithMessage($"Password must be at least {MinPasswordLength} characters long.")
+            .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+            .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+            .Matches(@"\d").WithMessage("Password must contain at least one number.")
+            .Matches(@"[\W_]").WithMessage("Password must contain at least one special character.");
 
         RuleFor(x => x.GithubUsername)
             .NotEmpty().WithMessage("GitHub Username is required.")

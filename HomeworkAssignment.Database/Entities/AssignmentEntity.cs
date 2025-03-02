@@ -32,7 +32,7 @@ public sealed class AssignmentEntity
     public DateTime CreatedAt { get; set; } 
     public DateTime UpdatedAt { get; set; }
 
-    public Guid ChapterId { get; set; }
+    public Guid? ChapterId { get; set; }
     public ChapterEntity? Chapter { get; set; }
 
     public ICollection<AttemptProgressEntity>? Attempts { get; set; } 

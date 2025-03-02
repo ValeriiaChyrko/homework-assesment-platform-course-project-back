@@ -2,14 +2,20 @@
 
 public class RespondAttemptDto
 {
-    public Guid Id { get; set; }
-    public Guid StudentId { get; init; }
-    public Guid AssignmentId { get; init; }
-    public string BranchName { get; init; } = string.Empty;
-    public DateTime FinishedAt { get; init; }
-    public int AttemptNumber { get; init; }
-    public int CompilationScore { get; init; }
-    public int TestsScore { get; init; }
-    public int QualityScore { get; init; }
-    public int FinalScore { get; init; }
+    public Guid Id { get; init; }
+    public Guid UserId { get; set; }
+    public Guid AssignmentId { get; set; }
+    
+    public int Position { get; set; }
+    public string? BranchName { get; set; }
+    
+    
+    public int FinalScore { get; set; }
+    
+    public int CompilationScore { get; set; } 
+    public int QualityScore { get; set; }
+    public int TestsScore { get; set; } 
+    
+    public bool IsCompleted { get; set; }
+    public required string ProgressStatus { get; set; }
 }
