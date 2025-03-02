@@ -19,10 +19,8 @@ public class CategoryMappingProfile : Profile
             .ForMember(dest => dest.Courses, opt => opt.Ignore());
         
         CreateMap<CategoryEntity, Category>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.CourseIds, opt => opt.MapFrom(src => src.Courses != null ? new List<Guid>(src.Courses.Select(course => course.Id)) : new List<Guid>()));
-        
+            .ConstructUsing(src => new Category(src.Id, src.Name, src.Courses != null ? src.Courses.Select(c => c.Id).ToList() : new List<Guid>()));
+
         CreateMap<Category, RespondCategoryDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
