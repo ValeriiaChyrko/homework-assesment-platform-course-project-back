@@ -12,6 +12,7 @@ public static class DependencyInjection
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ICourseService, CourseService>();
 
         services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
 

@@ -81,6 +81,13 @@ public class Chapter
         IsPublished = true;
     }
     
+    public void Unpublish()
+    {
+        UpdatedAt = DateTime.UtcNow;
+        
+        IsPublished = false;
+    }
+    
     public void AddAttachment(Guid attachmentId)
     {
         if (_attachmentIds.Contains(attachmentId)) return;

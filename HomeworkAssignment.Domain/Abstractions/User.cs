@@ -50,7 +50,7 @@ public class User
         string fullName, string email, string passwordHash, string? githubUsername, 
         string? githubProfileUrl, string? githubPictureUrl)
     {
-        var roleType = UserRoles.Student.ToString().ToLower();
+        var roleType = UserRoles.Student.ToString();
 
         var newStudent = new User(
             attemptsIds,
@@ -76,7 +76,7 @@ public class User
         string fullName, string email, string passwordHash, string? githubUsername, 
         string? githubProfileUrl, string? githubPictureUrl)
     {
-        var roleType = UserRoles.Teacher.ToString().ToLower();
+        var roleType = UserRoles.Teacher.ToString();
 
         var newTeacher = new User(
             attemptsIds,

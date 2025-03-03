@@ -36,11 +36,11 @@ public class RequestUserDtoValidator : AbstractValidator<RequestUserDto>
             .Must(BeAValidUrl).WithMessage("GitHub Profile URL must be a valid URL.");
         
         RuleFor(x => x.GithubPictureUrl)
-            .Must(BeAValidUrl!).WithMessage("GitHub Picture URL must be a valid URL if provided.")
+            .Must(BeAValidUrl).WithMessage("GitHub Picture URL must be a valid URL if provided.")
             .When(x => !string.IsNullOrEmpty(x.GithubPictureUrl));
     }
     
-    private static bool BeAValidUrl(string url)
+    private static bool BeAValidUrl(string? url)
     {
         return Uri.TryCreate(url, UriKind.Absolute, out var uriResult) 
                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);

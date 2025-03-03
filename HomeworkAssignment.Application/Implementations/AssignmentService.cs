@@ -6,6 +6,7 @@ using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.DTOs.SharedDTOs;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
+using HomeAssignment.Persistence.Queries.Chapters;
 using HomeAssignment.Persistence.Queries.Users;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
@@ -140,6 +141,7 @@ public class AssignmentService : BaseService<AssignmentService>, IAssignmentServ
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started publish assignment with ID: {AssignmentId}", assignmentId);
+        
         var isTeacher = await ExecuteTransactionAsync(
             async () => await _mediator.Send(new CheckIfUserInRoleQuery(userId, UserRoles.Teacher), cancellationToken),
             cancellationToken: cancellationToken);
@@ -170,6 +172,7 @@ public class AssignmentService : BaseService<AssignmentService>, IAssignmentServ
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started unpublish assignment with ID: {AssignmentId}", assignmentId);
+        
         var isTeacher = await ExecuteTransactionAsync(
             async () => await _mediator.Send(new CheckIfUserInRoleQuery(userId, UserRoles.Teacher), cancellationToken),
             cancellationToken: cancellationToken);
@@ -204,6 +207,42 @@ public class AssignmentService : BaseService<AssignmentService>, IAssignmentServ
         _logger.LogInformation("Successfully unpublished assignment: {@Assignment}", updatedAssignment);
         return _mapper.Map<RespondAssignmentDto>(updatedAssignment);
     }
+    
+    public async Task ReorderAssignmentAsync(Guid userId, Guid courseId, Guid chapterId,
+        IEnumerable<RespondAssignmentDto> assignmentDtos, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Started reorder assignments with CHAPTER_ID: {ChapterId}", chapterId);
+        
+        var isTeacher = await ExecuteTransactionAsync(
+            async () => await _mediator.Send(new CheckIfUserInRoleQuery(userId, UserRoles.Teacher), cancellationToken),
+            cancellationToken: cancellationToken);
+        if (!isTeacher)
+        {
+            _logger.LogWarning("User with ID: {userId} does not have an teacher role.", userId);
+            throw new ArgumentException("User does not have an teacher role.");
+        }
+        
+        var chapter = await ExecuteTransactionAsync(
+            async () => await _mediator.Send(new GetChapterByIdQuery(chapterId, courseId), cancellationToken),
+            cancellationToken: cancellationToken);
+        if (chapter == null)
+        {
+            _logger.LogWarning("Chapter with ID: {id} does not exist.", chapterId);
+            throw new ArgumentException("Chapter does not exist.");
+        }
+        
+        await ExecuteTransactionAsync(
+            async () =>
+            {
+                foreach (var assignment in assignmentDtos)
+                {
+                    await _mediator.Send(new UpdatePartialAssignmentCommand(assignment.Id, assignment.Position), cancellationToken);
+                }
+            },
+            cancellationToken: cancellationToken);
+        
+        _logger.LogInformation("Successfully reorder assignments with CHAPTER_ID: {ChapterId}", chapterId);
+    }
 
     public async Task<PagedList<RespondAssignmentDto>> GetAssignmentsAsync(
         RequestAssignmentFilterParameters filterParameters,
@@ -215,12 +254,11 @@ public class AssignmentService : BaseService<AssignmentService>, IAssignmentServ
         var result = await ExecuteWithExceptionHandlingAsync(
             async () => await _mediator.Send(query, cancellationToken)
         );
-
-        _logger.LogInformation("Successfully retrieved all assignments");
         
         var mappedItems = result.Items.Select(entityModel => _mapper.Map<RespondAssignmentDto>(entityModel)).ToList();
         var pagedResult = new PagedList<RespondAssignmentDto>(mappedItems, result.TotalCount, result.Page, result.PageSize);
-
+        
+        _logger.LogInformation("Successfully retrieved all assignments");
         return pagedResult;
     }
     

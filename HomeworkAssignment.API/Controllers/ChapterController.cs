@@ -8,146 +8,142 @@ namespace HomeworkAssignment.Controllers;
 
 [Produces("application/json")]
 [ApiController]
-public class AssignmentController : ControllerBase
+public class ChapterController : ControllerBase
 {
-    private readonly IAssignmentService _assignmentService;
+    private readonly IChapterService _chapterService;
 
-    public AssignmentController(IAssignmentService assignmentService)
+    public ChapterController(IChapterService chapterService)
     {
-        _assignmentService = assignmentService;
+        _chapterService = chapterService;
     }
 
-    [HttpGet("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments")]
+    [HttpGet("/api/courses/${courseId:guid}/chapters")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RespondAssignmentDto>> Get(
-        [FromBody] RequestAssignmentFilterParameters filterParameters,
-        [FromServices] IValidator<RequestAssignmentFilterParameters> validator,
+    public async Task<ActionResult<RespondChapterDto>> Get(
+        [FromBody] RequestChapterFilterParameters filterParameters,
+        [FromServices] IValidator<RequestChapterFilterParameters> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(filterParameters, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
 
-        var response = await _assignmentService.GetAssignmentsAsync(filterParameters, cancellationToken);
+        var response = await _chapterService.GetChaptersAsync(filterParameters, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, response);
     }
 
-    [HttpGet("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/${assignmentId:guid}")]
+    [HttpGet("/api/courses/${courseId:guid}/chapters/${chapterId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RespondAssignmentDto>> Get(
+    public async Task<ActionResult<RespondChapterDto>> Get(
         Guid chapterId,
-        Guid assignmentId,
         CancellationToken cancellationToken = default
     )
     {
-        var result = await _assignmentService.GetAssignmentByIdAsync(chapterId, assignmentId, cancellationToken);
+        var result = await _chapterService.GetChapterByIdAsync(chapterId, cancellationToken);
         if (result == null) return StatusCode(StatusCodes.Status404NotFound);
 
         return StatusCode(StatusCodes.Status200OK, result);
     }
 
-    [HttpPost("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments")]
+    [HttpPost("/api/courses/${courseId:guid}/chapters")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Guid>> Create(
+    public async Task<ActionResult<RespondChapterDto>> Create(
         Guid userId, 
         Guid chapterId,
-        [FromBody] RequestAssignmentDto request,
-        [FromServices] IValidator<RequestAssignmentDto> validator,
+        [FromBody] RequestChapterDto request,
+        [FromServices] IValidator<RequestChapterDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
 
-        var result = await _assignmentService.CreateAssignmentAsync(userId, chapterId, request, cancellationToken);
+        var result = await _chapterService.CreateChapterAsync(userId, chapterId, request, cancellationToken);
         return StatusCode(StatusCodes.Status201Created, result);
     }
 
-    [HttpDelete("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/${assignmentId:guid}")]
+    [HttpDelete("/api/courses/${courseId:guid}/chapters/${chapterId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Delete(
         Guid userId, 
         Guid courseId, 
         Guid chapterId, 
-        Guid assignmentId,
         CancellationToken cancellationToken = default
     )
     {
-        await _assignmentService.DeleteAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, assignmentId);
+        await _chapterService.DeleteChapterAsync(userId, courseId, chapterId, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, chapterId);
     }
 
-    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/${assignmentId:guid}")]
+    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RespondAssignmentDto>> Update(
+    public async Task<ActionResult<RespondChapterDto>> Update(
         Guid userId, 
+        Guid courseId,
         Guid chapterId, 
-        Guid assignmentId,
-        [FromBody] RequestAssignmentDto request,
-        [FromServices] IValidator<RequestAssignmentDto> validator,
+        [FromBody] RequestChapterDto request,
+        [FromServices] IValidator<RequestChapterDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
 
-        var response = await _assignmentService.UpdateAssignmentAsync(userId, chapterId, assignmentId, request, cancellationToken);
+        var response = await _chapterService.UpdateChapterAsync(userId, chapterId, courseId, request, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, response);
     }
     
-    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/${assignmentId:guid}/publish")]
+    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/publish")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Publish(
-        Guid userId, 
+        Guid userId,
+        Guid courseId,
         Guid chapterId, 
-        Guid assignmentId,
         CancellationToken cancellationToken = default
     )
     {
-        await _assignmentService.PublishAssignmentAsync(userId, chapterId, assignmentId, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, assignmentId);
+        await _chapterService.PublishChapterAsync(userId, courseId, chapterId, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, chapterId);
     }
     
-    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/${assignmentId:guid}/unpublish")]
+    [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/unpublish")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Unpublish(
         Guid userId, 
         Guid courseId, 
         Guid chapterId, 
-        Guid assignmentId,
         CancellationToken cancellationToken = default
     )
     {
-        await _assignmentService.UnpublishAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, assignmentId);
+        await _chapterService.UnpublishChapterAsync(userId, courseId, chapterId, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, chapterId);
     }
     
-    [HttpPut("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/assignments/reorder")]
+    [HttpPut("/api/courses/${courseId:guid}/chapters/reorder")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Guid>> Reorder(
         Guid userId, 
-        Guid courseId, 
-        Guid chapterId, 
-        [FromBody] IEnumerable<RespondAssignmentDto> assignmentDtos,
+        Guid courseId,  
+        [FromBody] IEnumerable<RespondChapterDto> assignmentDtos,
         CancellationToken cancellationToken = default
     )
     {
-        await _assignmentService.ReorderAssignmentAsync(userId, courseId, chapterId, assignmentDtos, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, chapterId);
+        await _chapterService.ReorderChapterAsync(userId, courseId, assignmentDtos, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, courseId);
     }
 }

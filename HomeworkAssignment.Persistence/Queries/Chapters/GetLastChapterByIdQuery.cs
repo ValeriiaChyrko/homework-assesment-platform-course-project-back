@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Chapters;
 
-public record GetChapterByIdQuery(Guid ChapterId, Guid CourseId) : IRequest<Chapter?>;
+public record GetLastChapterByIdQuery(Guid CourseId) : IRequest<Chapter?>;

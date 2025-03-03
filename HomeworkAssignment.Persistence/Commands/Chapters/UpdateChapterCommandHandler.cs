@@ -23,7 +23,7 @@ public sealed record UpdateChapterCommandHandler : IRequestHandler<UpdateChapter
         if (command is null) throw new ArgumentNullException(nameof(command));
 
         var chapterEntity = _mapper.Map<ChapterEntity>(command.Chapter);
-        chapterEntity.Id = command.Id;
+        chapterEntity.Id = command.ChapterId;
         _context.ChapterEntities.Update(chapterEntity);
 
         return Task.FromResult(_mapper.Map<Chapter>(chapterEntity));

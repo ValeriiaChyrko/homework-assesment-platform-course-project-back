@@ -18,8 +18,7 @@ public sealed class CheckIfUserInRoleQueryHandler : IRequestHandler<CheckIfUserI
         var user = await _context.UserEntities
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                u => u.RoleType.Equals(query.UserRole.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                     u.Id == query.UserId, cancellationToken);
+                u => EF.Functions.Like(u.RoleType.Trim(), query.UserRole.ToString()), cancellationToken);
 
         return user != null;
     }

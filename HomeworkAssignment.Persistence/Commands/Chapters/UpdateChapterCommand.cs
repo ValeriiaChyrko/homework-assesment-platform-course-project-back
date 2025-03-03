@@ -3,5 +3,5 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Chapters;
 
-public sealed record UpdateChapterCommand(Guid Id, Chapter Chapter)
+public sealed record UpdateChapterCommand(Guid ChapterId, Chapter Chapter)
     : IRequest<Chapter>;

@@ -12,12 +12,14 @@ public interface IAssignmentService
         CancellationToken cancellationToken = default);
     Task DeleteAssignmentAsync(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId, CancellationToken cancellationToken = default);
     
+    Task ReorderAssignmentAsync(Guid userId, Guid courseId, Guid chapterId, IEnumerable<RespondAssignmentDto> assignmentDtos, 
+        CancellationToken cancellationToken = default);
+    
     Task<RespondAssignmentDto> PublishAssignmentAsync(Guid userId, Guid chapterId, Guid assignmentId, 
         CancellationToken cancellationToken = default);
     Task<RespondAssignmentDto> UnpublishAssignmentAsync(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId, 
         CancellationToken cancellationToken = default);
-
-   
+    
     Task<PagedList<RespondAssignmentDto>> GetAssignmentsAsync(
         RequestAssignmentFilterParameters filterParameters,
         CancellationToken cancellationToken = default);
