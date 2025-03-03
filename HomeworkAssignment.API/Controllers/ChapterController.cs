@@ -101,8 +101,27 @@ public class ChapterController : ControllerBase
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
 
-        var response = await _chapterService.UpdateChapterAsync(userId, chapterId, courseId, request, cancellationToken);
+        var response = await _chapterService.UpdateChapterAsync(userId, courseId, chapterId, request, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, response);
+    }
+    
+    [HttpPut("/api/courses/${courseId}/chapters/${chapterId}/progress")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<Guid>> UpdateProgress(
+        Guid userId, 
+        Guid courseId,  
+        Guid chapterId,
+        [FromBody] RequestUserProgressDto request,
+        [FromServices] IValidator<RequestUserProgressDto> validator,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+        
+        await _chapterService.UpdateProgressAsync(userId, courseId, chapterId, request, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, courseId);
     }
     
     [HttpPatch("/api/courses/${courseId:guid}/chapters/${chapterId:guid}/publish")]

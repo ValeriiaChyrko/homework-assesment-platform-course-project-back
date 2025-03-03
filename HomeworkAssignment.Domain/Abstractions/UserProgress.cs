@@ -34,6 +34,12 @@ public class UserProgress
         );
     }
 
+    public void Update(bool isCompleted)
+    {
+        IsCompleted = isCompleted;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void Complete()
     {
         IsCompleted = true;

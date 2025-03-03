@@ -8,11 +8,14 @@ public interface IChapterService
 {
     Task<RespondChapterDto> CreateChapterAsync(Guid userId, Guid courseId, RequestChapterDto chapterDto,
         CancellationToken cancellationToken = default);
-    Task<RespondChapterDto> UpdateChapterAsync(Guid userId, Guid chapterId, Guid courseId, RequestChapterDto chapterDto,
+    Task<RespondChapterDto> UpdateChapterAsync(Guid userId, Guid courseId, Guid chapterId, RequestChapterDto chapterDto,
         CancellationToken cancellationToken = default);
     Task DeleteChapterAsync(Guid userId, Guid courseId, Guid chapterId, CancellationToken cancellationToken = default);
     
     Task ReorderChapterAsync(Guid userId, Guid courseId, IEnumerable<RespondChapterDto> chapterDtos, 
+        CancellationToken cancellationToken = default);
+    
+    Task<RespondUserProgressDto> UpdateProgressAsync(Guid userId, Guid courseId, Guid chapterId, RequestUserProgressDto userProgressDto,
         CancellationToken cancellationToken = default);
     
     Task<RespondChapterDto> PublishChapterAsync(Guid userId, Guid courseId, Guid chapterId, 

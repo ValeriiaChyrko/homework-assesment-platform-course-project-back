@@ -5,9 +5,11 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.DTOs.SharedDTOs;
 using HomeAssignment.Persistence.Commands.Chapters;
+using HomeAssignment.Persistence.Commands.UserProgresses;
 using HomeAssignment.Persistence.Queries.Assignments;
 using HomeAssignment.Persistence.Queries.Chapters;
 using HomeAssignment.Persistence.Queries.Courses;
+using HomeAssignment.Persistence.Queries.UserProgresses;
 using HomeAssignment.Persistence.Queries.Users;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
@@ -127,6 +129,37 @@ public class ChapterService : BaseService<ChapterService>, IChapterService
         }
         
         _logger.LogInformation("Successfully deleted chapter with ID: {ChapterId}", chapterId);
+    }
+
+    public async Task<RespondUserProgressDto> UpdateProgressAsync(Guid userId, Guid courseId, Guid chapterId, 
+        RequestUserProgressDto userProgressDto, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Started updating user progress with CHAPTER_ID: {ChapterId}", chapterId);
+        
+        var userProgress = await ExecuteTransactionAsync(
+            async () => await _mediator.Send(new GetUserProgressByIdQuery(userId, chapterId), cancellationToken),
+            cancellationToken: cancellationToken);
+        if (userProgress == null)
+        {
+            _logger.LogInformation("Started creating user progress with CHAPTER_ID: {ChapterId}", chapterId);
+            
+            var progress = _mapper.Map<UserProgress>(userProgressDto);
+            var createdUserProgress = await ExecuteTransactionAsync(
+                async () => await _mediator.Send(new CreateUserProgressCommand(progress), cancellationToken),
+                cancellationToken: cancellationToken);
+            
+            _logger.LogInformation("Successfully created user progress with CHAPTER_ID: {ChapterId}", chapterId);
+            return _mapper.Map<RespondUserProgressDto>(createdUserProgress);
+        }
+
+        var mappedProgress = _mapper.Map<UserProgress>(userProgress);
+        mappedProgress.Update(userProgressDto.IsCompleted);
+        var updatedUserProgress = await ExecuteTransactionAsync(
+            async () => await _mediator.Send(new UpdateUserProgressCommand(mappedProgress), cancellationToken),
+            cancellationToken: cancellationToken);
+            
+        _logger.LogInformation("Successfully updated user progress with CHAPTER_ID: {ChapterId}", chapterId);
+        return _mapper.Map<RespondUserProgressDto>(updatedUserProgress);
     }
 
     public async Task<RespondChapterDto> PublishChapterAsync(Guid userId, Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
