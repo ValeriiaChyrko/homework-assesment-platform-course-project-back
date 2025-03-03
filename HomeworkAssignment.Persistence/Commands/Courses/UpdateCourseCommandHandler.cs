@@ -23,7 +23,7 @@ public sealed record UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCo
         if (command is null) throw new ArgumentNullException(nameof(command));
 
         var courseEntity = _mapper.Map<CourseEntity>(command.Course);
-        courseEntity.Id = command.Id;
+        courseEntity.Id = command.CourseId;
         _context.CourseEntities.Update(courseEntity);
 
         return Task.FromResult(_mapper.Map<Course>(courseEntity));

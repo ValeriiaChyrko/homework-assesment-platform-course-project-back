@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public record GetCourseByIdQuery(Guid Id, Guid OwnerId) : IRequest<Course?>;
+public record GetCourseByIdQuery(Guid CourseId, Guid OwnerId) : IRequest<Course?>;

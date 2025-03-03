@@ -73,6 +73,12 @@ public class Course
         IsPublished = true;
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public void Unpublish()
+    {
+        IsPublished = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     public void AddAttachment(Guid attachmentId)
     {
