@@ -26,4 +26,8 @@ public interface ICourseService
 
     Task<RespondCourseDto?> GetCourseByIdAsync(Guid courseId, 
         CancellationToken cancellationToken = default);
+    
+    Task<RespondAttachmentDto> CreateCourseAttachmentAsync(Guid userId, Guid courseId, RequestAttachmentDto attachmentDto,
+        CancellationToken cancellationToken = default);
+    Task DeleteCourseAttachmentAsync(Guid userId, Guid courseId, Guid attachmentId, CancellationToken cancellationToken = default);
 }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RespondDTOs;
 using HomeworkAssignment.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -138,5 +139,41 @@ public class CourseController : ControllerBase
     {
         await _courseService.EnrollAsync(userId, courseId, cancellationToken);
         return StatusCode(StatusCodes.Status200OK, courseId);
+    }
+    
+    [HttpPost("/api/courses/${courseId:guid}/attachments")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<RespondAttachmentDto>> CreateAttachment(
+        Guid userId,
+        Guid courseId,
+        [FromBody] RequestAttachmentDto request,
+        [FromServices] IValidator<RequestAttachmentDto> validator,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid) return StatusCode(StatusCodes.Status400BadRequest, validationResult.Errors);
+
+        var result = await _courseService.CreateCourseAttachmentAsync(userId, courseId, request, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, result);
+    }
+    
+    [HttpDelete("/api/courses/${courseId}/attachments/${attachmentId:guid}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<Guid>> DeleteAttachment(
+        Guid userId,
+        Guid courseId,
+        Guid attachmentId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await _courseService.DeleteCourseAttachmentAsync(userId, courseId, attachmentId, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, attachmentId);
     }
 }
