@@ -14,23 +14,23 @@ public class AttemptMappingProfile : Profile
             .ConstructUsing(dto => Attempt.Create(
                 dto.Position,
                 dto.BranchName,
-                dto.FinalScore,
-                dto.CompilationScore,
-                dto.QualityScore,
-                dto.TestsScore,
-                dto.IsCompleted,
                 dto.UserId,
                 dto.AssignmentId
             ))
-            .ForMember(dest => dest.ProgressStatus, opt => opt.MapFrom(src => src.ProgressStatus.ToLower()))
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
         
-        CreateMap<Attempt, AttemptProgressEntity>()
+        CreateMap<Attempt, AttemptEntity>()
             .ForMember(dest => dest.User, opt => opt.Ignore()) 
             .ForMember(dest => dest.Assignment, opt => opt.Ignore()) 
             .ReverseMap();
         
         CreateMap<Attempt, RespondAttemptDto>();
+        
+        CreateMap<RequestSubmitAttemptDto, RequestRepositoryWithBranchDto>()
+            .ForMember(dest => dest.RepoTitle, opt => opt.MapFrom(src => src.Assignment.RepositoryName))
+            .ForMember(dest => dest.BranchTitle, opt => opt.MapFrom(src => src.Attempt.BranchName))
+            .ForMember(dest => dest.OwnerGitHubUsername, opt => opt.MapFrom(src => src.Assignment.RepositoryOwner))
+            .ForMember(dest => dest.AuthorGitHubUsername, opt => opt.MapFrom(src => src.AuthorGitHubUsername));
     }
 }

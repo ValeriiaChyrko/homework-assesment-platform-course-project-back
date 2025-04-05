@@ -19,16 +19,16 @@ public sealed class GetPublishedChapterByIdQueryHandler : IRequestHandler<GetPub
 
     public async Task<Chapter?> Handle(GetPublishedChapterByIdQuery query, CancellationToken cancellationToken)
     {
-        var assignment = await _context
-            .CourseEntities
+        var chapterEntity = await _context
+            .ChapterEntities
             .AsNoTracking()
             .SingleOrDefaultAsync(mr => 
                 mr.Id == query.Id 
-                && mr.UserId == query.OwnerId
+                && mr.CourseId == query.CourseId
                 && mr.IsPublished == true, 
                 cancellationToken
             );
 
-        return assignment != null ? _mapper.Map<Chapter>(assignment) : null;
+        return chapterEntity != null ? _mapper.Map<Chapter>(chapterEntity) : null;
     }
 }

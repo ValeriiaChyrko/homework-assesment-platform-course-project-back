@@ -19,9 +19,9 @@ public static class DependencyInjection
             cfg.AddProfile<CourseMappingProfile>();
             cfg.AddProfile<ChapterMappingProfile>();
             cfg.AddProfile<EnrollmentMappingProfile>();
-            cfg.AddProfile<MuxDataMappingProfile>();
             cfg.AddProfile<UserMappingProfile>();
-            cfg.AddProfile<UserProgressMappingProfile>();
+            cfg.AddProfile<UserChapterProgressMappingProfile>();
+            cfg.AddProfile<UserAssignmentProgressMappingProfile>();
         });
     }
 }

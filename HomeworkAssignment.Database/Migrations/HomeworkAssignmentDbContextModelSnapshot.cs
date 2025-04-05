@@ -55,18 +55,18 @@ namespace HomeAssignment.Database.Migrations
                     b.Property<bool>("AttemptTestsSectionEnable")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("ChapterId")
+                    b.Property<Guid?>("ChapterId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("Deadline")
+                    b.Property<DateTime?>("Deadline")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasMaxLength(15000)
+                        .HasColumnType("character varying(15000)");
 
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
@@ -81,12 +81,10 @@ namespace HomeAssignment.Database.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("RepositoryName")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("RepositoryOwner")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -146,7 +144,7 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("AttachmentEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptProgressEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -156,7 +154,6 @@ namespace HomeAssignment.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BranchName")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -174,11 +171,6 @@ namespace HomeAssignment.Database.Migrations
 
                     b.Property<int>("Position")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ProgressStatus")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("QualityScore")
                         .HasColumnType("integer");
@@ -198,7 +190,7 @@ namespace HomeAssignment.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AttemptProgressEntities");
+                    b.ToTable("AttemptEntities");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.CategoryEntity", b =>
@@ -233,8 +225,8 @@ namespace HomeAssignment.Database.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
 
                     b.Property<bool>("IsFree")
                         .HasColumnType("boolean");
@@ -316,7 +308,7 @@ namespace HomeAssignment.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CourseId")
+                    b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -338,33 +330,65 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("EnrollmentEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.MuxDataEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserAssignmentProgressEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AssetId")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                    b.Property<Guid>("AssignmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAssignmentProgressEntities");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserChapterProgressEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ChapterId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PlaybackId")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId")
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("UserId", "ChapterId")
                         .IsUnique();
 
-                    b.HasIndex("PlaybackId")
-                        .IsUnique();
-
-                    b.ToTable("MuxDataEntities");
+                    b.ToTable("UserChapterProgressEntities");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserEntity", b =>
@@ -424,44 +448,12 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("UserEntities");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.UserProgressEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ChapterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChapterId");
-
-                    b.HasIndex("UserId", "ChapterId")
-                        .IsUnique();
-
-                    b.ToTable("UserProgressEntities");
-                });
-
             modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
                 {
                     b.HasOne("HomeAssignment.Database.Entities.ChapterEntity", "Chapter")
                         .WithMany("Assignments")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Chapter");
                 });
@@ -483,11 +475,11 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptProgressEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.AttemptEntity", b =>
                 {
                     b.HasOne("HomeAssignment.Database.Entities.AssignmentEntity", "Assignment")
                         .WithMany("Attempts")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AssignmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -535,7 +527,8 @@ namespace HomeAssignment.Database.Migrations
                     b.HasOne("HomeAssignment.Database.Entities.CourseEntity", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
                         .WithMany("Enrollments")
@@ -548,17 +541,26 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.MuxDataEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserAssignmentProgressEntity", b =>
                 {
-                    b.HasOne("HomeAssignment.Database.Entities.ChapterEntity", "Chapter")
-                        .WithOne("MuxData")
-                        .HasForeignKey("HomeAssignment.Database.Entities.MuxDataEntity", "ChapterId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.HasOne("HomeAssignment.Database.Entities.AssignmentEntity", "Assignment")
+                        .WithMany("UsersProgress")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Chapter");
+                    b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.UserProgressEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserChapterProgressEntity", b =>
                 {
                     b.HasOne("HomeAssignment.Database.Entities.ChapterEntity", "Chapter")
                         .WithMany("UsersProgress")
@@ -568,7 +570,7 @@ namespace HomeAssignment.Database.Migrations
                     b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
                         .WithMany("UsersProgress")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Chapter");
@@ -579,6 +581,8 @@ namespace HomeAssignment.Database.Migrations
             modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
                 {
                     b.Navigation("Attempts");
+
+                    b.Navigation("UsersProgress");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.CategoryEntity", b =>
@@ -591,8 +595,6 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Assignments");
 
                     b.Navigation("Attachments");
-
-                    b.Navigation("MuxData");
 
                     b.Navigation("UsersProgress");
                 });

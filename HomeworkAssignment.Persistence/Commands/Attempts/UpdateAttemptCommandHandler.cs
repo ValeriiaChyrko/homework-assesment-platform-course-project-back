@@ -22,9 +22,9 @@ public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttempt
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
         
-        var attemptEntity = _mapper.Map<AttemptProgressEntity>(command.Attempt);
+        var attemptEntity = _mapper.Map<AttemptEntity>(command.Attempt);
         attemptEntity.Id = command.Id;
-        _context.AttemptProgressEntities.Update(attemptEntity);
+        _context.AttemptEntities.Update(attemptEntity);
 
         return Task.FromResult(_mapper.Map<Attempt>(attemptEntity));
     }

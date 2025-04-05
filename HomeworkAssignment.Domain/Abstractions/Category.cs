@@ -1,33 +1,26 @@
-﻿using System.Data;
-
-namespace HomeAssignment.Domain.Abstractions;
-
-public class Category
+﻿namespace HomeAssignment.Domain.Abstractions
 {
-    private readonly List<Guid> _courseIds;
-
-    public Category(Guid id, string name, List<Guid> courseIds)
+    public class Category(Guid id, string name, List<Guid>? courseIds = null)
     {
-        Id = id;
-        Name = name;
-        _courseIds = courseIds;
-    }
+        private readonly List<Guid> _courseIds = courseIds ?? [];
 
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public IReadOnlyList<Guid> CourseIds => _courseIds.AsReadOnly();
+        public Guid Id { get; init; } = id;
+        public string Name { get; private set; } = name;
 
-    public static Category Create(string name, List<Guid>? courseIds = null)
-    {
-        return new Category(
-            Guid.NewGuid(),
-            name,
-            courseIds ?? []
-        );
-    }
+        public IReadOnlyList<Guid> CourseIds => _courseIds.AsReadOnly();
 
-    public void Update(string name)
-    {
-        Name = name;
+        public static Category Create(string name, List<Guid>? courseIds = null)
+        {
+            return new Category(
+                Guid.NewGuid(),
+                name,
+                courseIds
+            );
+        }
+        
+        public void Update(string name)
+        {
+            Name = name;
+        }
     }
 }

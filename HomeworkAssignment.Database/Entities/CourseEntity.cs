@@ -3,21 +3,21 @@
 public class CourseEntity
 {
     public Guid Id { get; set; }
-    public required string Title { get; set; }
-    public string? Description { get; set; }
-    public string? ImageUrl { get; set; }
-    public bool IsPublished { get; set; } = false;
+    public required string Title { get; init; }
+    public string? Description { get; init; }
+    public string? ImageUrl { get; init; }
+    public bool IsPublished { get; init; } 
 
-    public Guid? CategoryId { get; set; }
-    public CategoryEntity? Category { get; set; }
+    public Guid? CategoryId { get; init; }
+    public CategoryEntity? Category { get; init; }
     
-    public ICollection<ChapterEntity>? Chapters { get; set; }
-    public ICollection<AttachmentEntity>? Attachments { get; set; }
-    public ICollection<EnrollmentEntity>? Enrollments { get; set; }
+    public ICollection<ChapterEntity>? Chapters { get; init; }
+    public ICollection<AttachmentEntity>? Attachments { get; init; }
+    public ICollection<EnrollmentEntity>? Enrollments { get; init; }
 
-    public DateTime CreatedAt { get; set; } 
-    public DateTime UpdatedAt { get; set; } 
+    public DateTime CreatedAt { get; init; } 
+    public DateTime UpdatedAt { get; init; } 
     
-    public required Guid UserId { get; set; }
-    public required UserEntity User { get; set; }
+    public required Guid UserId { get; init; }
+    public required UserEntity User { get; init; }
 }

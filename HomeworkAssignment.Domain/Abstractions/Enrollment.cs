@@ -1,23 +1,14 @@
 ﻿namespace HomeAssignment.Domain.Abstractions;
 
-public class Enrollment
+public class Enrollment(Guid id, Guid userId, Guid courseId, DateTime createdAt, DateTime updatedAt)
 {
-    public Enrollment(Guid id, Guid userId, Guid? courseId, DateTime createdAt, DateTime updatedAt)
-    {
-        Id = id;
-        UserId = userId;
-        CourseId = courseId;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
-    }
+    public Guid Id { get; init; } = id;
 
-    public Guid Id { get; init; }
-   
-    public Guid UserId { get; set; }
-    public Guid? CourseId { get; set; }
-    
-    public DateTime CreatedAt { get; init; } 
-    public DateTime UpdatedAt { get; set; }
+    public Guid UserId { get; init; } = userId;
+    public Guid CourseId { get; init; } = courseId;
+
+    public DateTime CreatedAt { get; init; } = createdAt;
+    public DateTime UpdatedAt { get; init; } = updatedAt;
 
     public static Enrollment Create(Guid userId, Guid courseId)
     {
@@ -28,12 +19,5 @@ public class Enrollment
             DateTime.UtcNow,
             DateTime.UtcNow
         );
-    }
-
-    public void Update(Guid userId, Guid courseId)
-    {
-        UserId = userId;
-        CourseId = courseId;
-        UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -7,7 +7,7 @@ public class RequestAssignmentDtoValidator : AbstractValidator<RequestAssignment
     private const int MaxLengthTitlePropertyLength = 64;
     private const int MaxLengthRepositoryPropertyLength = 64;
     private const int MaxLengthRepositoryUrlPropertyLength = 256;
-    private const int MaxLengthDescriptionPropertyLength = 512;
+    private const int MaxLengthDescriptionPropertyLength = 15000;
 
     public RequestAssignmentDtoValidator()
     {
@@ -42,51 +42,41 @@ public class RequestAssignmentDtoValidator : AbstractValidator<RequestAssignment
 
         RuleFor(dto => dto.Deadline)
             .NotEmpty().WithMessage("Date of the deadline cannot be empty.")
-            .Must(BeValidDeadlineDate).WithMessage("Date of the deadline must be after the current date.");
+            .Must(BeValidDeadlineDate).WithMessage("Date of the deadline must be after the current date.")
+            .When(x => x.Deadline != null);
 
         RuleFor(dto => dto.MaxScore)
-            .NotEmpty().WithMessage("The value of max score cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max score must be greater than zero.");
+            .GreaterThan(-1).WithMessage("The value of max score must be greater than zero.");
 
         RuleFor(dto => dto.MaxAttemptsAmount)
-            .NotEmpty().WithMessage("The value of max attempts amount cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max attempts amount must be greater than one.");
+            .GreaterThan(-1).WithMessage("The value of max attempts amount must be greater than one.");
         
         RuleFor(dto => dto.Position)
-            .NotEmpty().WithMessage("The value of max score cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max score must be greater than one.");
-
-        RuleFor(x => x.ChapterId)
-            .NotEmpty().WithMessage("ChapterId is required.")
-            .Must(id => id != Guid.Empty).WithMessage("ChapterId cannot be an empty GUID.");
+            .GreaterThan(-1).WithMessage("The value of max score must be greater than one.");
         
         RuleFor(dto => dto.AttemptCompilationMaxScore)
             .NotNull().WithMessage("The value of max score cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max score must be greater than zero.");
+            .GreaterThan(-1).WithMessage("The value of max score must be greater than zero.");
 
         RuleFor(dto => dto.AttemptCompilationMinScore)
             .NotNull().WithMessage("The value of min score cannot be empty.")
             .GreaterThan(-1).WithMessage("The value of min score must be positive number.");
         
         RuleFor(dto => dto.AttemptTestsMaxScore)
-            .NotNull().WithMessage("The value of max score cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max score must be greater than zero.");
+            .GreaterThan(-1).WithMessage("The value of max score must be greater than zero.");
 
         RuleFor(dto => dto.AttemptTestsMinScore)
-            .NotNull().WithMessage("The value of min score cannot be empty.")
             .GreaterThan(-1).WithMessage("The value of min score must be positive number.");
         
         RuleFor(dto => dto.AttemptQualityMaxScore)
-            .NotNull().WithMessage("The value of max score cannot be empty.")
-            .GreaterThan(0).WithMessage("The value of max score must be greater than zero.");
+            .GreaterThan(-1).WithMessage("The value of max score must be greater than zero.");
 
         RuleFor(dto => dto.AttemptQualityMinScore)
-            .NotNull().WithMessage("The value of min score cannot be empty.")
             .GreaterThan(-1).WithMessage("The value of min score must be positive number.");
     }
 
-    private static bool BeValidDeadlineDate(DateTime dateTime)
+    private static bool BeValidDeadlineDate(DateTime? dateTime)
     {
-        return dateTime > DateTime.UtcNow;
+        return dateTime != null && dateTime > DateTime.UtcNow;
     }
 }

@@ -3,4 +3,5 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Enrollments;
 
-public record GetEnrollmentByIdQuery(Guid UserId, Guid CourseId) : IRequest<Enrollment?>;
+public record GetEnrollmentByIdQuery(Guid UserId, Guid CourseId)
+    : IRequest<Enrollment?>;

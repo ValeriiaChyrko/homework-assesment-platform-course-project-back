@@ -19,9 +19,9 @@ public class AssignmentConfiguration : IEntityTypeConfiguration<AssignmentEntity
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
-        builder.Property(mr => mr.Description).HasMaxLength(512);
-        builder.Property(mr => mr.RepositoryName).IsRequired().HasMaxLength(64);
-        builder.Property(mr => mr.RepositoryOwner).IsRequired().HasMaxLength(64);
+        builder.Property(mr => mr.Description).HasMaxLength(15000);
+        builder.Property(mr => mr.RepositoryName).HasMaxLength(64);
+        builder.Property(mr => mr.RepositoryOwner).HasMaxLength(64);
         builder.Property(mr => mr.RepositoryUrl).HasMaxLength(256);
         
         builder.HasIndex(mr => mr.ChapterId);

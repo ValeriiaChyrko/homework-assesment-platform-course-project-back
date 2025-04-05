@@ -38,13 +38,5 @@ public class RequestAttemptDtoValidator : AbstractValidator<RequestAttemptDto>
         RuleFor(dto => dto.QualityScore)
             .NotNull().WithMessage("The value of quality score cannot be empty.")
             .GreaterThan(-1).WithMessage("The value of quality score must be positive number.");
-        
-        RuleFor(dto => dto.ProgressStatus)
-            .Must(BeAValidProgressStatus).WithMessage("SortBy must be a valid property name.");
-    }
-
-    private static bool BeAValidProgressStatus(string progressStatus)
-    {
-        return Enum.TryParse(typeof(ProgressStatuses), progressStatus, true, out _);
     }
 }

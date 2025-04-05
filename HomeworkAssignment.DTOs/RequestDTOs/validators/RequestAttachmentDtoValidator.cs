@@ -9,16 +9,6 @@ public class RequestAttachmentDtoValidator : AbstractValidator<RequestAttachment
     
     public RequestAttachmentDtoValidator()
     {
-        RuleFor(x => x.CourseId)
-            .NotEmpty().WithMessage("CourseId is required.")
-            .Must(id => id != Guid.Empty).WithMessage("CourseId cannot be an empty GUID.")
-            .When(x => x.CourseId != null);
-
-        RuleFor(x => x.ChapterId)
-            .NotEmpty().WithMessage("ChapterId is required.")
-            .Must(id => id != Guid.Empty).WithMessage("ChapterId cannot be an empty GUID.")
-            .When(x => x.ChapterId != null);
-
         RuleFor(x => x.Name)
             .NotNull().NotEmpty().WithMessage("Name name is required.")
             .MaximumLength(MaxLengthNamePropertyLength)

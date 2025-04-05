@@ -27,14 +27,9 @@ public class ChapterConfiguration : IEntityTypeConfiguration<ChapterEntity>
             .WithOne(g => g.Chapter)
             .HasForeignKey(mr => mr.ChapterId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.HasOne(a => a.MuxData)
-            .WithOne(p => p.Chapter)
-            .HasForeignKey<ChapterEntity>(mr => mr.MuxDataId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
-        builder.Property(mr => mr.Description).HasMaxLength(512);
+        builder.Property(mr => mr.Description).HasMaxLength(10000);
         builder.Property(mr => mr.VideoUrl).HasMaxLength(256);
         
         builder.HasIndex(mr => mr.CourseId);

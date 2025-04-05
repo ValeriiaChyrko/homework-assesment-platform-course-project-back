@@ -12,9 +12,6 @@ public class UserMappingProfile : Profile
     {
         CreateMap<RequestUserDto, User>()
             .ConstructUsing(dto => User.CreateStudent(
-                null, // attemptsIds
-                null, // enrollmentIds
-                null, // userProgressIds
                 dto.FullName,
                 dto.Email,
                 dto.Password, // TODO: Тут має бути хешування пароля перед створенням User
@@ -46,8 +43,5 @@ public class UserMappingProfile : Profile
                 src.CreatedAt,
                 src.UpdatedAt
             ));
-        
-        CreateMap<User, RespondUserDto>()
-            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 
 namespace HomeAssignment.DTOs.RequestDTOs.validators;
 
@@ -21,6 +22,10 @@ public class RequestCourseFilterParametersValidator : AbstractValidator<RequestC
             .Must(BeAValidPropertyName!).WithMessage("SortBy must be a valid property name.")
             .When(dto => dto.SortBy != null);
         
+        RuleFor(x => x.Include)
+            .Must(include => include == null || include.All(IsValidInclude)) 
+            .WithMessage("Invalid Include property");
+        
         RuleFor(x => x.PageNumber)
             .GreaterThan(0).WithMessage("PageNumber must be greater than 0.");
         
@@ -40,5 +45,16 @@ public class RequestCourseFilterParametersValidator : AbstractValidator<RequestC
     private static bool BeAValidPropertyName(string sortBy)
     {
         return ValidProperties.Contains(sortBy);
+    }
+    
+    private static readonly HashSet<string> ValidIncludes =
+    [
+        "category",
+        "progress"
+    ];
+    
+    private static bool IsValidInclude(string value)
+    {
+        return ValidIncludes.Contains(value);
     }
 }

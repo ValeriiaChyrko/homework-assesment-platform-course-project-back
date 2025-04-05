@@ -10,18 +10,9 @@ public class ChapterMappingProfile : Profile
 {
     public ChapterMappingProfile()
     {
-        CreateMap<RequestChapterDto, Chapter>()
+        CreateMap<RequestCreateChapterDto, Chapter>()
             .ConstructUsing(src => Chapter.Create(
-                src.Title,
-                src.Description,
-                src.VideoUrl,
-                src.Position,
-                src.IsPublished,
-                src.IsFree,
-                src.MuxDataId,
-                src.CourseId,
-                null,
-                null
+                src.Title
             ));
         
         CreateMap<ChapterEntity, Chapter>()
@@ -33,7 +24,6 @@ public class ChapterMappingProfile : Profile
                 src.Position,
                 src.IsPublished,
                 src.IsFree,
-                src.MuxDataId,
                 src.CourseId,
                 src.Attachments != null ? src.Attachments.Select(a => a.Id).ToList() : null,
                 src.UsersProgress != null ? src.UsersProgress.Select(up => up.Id).ToList() : null,
@@ -55,7 +45,6 @@ public class ChapterMappingProfile : Profile
             .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
             .ForMember(dest => dest.IsPublished, opt => opt.MapFrom(src => src.IsPublished))
             .ForMember(dest => dest.IsFree, opt => opt.MapFrom(src => src.IsFree))
-            .ForMember(dest => dest.MuxDataId, opt => opt.MapFrom(src => src.MuxDataId))
             .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId));
     }
 }

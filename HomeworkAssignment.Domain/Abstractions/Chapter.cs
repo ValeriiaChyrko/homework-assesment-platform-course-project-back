@@ -1,121 +1,74 @@
-﻿namespace HomeAssignment.Domain.Abstractions;
-
-public class Chapter
+﻿namespace HomeAssignment.Domain.Abstractions
 {
-    private readonly List<Guid> _attachmentIds;
-    private readonly List<Guid> _userProgressIds;
-    
-    public Chapter(Guid id, string title, string? description, string? videoUrl, int position, bool isPublished, bool isFree, 
-        Guid? muxDataId, Guid? courseId, List<Guid>? attachmentIds, List<Guid>? userProgressIds, DateTime createdAt, DateTime updatedAt)
+    public class Chapter(
+        Guid id,
+        string title,
+        string? description,
+        string? videoUrl,
+        ushort position,
+        bool isPublished,
+        bool isFree,
+        Guid? courseId,
+        List<Guid>? attachmentIds,
+        List<Guid>? userProgressIds,
+        DateTime createdAt,
+        DateTime updatedAt)
     {
-        Id = id;
-        Title = title;
-        Description = description;
-        VideoUrl = videoUrl;
-        Position = position;
-        IsPublished = isPublished;
-        IsFree = isFree;
-        MuxDataId = muxDataId;
-        CourseId = courseId;
-        _attachmentIds = attachmentIds ?? [];
-        _userProgressIds = userProgressIds ?? [];
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
-    }
+        private readonly List<Guid> _attachmentIds = attachmentIds ?? [];
+        private readonly List<Guid> _userProgressIds = userProgressIds ?? [];
 
-    public Guid Id { get; init; }
-    public string Title { get; set; }
-    public string? Description { get; set; }
-    public string? VideoUrl { get; set; }
-    public int Position { get; set; }
-    
-    public bool IsPublished { get; set; }
-    public bool IsFree { get; set; } 
-    
-    public Guid? MuxDataId { get; set; }
-    public Guid? CourseId { get; set; }
-    public IReadOnlyList<Guid> AttachmentIds => _attachmentIds.AsReadOnly();
-    public IReadOnlyList<Guid> UserProgressIds => _userProgressIds.AsReadOnly();
-    
-    public DateTime CreatedAt { get; init; } 
-    public DateTime UpdatedAt { get; set; }
+        public Guid Id { get; init; } = id;
+        public string Title { get; set; } = title;
+        public string? Description { get; set; } = description;
+        public string? VideoUrl { get; set; } = videoUrl;
+        public int Position { get; set; } = position;
+        public bool IsPublished { get; private set; } = isPublished;
+        public bool IsFree { get; set; } = isFree;
+        public Guid? CourseId { get; set; } = courseId;
+        public IReadOnlyList<Guid> AttachmentIds => _attachmentIds.AsReadOnly();
+        public IReadOnlyList<Guid> UserProgressIds => _userProgressIds.AsReadOnly();
+        public DateTime CreatedAt { get; init; } = createdAt;
+        public DateTime UpdatedAt { get; private set; } = updatedAt;
 
-    public static Chapter Create(string title, string? description, string? videoUrl, int position,
-        bool isPublished, bool isFree, Guid? muxDataId, Guid? courseId,  
-        List<Guid>? attachmentIds = null, List<Guid>? userProgressIds = null)
-    {
-        return new Chapter(
-            Guid.NewGuid(),
-            title,
-            description,
-            videoUrl,
-            position,
-            isPublished,
-            isFree,
-            muxDataId,
-            courseId,
-            attachmentIds ?? [],
-            userProgressIds ?? [],
-            DateTime.UtcNow,
-            DateTime.UtcNow
-        );
-    }
-
-    public void Update(string title, string? description, string? videoUrl, int position, bool isFree, Guid? muxData, Guid? course)
-    {
-        Title = title;
-        Description = description;
-        VideoUrl = videoUrl;
-        Position = position;
-        
-        MuxDataId = muxData;
-        CourseId = course;
-        
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Publish()
-    {
-       UpdatedAt = DateTime.UtcNow;
-        
-        IsPublished = true;
-    }
-    
-    public void Unpublish()
-    {
-        UpdatedAt = DateTime.UtcNow;
-        
-        IsPublished = false;
-    }
-    
-    public void AddAttachment(Guid attachmentId)
-    {
-        if (_attachmentIds.Contains(attachmentId)) return;
-        
-        _attachmentIds.Add(attachmentId);
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void RemoveAttachment(Guid attachmentId)
-    {
-        if (_attachmentIds.Remove(attachmentId))
+        public static Chapter Create(string title)
         {
+            return new Chapter(
+                Guid.NewGuid(),
+                title,
+                null,
+                null,
+                0,
+                false,
+                false,
+                null,
+                new List<Guid>(),
+                new List<Guid>(),
+                DateTime.UtcNow,
+                DateTime.UtcNow
+            );
+        }
+        
+        public void PatchUpdate(string? title = null, string? description = null, string? videoUrl = null,
+            int? position = null, bool? isFree = null)
+        {
+            Title = title ?? Title;
+            Description = description ?? Description;
+            VideoUrl = videoUrl ?? VideoUrl;
+            Position = position ?? Position;
+            IsFree = isFree ?? IsFree;
+
             UpdatedAt = DateTime.UtcNow;
         }
-    }
-    
-    public void AddUserProgress(Guid userProgressId)
-    {
-        if (_userProgressIds.Contains(userProgressId)) return;
         
-        _userProgressIds.Add(userProgressId);
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void RemoveUserProgress(Guid userProgressId)
-    {
-        if (_userProgressIds.Remove(userProgressId))
+        public void MarkAsPublished()
         {
+            IsPublished = true;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        
+        public void MarkAsUnpublished()
+        {
+            IsPublished = false;
             UpdatedAt = DateTime.UtcNow;
         }
     }

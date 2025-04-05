@@ -24,14 +24,14 @@ public class Attachment
     }
 
     public Guid Id { get; init; }
-    public string Name { get; set; }
-    public string Url { get; set; }
+    public string Name { get; private set; }
+    public string Url { get; private set; }
 
-    public Guid? CourseId { get; set; }
-    public Guid? ChapterId { get; set; }
+    public Guid? CourseId { get; init; }
+    public Guid? ChapterId { get; init; }
 
     public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; private set; }
 
     public static Attachment CreateForCourse(Guid courseId, string name, string url)
     {

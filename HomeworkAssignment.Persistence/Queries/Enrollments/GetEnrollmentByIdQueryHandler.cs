@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Enrollments;
 
-public sealed class GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQuery, Enrollment?>
+public sealed class
+    GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQuery,
+    Enrollment>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -17,16 +19,17 @@ public sealed class GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmen
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Enrollment?> Handle(GetEnrollmentByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Enrollment> Handle(GetEnrollmentByIdQuery query,
+        CancellationToken cancellationToken)
     {
-        var enrollment = await _context
+        var enrollmentEntities = await _context
             .EnrollmentEntities
             .AsNoTracking()
             .SingleOrDefaultAsync(mr => 
-                mr.UserId == query.UserId && mr.CourseId == query.CourseId, 
+                    mr.CourseId == query.CourseId && mr.UserId == query.UserId, 
                 cancellationToken
             );
 
-        return enrollment != null ? _mapper.Map<Enrollment>(enrollment) : null;
+        return _mapper.Map<Enrollment>(enrollmentEntities);
     }
 }

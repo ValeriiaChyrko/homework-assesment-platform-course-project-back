@@ -23,7 +23,7 @@ public sealed class
         CancellationToken cancellationToken)
     {
         var attempts = await _context
-            .AttemptProgressEntities
+            .AttemptEntities
             .Where(a => a.AssignmentId == query.AssignmentId && a.UserId == query.UserId)
             .OrderByDescending(a => a.CreatedAt)
             .AsNoTracking()

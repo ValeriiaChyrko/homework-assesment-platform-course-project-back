@@ -3,15 +3,15 @@
 public class AttachmentEntity
 {
     public Guid Id { get; set; }
-    public required string Name { get; set; }
-    public required string Url { get; set; }
+    public required string Name { get; init; }
+    public required string Url { get; init; }
 
-    public Guid? CourseId { get; set; }
-    public CourseEntity? Course { get; set; }
+    public Guid? CourseId { get; init; }
+    public CourseEntity? Course { get; init; }
     
-    public Guid? ChapterId { get; set; }
-    public ChapterEntity? Chapter { get; set; }
+    public Guid? ChapterId { get; init; }
+    public ChapterEntity? Chapter { get; init; }
 
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; } 
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; } 
 }

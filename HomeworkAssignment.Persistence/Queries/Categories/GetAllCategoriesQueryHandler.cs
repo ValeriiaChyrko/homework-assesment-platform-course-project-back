@@ -22,12 +22,12 @@ public sealed class
     public async Task<IEnumerable<Category>> Handle(GetAllCategoriesQuery query,
         CancellationToken cancellationToken)
     {
-        var attempts = await _context
+        var categoryEntities = await _context
             .CategoryEntities
             .OrderBy(a => a.Name)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return attempts.Select(entityModel => _mapper.Map<Category>(entityModel)).ToList();
+        return categoryEntities.Select(entityModel => _mapper.Map<Category>(entityModel)).ToList();
     }
 }

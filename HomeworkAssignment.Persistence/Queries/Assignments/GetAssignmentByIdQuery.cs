@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public record GetAssignmentByIdQuery(Guid Id, Guid ChapterId) : IRequest<Assignment?>;
+public record GetAssignmentByIdQuery(Guid ChapterId, Guid AssignmentId) : IRequest<Assignment?>;

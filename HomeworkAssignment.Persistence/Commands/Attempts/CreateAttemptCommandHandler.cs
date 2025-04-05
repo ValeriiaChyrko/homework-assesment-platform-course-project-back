@@ -22,8 +22,8 @@ public sealed class CreateAttemptCommandHandler : IRequestHandler<CreateAttemptC
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var attemptEntity = _mapper.Map<AttemptProgressEntity>(command.Attempt);
-        var addedEntity = await _context.AttemptProgressEntities.AddAsync(attemptEntity, cancellationToken);
+        var attemptEntity = _mapper.Map<AttemptEntity>(command.Attempt);
+        var addedEntity = await _context.AttemptEntities.AddAsync(attemptEntity, cancellationToken);
 
         return _mapper.Map<Attempt>(addedEntity.Entity);
     }

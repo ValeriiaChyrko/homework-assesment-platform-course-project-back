@@ -8,6 +8,7 @@
       KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_LOCALE: uk
     volumes:
       - ./.containers/identity:/opt/keycloak/data
     ports:
@@ -24,6 +25,19 @@
       POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
+    networks:
+      - homework-assignment_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d HomeworkAssignmentDb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  redis:
+    image: redis:latest
+    container_name: homework-assignment-redis
+    ports:
+      - "6379:6379"
     networks:
       - homework-assignment_network
   
@@ -54,4 +68,4 @@
 
 networks:
   homework-assignment_network:
-    driver: bridge
+    external: true

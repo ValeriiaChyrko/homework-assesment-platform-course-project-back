@@ -22,13 +22,13 @@ public sealed class
     public async Task<IEnumerable<Enrollment>> Handle(GetAllEnrollmentsByUserIdQuery query,
         CancellationToken cancellationToken)
     {
-        var attempts = await _context
+        var enrollmentEntities = await _context
             .EnrollmentEntities
             .Where(a => a.UserId == query.UserId)
             .OrderByDescending(a => a.CreatedAt)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return attempts.Select(entityModel => _mapper.Map<Enrollment>(entityModel)).ToList();
+        return enrollmentEntities.Select(entityModel => _mapper.Map<Enrollment>(entityModel)).ToList();
     }
 }

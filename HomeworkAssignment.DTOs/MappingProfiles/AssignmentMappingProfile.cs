@@ -12,21 +12,7 @@ public class AssignmentMappingProfile : Profile
     {
         CreateMap<RequestAssignmentDto, Assignment>()
             .ConstructUsing(dto => Assignment.Create(
-                dto.Title,
-                dto.Description,
-                dto.RepositoryName,
-                dto.RepositoryOwner,
-                dto.RepositoryUrl,
-                dto.Deadline,
-                dto.MaxScore,
-                dto.MaxAttemptsAmount,
-                dto.Position,
-                dto.IsPublished,
-                dto.ChapterId,
-                null, // Attempt IDs are not part of the DTO
-                new ScoreSection(dto.AttemptCompilationSectionEnable, dto.AttemptCompilationMaxScore, dto.AttemptCompilationMinScore),
-                new ScoreSection(dto.AttemptTestsSectionEnable, dto.AttemptTestsMaxScore, dto.AttemptTestsMinScore),
-                new ScoreSection(dto.AttemptQualitySectionEnable, dto.AttemptQualityMaxScore, dto.AttemptQualityMinScore)
+                dto.Title
             ));
         
         CreateMap<Assignment, AssignmentEntity>()
@@ -34,6 +20,9 @@ public class AssignmentMappingProfile : Profile
             .ForMember(dest => dest.AttemptCompilationMaxScore, opt => opt.MapFrom(src => src.CompilationSection.MaxScore))
             .ForMember(dest => dest.AttemptCompilationMinScore, opt => opt.MapFrom(src => src.CompilationSection.MinScore))
 
+            .ForMember(dest => dest.RepositoryOwner, opt => opt.MapFrom(src => src.RepositoryOwnerUserName))
+            .ForMember(dest => dest.RepositoryName, opt => opt.MapFrom(src => src.RepositoryName))
+            
             .ForMember(dest => dest.AttemptTestsSectionEnable, opt => opt.MapFrom(src => src.TestsSection.IsEnabled))
             .ForMember(dest => dest.AttemptTestsMaxScore, opt => opt.MapFrom(src => src.TestsSection.MaxScore))
             .ForMember(dest => dest.AttemptTestsMinScore, opt => opt.MapFrom(src => src.TestsSection.MinScore))
@@ -67,7 +56,7 @@ public class AssignmentMappingProfile : Profile
                 new ScoreSection(entity.AttemptTestsSectionEnable, entity.AttemptTestsMaxScore, entity.AttemptTestsMinScore),
                 new ScoreSection(entity.AttemptQualitySectionEnable, entity.AttemptQualityMaxScore, entity.AttemptQualityMinScore)
             ))
-            .ForMember(dest => dest.AttemptProgressIds, opt => opt.MapFrom(src => src.Attempts != null ? src.Attempts.Select(a => a.Id).ToList() : new List<Guid>()));
+            .ForMember(dest => dest.AttemptProgressIds, opt => opt.Ignore());
         
         CreateMap<Assignment, RespondAssignmentDto>()
             .ForMember(dest => dest.RepositoryOwner, opt => opt.MapFrom(src => src.RepositoryOwnerUserName))

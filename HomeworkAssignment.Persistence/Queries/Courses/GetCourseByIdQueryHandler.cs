@@ -23,7 +23,7 @@ public sealed class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQue
             .CourseEntities
             .AsNoTracking()
             .SingleOrDefaultAsync(mr => 
-                mr.Id == query.CourseId && mr.UserId == query.OwnerId, 
+                mr.Id == query.CourseId,
                 cancellationToken
             );
 

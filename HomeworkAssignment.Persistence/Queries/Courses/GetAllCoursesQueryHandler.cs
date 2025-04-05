@@ -34,6 +34,11 @@ public sealed class
             coursesQuery = coursesQuery.Where(a => a.UserId == query.FilterParameters.OwnerId.Value);
         }
         
+        if (query.FilterParameters.CategoryId.HasValue)
+        {
+            coursesQuery = coursesQuery.Where(a => a.CategoryId == query.FilterParameters.CategoryId.Value);
+        }
+        
         if (query.FilterParameters.IsPublished.HasValue)
         {
             coursesQuery = coursesQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished.Value);
