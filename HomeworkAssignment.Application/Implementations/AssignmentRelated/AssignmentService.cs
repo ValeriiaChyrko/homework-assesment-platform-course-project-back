@@ -35,7 +35,7 @@ public class AssignmentService(
             async () => await mediator.Send(new GetLastAssignmentByIdQuery(chapterId), cancellationToken),
             cancellationToken: cancellationToken);
 
-        var newPosition = lastAssignment != null ? lastAssignment.Position + 1 : 1;
+        var newPosition = (ushort)(lastAssignment?.Position + 1 ?? 1);
 
         var assignment = mapper.Map<Assignment>(assignmentDto);
         assignment.Position = newPosition;

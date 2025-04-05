@@ -69,7 +69,7 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddMemoryCache();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "redis:6379";
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
 builder.Services.AddHybridCache(options =>

@@ -1,7 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 using HomeAssignment.DTOs.RespondDTOs;
-using HomeAssignment.DTOs.SharedDTOs;
+using HomeAssignment.Persistence.Abstractions;
 
 namespace HomeworkAssignment.Application.Abstractions.CourseRelated;
 
@@ -18,33 +18,8 @@ public interface ICourseService
     Task<RespondCourseDto> UnpublishCourseAsync(Guid userId, Guid courseId,
         CancellationToken cancellationToken = default);
     
-    Task<PagedList<RespondCourseDto>> GetCoursesAsync(
+    Task<PagedList<RespondCourseFullInfoDto>> GetCoursesFullInfoAsync(
         RequestCourseFilterParameters filterParameters,
         Guid userId,
-        CancellationToken cancellationToken = default);
-    
-    Task<PagedList<RespondCourseWithCategoryDto>> GetCoursesWithCategoryAsync(
-        RequestCourseFilterParameters filterParameters,
-        CancellationToken cancellationToken = default);
-    
-    Task<PagedList<RespondCourseWithCategoryProgressDto>> GetCoursesWithCategoryWithProgressAsync(
-        RequestCourseFilterParameters filterParameters, Guid userId,
-        CancellationToken cancellationToken = default);
-
-    Task<RespondCourseWithCategoryWithProgressDto?> GetCourseWithCategoryWithProgressAsync(Guid courseId, Guid userId,
-        CancellationToken cancellationToken = default);
-
-    Task<RespondCourseWithChapters?> GetCourseWithChaptersByIdAsync(Guid courseId,
-        CancellationToken cancellationToken = default);
-    
-    Task<PagedList<RespondCourseWithCategoryProgressDto>> GetEnrolledCoursesWithCategoryWithProgressAsync(
-        Guid userId,
-        RequestCourseFilterParameters filterParameters,
-        CancellationToken cancellationToken = default);
-
-    Task<RespondCourseDto?> GetCourseByIdAsync(Guid courseId, Guid userId, 
-        CancellationToken cancellationToken = default);
-    
-    Task<RespondCourseWithChaptersWithAttachmentsDto?> GetCourseWithChaptersWithAttachmentsByIdAsync(Guid courseId, Guid userId, 
         CancellationToken cancellationToken = default);
 }

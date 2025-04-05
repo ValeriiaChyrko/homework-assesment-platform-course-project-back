@@ -4,13 +4,14 @@ public class RespondCourseFullInfoDto
 {
     public Guid Id { get; init; }
     public required string Title { get; set; }
-    public string? Description { get; set; }
-    public string? ImageUrl { get; set; }
+    public required string Description { get; set; }
+    public required string ImageUrl { get; set; }
     
-    public bool IsPublished { get; set; } 
+    public bool IsEnrolled { get; set; } = false;
+    public bool IsPublished { get; set; } = false;
+    
     public int Progress { get; set; } 
 
-    public Guid CategoryId { get; set; }
-    public required IReadOnlyCollection<RespondChapterDto> Chapters { get; set; }
-    public Guid UserId { get; set; }
+    public RespondCategoryDto? Category { get; set; }
+    public required List<RespondChapterDto>? Chapters { get; set; }
 }

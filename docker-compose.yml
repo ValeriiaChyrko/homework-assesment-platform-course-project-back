@@ -52,7 +52,8 @@
       - "5169:8081"
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=HomeworkAssignmentDb;Username=admin;Password=admin
-      - OTEL_EXPORTER_OTLP_ENDPOINT="http://jaeger:4317"
+      - ConnectionStrings__Redis=redis:6379
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
       - db
     networks:

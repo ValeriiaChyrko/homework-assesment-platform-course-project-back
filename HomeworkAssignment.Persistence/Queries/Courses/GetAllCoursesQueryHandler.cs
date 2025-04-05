@@ -1,57 +1,57 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.SharedDTOs;
+using HomeAssignment.Persistence.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeAssignment.Persistence.Queries.Courses;
-
-public sealed class
-    GetAllCoursesQueryHandler : IRequestHandler<GetAllCoursesQuery, PagedList<Course>>
+namespace HomeAssignment.Persistence.Queries.Courses
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAllCoursesQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    public sealed class GetAllCoursesQueryHandler : IRequestHandler<GetAllCoursesQuery, PagedList<CourseDetailView>>
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+        private readonly IHomeworkAssignmentDbContext _context;
+        private readonly IMapper _mapper;
 
-    public async Task<PagedList<Course>> Handle(GetAllCoursesQuery query,
-        CancellationToken cancellationToken)
-    {
-        var coursesQuery = _context.CourseEntities.AsNoTracking();
-        
-        if (!string.IsNullOrEmpty(query.FilterParameters.Title))
+        public GetAllCoursesQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
         {
-            coursesQuery = coursesQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
-        if (query.FilterParameters.OwnerId.HasValue)
+
+        public async Task<PagedList<CourseDetailView>> Handle(GetAllCoursesQuery query, CancellationToken cancellationToken)
         {
-            coursesQuery = coursesQuery.Where(a => a.UserId == query.FilterParameters.OwnerId.Value);
+            var coursesQuery = _context.CourseEntities.AsNoTracking();
+            
+            if (!string.IsNullOrEmpty(query.FilterParameters.Title))
+            {
+                coursesQuery = coursesQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
+            }
+
+            if (query.FilterParameters.CategoryId.HasValue)
+            {
+                coursesQuery = coursesQuery.Where(a => a.CategoryId == query.FilterParameters.CategoryId.Value);
+            }
+            
+            if (query.FilterParameters.IsPublished)
+            {
+                coursesQuery = coursesQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished);
+            }
+            
+            if (query.FilterParameters.IncludeCategory)
+            {
+                coursesQuery = coursesQuery.Include(a => a.Category);
+            }
+            
+            if (query.FilterParameters.IncludeChapters)
+            {
+                coursesQuery = coursesQuery.Include(a => a.Chapters);
+            }
+            
+            
+            coursesQuery = coursesQuery.OrderByDescending(a => a.CreatedAt);
+
+            var assignmentDtos = coursesQuery.Select(entityModel => _mapper.Map<CourseDetailView>(entityModel));
+            return await PagedList<CourseDetailView>.CreateAsync(assignmentDtos, query.FilterParameters.Page, query.FilterParameters.PageSize, cancellationToken);
         }
-        
-        if (query.FilterParameters.CategoryId.HasValue)
-        {
-            coursesQuery = coursesQuery.Where(a => a.CategoryId == query.FilterParameters.CategoryId.Value);
-        }
-        
-        if (query.FilterParameters.IsPublished.HasValue)
-        {
-            coursesQuery = coursesQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished.Value);
-        }
-        
-        if (!string.IsNullOrEmpty(query.FilterParameters.SortBy))
-        {
-            coursesQuery = query.FilterParameters.IsAscending
-                ? coursesQuery.OrderBy(a => EF.Property<object>(a, query.FilterParameters.SortBy))
-                : coursesQuery.OrderByDescending(a => EF.Property<object>(a, query.FilterParameters.SortBy));
-        }
-        
-        var assignmentDtos = coursesQuery.Select(entityModel => _mapper.Map<Course>(entityModel));
-        return await PagedList<Course>.CreateAsync(assignmentDtos, query.FilterParameters.PageNumber, query.FilterParameters.PageSize, cancellationToken);
     }
 }

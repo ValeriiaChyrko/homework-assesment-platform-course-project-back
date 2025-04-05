@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HomeAssignment.DTOs.SharedDTOs;
+namespace HomeAssignment.Persistence.Abstractions;
 
 public class PagedList<T>
 {

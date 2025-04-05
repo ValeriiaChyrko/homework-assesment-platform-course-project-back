@@ -43,7 +43,7 @@ public class AssignmentMappingProfile : Profile
                 entity.RepositoryName,
                 entity.RepositoryOwner,
                 entity.RepositoryUrl,
-                entity.Deadline,
+                entity.Deadline ?? entity.CreatedAt,
                 entity.MaxScore,
                 entity.MaxAttemptsAmount,
                 entity.Position,

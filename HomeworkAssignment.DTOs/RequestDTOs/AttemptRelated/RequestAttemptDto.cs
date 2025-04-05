@@ -5,15 +5,15 @@ public class RequestAttemptDto
     public Guid UserId { get; set; }
     public Guid AssignmentId { get; set; }
     
-    public int Position { get; set; }
+    public ushort Position { get; set; }
     public string? BranchName { get; set; }
     
     
-    public int FinalScore { get; set; }
+    public ushort FinalScore { get; set; }
     
-    public int CompilationScore { get; set; } 
-    public int QualityScore { get; set; }
-    public int TestsScore { get; set; } 
+    public ushort CompilationScore { get; set; } 
+    public ushort QualityScore { get; set; }
+    public ushort TestsScore { get; set; } 
     
     public bool IsCompleted { get; set; }
 }

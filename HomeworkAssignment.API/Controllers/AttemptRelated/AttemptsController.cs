@@ -96,7 +96,7 @@ public class AttemptsController(
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var dto = mapper.Map<RequestRepositoryWithBranchDto>(request);
-        var scores = new List<int>();
+        var scores = new List<ushort>();
 
         if (request.Assignment.AttemptCompilationSectionEnable)
         {
@@ -129,7 +129,7 @@ public class AttemptsController(
         return Ok(result);
     }
 
-    private static void UpdateScores(RequestSubmitAttemptDto request, int[] scores)
+    private static void UpdateScores(RequestSubmitAttemptDto request, ushort[] scores)
     {
         var index = 0;
         if (request.Assignment.AttemptCompilationSectionEnable) request.Attempt.CompilationScore = scores[index++];
@@ -137,7 +137,7 @@ public class AttemptsController(
         if (request.Assignment.AttemptTestsSectionEnable) request.Attempt.TestsScore = scores[index];
     }
 
-    private static async Task<int> GetScoreAsync(
+    private static async Task<ushort> GetScoreAsync(
         Func<RequestRepositoryWithBranchDto, CancellationToken, Task<int>> scoreFunc,
         RequestRepositoryWithBranchDto dto,
         int minScore,
@@ -145,6 +145,6 @@ public class AttemptsController(
         CancellationToken cancellationToken)
     {
         var percentage = await scoreFunc(dto, cancellationToken);
-        return (int)Math.Round(minScore + percentage / 100.0 * (maxScore - minScore));
+        return (ushort)Math.Round(minScore + percentage / 100.0 * (maxScore - minScore));
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.SharedDTOs;
+using HomeAssignment.Persistence.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

@@ -38,7 +38,7 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
         var userId = GetUserId();
         var cacheKey = $"courses-{userId}-{JsonSerializer.Serialize(filterParameters)}"; ;
         var result = await cache.GetOrCreateAsync(cacheKey,
-            async _ => await service.GetCoursesAsync(filterParameters, userId, cancellationToken),
+            async _ => await service.GetCoursesFullInfoAsync(filterParameters, userId, cancellationToken),
             _cacheOptions, cancellationToken:cancellationToken);
 
         return Ok(result);

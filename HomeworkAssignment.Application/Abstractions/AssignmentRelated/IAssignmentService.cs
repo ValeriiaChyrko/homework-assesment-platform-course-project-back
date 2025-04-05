@@ -1,6 +1,5 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RespondDTOs;
-using HomeAssignment.DTOs.SharedDTOs;
 
 namespace HomeworkAssignment.Application.Abstractions.AssignmentRelated;
 

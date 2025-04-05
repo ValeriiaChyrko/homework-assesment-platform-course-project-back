@@ -30,7 +30,7 @@ public class AttemptService(
             async () => await mediator.Send(new GetLastAttemptByIdQuery(userId, assignmentId), cancellationToken),
             cancellationToken:cancellationToken);
         
-        var newPosition = lastAttempt?.Position + 1 ?? 1;
+        var newPosition = (ushort)(lastAttempt?.Position + 1 ?? 1);
         var attempt = mapper.Map<Attempt>(attemptDto);
         attempt.Position = newPosition;
         attempt.AssignmentId = assignmentId;
