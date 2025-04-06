@@ -19,7 +19,7 @@ public sealed class GetCourseByOwnerIdQueryHandler : IRequestHandler<GetCourseBy
 
     public async Task<Course?> Handle(GetCourseByOwnerIdQuery query, CancellationToken cancellationToken)
     {
-        var assignment = await _context
+        var courseEntity = await _context
             .CourseEntities
             .AsNoTracking()
             .SingleOrDefaultAsync(mr => 
@@ -27,6 +27,6 @@ public sealed class GetCourseByOwnerIdQueryHandler : IRequestHandler<GetCourseBy
                 cancellationToken
             );
 
-        return assignment != null ? _mapper.Map<Course>(assignment) : null;
+        return courseEntity != null ? _mapper.Map<Course>(courseEntity) : null;
     }
 }

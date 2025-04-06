@@ -11,6 +11,7 @@ public class CourseDetailView(
     DateTime createdAt,
     DateTime updatedAt,
     List<Chapter> chapters,
+    List<Attachment> attachments,
     Category? category)
 {
     public Guid Id { get; init; } = id;
@@ -24,5 +25,6 @@ public class CourseDetailView(
     public DateTime UpdatedAt { get; init; } = updatedAt;
 
     public IReadOnlyList<Chapter> Chapters { get; init; } = chapters;
+    public IReadOnlyList<Attachment> Attachments { get; init; } = attachments;
     public Category? Category { get; init; } = category;
 }

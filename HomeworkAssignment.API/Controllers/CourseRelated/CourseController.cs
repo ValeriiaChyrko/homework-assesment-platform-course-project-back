@@ -22,7 +22,7 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
         LocalCacheExpiration = TimeSpan.FromMinutes(5),
         Expiration = TimeSpan.FromMinutes(10)
     };
-    
+
     /// <summary>
     /// Retrieves a list of courses based on filter parameters.
     /// </summary>
@@ -36,81 +36,81 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
             return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var cacheKey = $"courses-{userId}-{JsonSerializer.Serialize(filterParameters)}"; ;
+        var cacheKey = $"courses-{userId}-{JsonSerializer.Serialize(filterParameters)}";
+        ;
         var result = await cache.GetOrCreateAsync(cacheKey,
             async _ => await service.GetCoursesFullInfoAsync(filterParameters, userId, cancellationToken),
-            _cacheOptions, cancellationToken:cancellationToken);
-
+            _cacheOptions, cancellationToken: cancellationToken);
         return Ok(result);
     }
-    
+
     /// <summary>
-    /// Retrieves enrolled courses with evaluation details for a user.
+    /// Retrieves a list of created courses based on user.
     /// </summary>
-    [HttpGet("evaluation")]
-    public async Task<IActionResult> GetCoursesFullInfoAsync([FromQuery] Guid userId, CancellationToken cancellationToken = default)
-    {
-        var cacheKey = $"enrolled-courses-{userId}";
-        // var response = await cache.GetOrCreateAsync(cacheKey, 
-        //     async _ => await service.GetEnrolledCoursesAsync(userId, cancellationToken),
-        //     _cacheOptions, cancellationToken: cancellationToken);
-        //
-        // return Ok(response);
-        return NoContent();
-    }
-    
-    /// <summary>
-    /// Retrieves course details by ID.
-    /// </summary>
-    [HttpGet("{courseId:guid}")]
-    public async Task<IActionResult> Get(Guid courseId,
-        [FromQuery] RequestSingleCourseFilterParameters filterParameters,
-        [FromServices] IValidator<RequestSingleCourseFilterParameters> validator,
+    [HttpGet("owned")]
+    [TeacherOnly]
+    public async Task<IActionResult> GetByOwner([FromQuery] RequestCourseFilterParameters filterParameters,
+        [FromServices] IValidator<RequestCourseFilterParameters> validator,
         CancellationToken cancellationToken = default)
     {
         var validationResult = await validator.ValidateAsync(filterParameters, cancellationToken);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
+
+        var userId = GetUserId();
+        var cacheKey = $"courses-owned-by-{userId}";
         
-        var cacheKey = $"course-{courseId}-{filterParameters.OwnerId}";
-        // var result = await cache.GetOrCreateAsync(cacheKey, 
-        //     async _ => filterParameters.Include?.Contains("chapters") && filterParameters.Include.Contains("attachments")
-        //         ? await service.GetCourseWithChaptersWithAttachmentsByIdAsync(courseId, filterParameters.OwnerId, cancellationToken)
-        //         : await service.GetCourseByIdAsync(courseId, filterParameters.OwnerId, cancellationToken),
-        //     _cacheOptions, cancellationToken: cancellationToken);
-        //
-        // return result != null ? Ok(result) : NotFound();
-        return NoContent();
+        var result = await cache.GetOrCreateAsync(cacheKey,
+            async _ => await service.GetUserCoursesFullInfoAsync(filterParameters, userId, cancellationToken),
+            _cacheOptions, cancellationToken: cancellationToken);
+        return Ok(result);
     }
-    
+
+    /// <summary>
+    /// Retrieves a single course based on filter parameters.
+    /// </summary>
+    [HttpGet("{courseId:guid}")]
+    public async Task<IActionResult> Get(Guid courseId,
+        [FromQuery] RequestCourseFilterParameters filterParameters,
+        [FromServices] IValidator<RequestCourseFilterParameters> validator,
+        CancellationToken cancellationToken = default)
+    {
+        var validationResult = await validator.ValidateAsync(filterParameters, cancellationToken);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var userId = GetUserId();
+        var cacheKey = $"course-{courseId}-{JsonSerializer.Serialize(filterParameters)}";
+        // var result = await cache.GetOrCreateAsync(cacheKey,
+        //     async _ => await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId,
+        //         cancellationToken),
+        //     _cacheOptions, cancellationToken: cancellationToken);
+        var result = await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId, cancellationToken);
+        return Ok(result);
+    }
+
     /// <summary>
     /// Creates a new course.
     /// </summary>
     [HttpPost]
     [TeacherOnly]
-    public async Task<IActionResult> Create([FromBody] RequestCourseDto request,
-        [FromServices] IValidator<RequestCourseDto> validator,
+    public async Task<IActionResult> Create([FromBody] RequestCreateCourseDto requestCreate,
+        [FromServices] IValidator<RequestCreateCourseDto> validator,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(requestCreate, cancellationToken);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
+
+        var userId = GetUserId();
+        var result = await service.CreateCourseAsync(userId, requestCreate, cancellationToken);
         
-        var result = await service.CreateCourseAsync(request.UserId, request, cancellationToken);
+        var cacheKey = $"courses-owned-by-{userId}";
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+
         return CreatedAtAction(nameof(Get), new { courseId = result.Id }, result);
     }
-    
-    /// <summary>
-    /// Deletes a course by ID.
-    /// </summary>
-    [HttpDelete("{courseId:guid}")]
-    [TeacherOnly]
-    public async Task<IActionResult> Delete(Guid courseId, [FromQuery] Guid userId, CancellationToken cancellationToken = default)
-    {
-        await service.DeleteCourseAsync(userId, courseId, cancellationToken);
-        return Ok(courseId);
-    }
-    
+
     /// <summary>
     /// Updates an existing course.
     /// </summary>
@@ -123,30 +123,61 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
+
+        var userId = GetUserId();
+        var response = await service.UpdateCourseAsync(userId, courseId, request, cancellationToken);
         
-        var response = await service.UpdateCourseAsync(request.UserId, courseId, request, cancellationToken);
+        var cacheKey =
+            $"course-{courseId}-{JsonSerializer.Serialize(new RequestCourseFilterParameters())}"; 
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+        
+        cacheKey = $"courses-owned-by-{userId}";
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+
         return Ok(response);
     }
-    
+
+    /// <summary>
+    /// Deletes a course by ID.
+    /// </summary>
+    [HttpDelete("{courseId:guid}")]
+    [TeacherOnly]
+    public async Task<IActionResult> Delete(Guid courseId, [FromQuery] Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        await service.DeleteCourseAsync(userId, courseId, cancellationToken);
+        
+        var cacheKey = $"courses-owned-by-{userId}";
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+
+        cacheKey =
+            $"course-{courseId}-{JsonSerializer.Serialize(new RequestCourseFilterParameters())}"; 
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+
+        return Ok(courseId);
+    }
+
     /// <summary>
     /// Publishes a course.
     /// </summary>
     [HttpPatch("{courseId:guid}/publish")]
     [TeacherOnly]
-    public async Task<IActionResult> Publish([FromQuery] Guid userId, Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Publish(Guid courseId, CancellationToken cancellationToken = default)
     {
+        var userId = GetUserId();
         await service.PublishCourseAsync(userId, courseId, cancellationToken);
         return Ok(courseId);
     }
-    
+
     /// <summary>
     /// Unpublishes a course.
     /// </summary>
     [HttpPatch("{courseId:guid}/unpublish")]
     [TeacherOnly]
-    public async Task<IActionResult> Unpublish([FromQuery] Guid userId, Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Unpublish(Guid courseId, CancellationToken cancellationToken = default)
     {
+        var userId = GetUserId();
         await service.UnpublishCourseAsync(userId, courseId, cancellationToken);
-        return Ok(courseId);
+        return NoContent();
     }
 }

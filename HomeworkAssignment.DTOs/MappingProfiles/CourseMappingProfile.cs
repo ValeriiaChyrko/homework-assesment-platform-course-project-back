@@ -10,7 +10,7 @@ public class CourseMappingProfile : Profile
 {
     public CourseMappingProfile()
     {
-        CreateMap<RequestCourseDto, Course>()
+        CreateMap<RequestCreateCourseDto, Course>()
             .ConstructUsing(src => Course.Create(
                 src.Title
             ));
@@ -37,6 +37,7 @@ public class CourseMappingProfile : Profile
             ));
         
         CreateMap<CourseEntity, CourseDetailView>()
+            .ForMember(dest => dest.Attachments, opt => opt.MapFrom(src => src.Attachments))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom(src => src.Chapters))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
 

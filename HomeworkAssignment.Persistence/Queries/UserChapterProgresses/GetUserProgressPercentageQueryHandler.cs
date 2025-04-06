@@ -18,7 +18,7 @@ public sealed class GetUserProgressPercentageQueryHandler
     public async Task<int> Handle(GetUserProgressPercentageQuery query, CancellationToken cancellationToken)
     {
         var totalChaptersQuery = _context.ChapterEntities
-            .Where(c => c.CourseId == query.CourseId);
+            .Where(c => c.CourseId == query.CourseId && c.IsPublished);
 
         var totalChapters = await totalChaptersQuery.CountAsync(cancellationToken);
 

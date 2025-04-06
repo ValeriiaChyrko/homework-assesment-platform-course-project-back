@@ -70,6 +70,6 @@ public class CourseAttachmentController(ICourseAttachmentService service, Hybrid
         var cacheKey = $"attachments-{courseId}";
         await cache.RemoveAsync(cacheKey, cancellationToken);
     
-        return NoContent();
+        return Ok(attachmentId);
     }
 }

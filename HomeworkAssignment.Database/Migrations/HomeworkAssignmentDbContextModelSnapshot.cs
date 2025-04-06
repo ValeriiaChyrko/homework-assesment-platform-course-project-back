@@ -130,6 +130,11 @@ namespace HomeAssignment.Database.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("UploadthingKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(512)

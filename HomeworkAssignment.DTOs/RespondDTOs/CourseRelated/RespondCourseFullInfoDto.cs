@@ -14,4 +14,5 @@ public class RespondCourseFullInfoDto
 
     public RespondCategoryDto? Category { get; set; }
     public required List<RespondChapterDto>? Chapters { get; set; }
+    public required List<RespondAttachmentDto>? Attachments { get; set; }
 }

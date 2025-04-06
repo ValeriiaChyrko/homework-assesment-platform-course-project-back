@@ -46,13 +46,11 @@ public class Course(
         string? title = null,
         string? description = null,
         string? imageUrl = null,
-        Guid? userId = null,
         Guid? categoryId = null)
     {
         Title = title ?? Title;
         Description = description ?? Description;
         ImageUrl = imageUrl ?? ImageUrl;
-        UserId = userId ?? UserId;
         CategoryId = categoryId ?? CategoryId;
 
         UpdatedAt = DateTime.UtcNow;

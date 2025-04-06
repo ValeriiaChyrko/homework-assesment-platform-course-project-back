@@ -15,10 +15,6 @@ public class RequestPartialCourseDtoValidator : AbstractValidator<RequestPartial
             .Must(id => id != Guid.Empty).WithMessage("CategoryId cannot be an empty GUID.")
             .When(x => x.CategoryId != null);
 
-        RuleFor(x => x.UserId)
-            .NotNull().NotEmpty().WithMessage("UserId is required.")
-            .Must(id => id != Guid.Empty).WithMessage("UserId cannot be an empty GUID.");
-
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(MaxLengthTitlePropertyLength)

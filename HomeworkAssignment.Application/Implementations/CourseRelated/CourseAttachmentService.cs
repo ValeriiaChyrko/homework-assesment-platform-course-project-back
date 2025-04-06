@@ -39,7 +39,7 @@ public class CourseAttachmentService(
     {
         _logger.LogInformation("Creating attachment '{Name}' for COURSE_ID: {CourseId}", attachmentDto.Name, courseId);
         
-        var attachment = Attachment.CreateForCourse(courseId, attachmentDto.Name, attachmentDto.Url);
+        var attachment = Attachment.CreateForCourse(courseId, attachmentDto.Key, attachmentDto.Name, attachmentDto.Url);
         
         var addedAttachment = await ExecuteTransactionAsync(
             () => mediator.Send(new CreateAttachmentCommand(attachment), cancellationToken),

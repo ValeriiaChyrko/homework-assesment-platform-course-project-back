@@ -11,6 +11,7 @@ public class AttachmentMappingProfile : Profile
     {
         CreateMap<Attachment, AttachmentEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.UploadthingKey, opt => opt.MapFrom(src => src.UploadthingKey))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
             .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
@@ -20,6 +21,7 @@ public class AttachmentMappingProfile : Profile
 
         CreateMap<AttachmentEntity, Attachment>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.UploadthingKey, opt => opt.MapFrom(src => src.UploadthingKey))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
             .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
@@ -29,6 +31,7 @@ public class AttachmentMappingProfile : Profile
         
         CreateMap<Attachment, RespondAttachmentDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Key, opt => opt.MapFrom(src => src.UploadthingKey))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
             .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))

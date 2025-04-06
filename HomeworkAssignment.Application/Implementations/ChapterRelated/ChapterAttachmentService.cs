@@ -40,7 +40,7 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
         {
             _logger.LogInformation("Started creating chapter attachment with CHAPTER_ID: {ChapterId}", chapterId);
 
-            var attachment = Attachment.CreateForChapter(chapterId, attachmentDto.Name, attachmentDto.Url);
+            var attachment = Attachment.CreateForChapter(chapterId, attachmentDto.Key, attachmentDto.Name, attachmentDto.Url);
 
             var addedAttachment = await ExecuteTransactionAsync(
                 async () => await mediator.Send(new CreateAttachmentCommand(attachment), cancellationToken),

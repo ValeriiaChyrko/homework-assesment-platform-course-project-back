@@ -5,6 +5,7 @@ public class AttachmentEntity
     public Guid Id { get; set; }
     public required string Name { get; init; }
     public required string Url { get; init; }
+    public required string UploadthingKey { get; init; }
 
     public Guid? CourseId { get; init; }
     public CourseEntity? Course { get; init; }
