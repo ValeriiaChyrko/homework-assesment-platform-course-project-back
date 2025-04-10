@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.CategoryRelated;
 using HomeworkAssignment.Application.Abstractions.CategoryRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Services.Abstractions;

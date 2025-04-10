@@ -1,6 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 using HomeAssignment.Persistence.Abstractions;
 
 namespace HomeworkAssignment.Application.Abstractions.CourseRelated;

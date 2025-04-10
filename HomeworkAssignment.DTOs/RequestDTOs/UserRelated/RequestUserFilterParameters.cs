@@ -1,6 +1,4 @@
-﻿using HomeAssignment.Domain.Abstractions.Enums;
-
-namespace HomeAssignment.DTOs.RequestDTOs;
+﻿namespace HomeAssignment.DTOs.RequestDTOs.UserRelated;
 
 public class RequestUserFilterParameters
 {

@@ -1,4 +1,4 @@
-﻿namespace HomeAssignment.DTOs.RequestDTOs;
+﻿namespace HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
 
 public class RequestReorderAssignmentDto
 {

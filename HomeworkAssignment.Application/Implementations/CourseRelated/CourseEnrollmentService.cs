@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 using HomeAssignment.Persistence.Commands.ChapterUserProgresses;
 using HomeAssignment.Persistence.Commands.Enrollments;
 using HomeAssignment.Persistence.Queries.Enrollments;

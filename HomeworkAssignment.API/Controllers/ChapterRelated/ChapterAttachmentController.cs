@@ -70,6 +70,6 @@ public class ChapterAttachmentController(IChapterAttachmentService service, Hybr
         await service.DeleteChapterAttachmentAsync(attachmentId, cancellationToken);
         
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
-        return NoContent();
+        return Ok(attachmentId);
     }
 }

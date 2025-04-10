@@ -1,4 +1,4 @@
-﻿namespace HomeAssignment.DTOs.RespondDTOs;
+﻿namespace HomeAssignment.DTOs.RespondDTOs.CategoryRelated;
 
 public class RespondCategoryDto
 {

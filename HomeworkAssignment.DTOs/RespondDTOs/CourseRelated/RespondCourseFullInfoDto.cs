@@ -1,4 +1,7 @@
-﻿namespace HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.DTOs.RespondDTOs.CategoryRelated;
+using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
+
+namespace HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 
 public class RespondCourseFullInfoDto
 {

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HomeAssignment.Domain.Abstractions.Enums;
+using HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
 
 namespace HomeAssignment.DTOs.RequestDTOs.validators;
 

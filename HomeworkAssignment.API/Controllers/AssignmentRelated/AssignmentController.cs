@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
 using HomeworkAssignment.Application.Abstractions.AssignmentRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
@@ -69,17 +69,18 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     [HttpPost]
     [TeacherOnly]
     public async Task<IActionResult> CreateAssignment(Guid courseId, Guid chapterId,
-        [FromBody] RequestAssignmentDto request,
-        [FromServices] IValidator<RequestAssignmentDto> validator,
+        [FromBody] RequestCreateAssignmentDto requestCreate,
+        [FromServices] IValidator<RequestCreateAssignmentDto> validator,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(requestCreate, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
-        var assignmentId = await assignmentService.CreateAssignmentAsync(request.UserId, chapterId, request, cancellationToken);
+        var userId = GetUserId();
+        var assignment = await assignmentService.CreateAssignmentAsync(userId, chapterId, requestCreate, cancellationToken);
         
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
-        return CreatedAtAction(nameof(GetAssignment), new { courseId, chapterId, assignmentId }, assignmentId);
+        return Ok(assignment);
     }
 
     /// <summary>
@@ -113,7 +114,7 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         await assignmentService.DeleteAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
         
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
-        return NoContent();
+        return Ok(assignmentId);
     }
 
     /// <summary>
@@ -158,6 +159,7 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         await assignmentService.UnpublishAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
         
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingle(courseId), cancellationToken);
         return Ok(assignmentId);
     }
 }

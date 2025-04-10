@@ -1,5 +1,6 @@
 ﻿using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.ChapterRelated;
 using HomeAssignment.Persistence.Abstractions;
 using MediatR;
 

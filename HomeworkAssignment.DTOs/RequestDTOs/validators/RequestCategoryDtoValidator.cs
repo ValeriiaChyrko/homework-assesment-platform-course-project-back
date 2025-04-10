@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HomeAssignment.DTOs.RequestDTOs.CategoryRelated;
 
 namespace HomeAssignment.DTOs.RequestDTOs.validators;
 

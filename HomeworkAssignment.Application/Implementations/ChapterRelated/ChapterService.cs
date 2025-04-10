@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.ChapterRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
+using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 using HomeAssignment.Persistence.Commands.Chapters;
 using HomeAssignment.Persistence.Queries.Assignments;
 using HomeAssignment.Persistence.Queries.Attachments;

@@ -1,4 +1,6 @@
-﻿namespace HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.DTOs.RespondDTOs.CategoryRelated;
+
+namespace HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 
 public class RespondCourseWithCategoryDto
 {

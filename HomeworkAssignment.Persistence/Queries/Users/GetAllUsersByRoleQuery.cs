@@ -1,6 +1,7 @@
 ﻿using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.Domain.Abstractions.Enums;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.UserRelated;
 using HomeAssignment.Persistence.Abstractions;
 using MediatR;
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
 using HomeAssignment.Persistence.Commands.AssignmentUserProgresses;
 using HomeAssignment.Persistence.Queries.UserAssignmentProgresses;
 using HomeworkAssignment.Application.Abstractions;

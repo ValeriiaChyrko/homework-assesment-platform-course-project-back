@@ -1,4 +1,4 @@
-﻿namespace HomeAssignment.DTOs.RespondDTOs;
+﻿namespace HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 
 public class RespondChapterUserProgressDto
 {

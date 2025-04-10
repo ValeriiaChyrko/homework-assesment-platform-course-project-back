@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
 using HomeworkAssignment.Application.Abstractions;
@@ -26,10 +28,10 @@ public class AssignmentService(
     public async Task<RespondAssignmentDto> CreateAssignmentAsync(
         Guid userId,
         Guid chapterId,
-        RequestAssignmentDto assignmentDto,
+        RequestCreateAssignmentDto createAssignmentDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started creating assignment: {@AssignmentDto}", assignmentDto);
+        _logger.LogInformation("Started creating assignment: {@AssignmentDto}", createAssignmentDto);
 
         var lastAssignment = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetLastAssignmentByIdQuery(chapterId), cancellationToken),
@@ -37,7 +39,7 @@ public class AssignmentService(
 
         var newPosition = (ushort)(lastAssignment?.Position + 1 ?? 1);
 
-        var assignment = mapper.Map<Assignment>(assignmentDto);
+        var assignment = mapper.Map<Assignment>(createAssignmentDto);
         assignment.Position = newPosition;
         assignment.ChapterId = chapterId;
 

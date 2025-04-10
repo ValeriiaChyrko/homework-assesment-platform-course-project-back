@@ -3,6 +3,7 @@ using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 

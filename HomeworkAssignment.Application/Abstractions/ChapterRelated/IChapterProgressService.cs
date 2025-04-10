@@ -1,5 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.ChapterRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 
 namespace HomeworkAssignment.Application.Abstractions.ChapterRelated;
 

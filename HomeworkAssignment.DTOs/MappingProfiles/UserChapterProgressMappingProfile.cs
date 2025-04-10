@@ -2,6 +2,7 @@
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 

@@ -2,7 +2,9 @@
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 
@@ -10,7 +12,7 @@ public class AssignmentMappingProfile : Profile
 {
     public AssignmentMappingProfile()
     {
-        CreateMap<RequestAssignmentDto, Assignment>()
+        CreateMap<RequestCreateAssignmentDto, Assignment>()
             .ConstructUsing(dto => Assignment.Create(
                 dto.Title
             ));

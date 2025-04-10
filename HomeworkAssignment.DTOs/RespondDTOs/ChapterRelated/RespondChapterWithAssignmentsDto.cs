@@ -1,4 +1,6 @@
-﻿namespace HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
+
+namespace HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 
 public class RespondChapterWithAssignmentsDto
 {

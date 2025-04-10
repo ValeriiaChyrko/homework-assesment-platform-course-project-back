@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AttemptRelated;
 using HomeworkAssignment.Application.Abstractions.AttemptRelated;
 using HomeworkAssignment.Controllers.Abstractions;
 using HomeworkAssignment.Services.Abstractions;

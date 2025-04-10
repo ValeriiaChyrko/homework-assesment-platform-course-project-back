@@ -1,4 +1,5 @@
 ﻿using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 
 namespace HomeworkAssignment.Application.Abstractions.CourseRelated;
 

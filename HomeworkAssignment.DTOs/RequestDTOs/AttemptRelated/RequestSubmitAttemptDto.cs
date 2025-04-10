@@ -1,6 +1,6 @@
-﻿using HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
 
-namespace HomeAssignment.DTOs.RequestDTOs;
+namespace HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
 
 public class RequestSubmitAttemptDto
 { 

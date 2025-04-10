@@ -1,11 +1,13 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
 
 namespace HomeworkAssignment.Application.Abstractions.AssignmentRelated;
 
 public interface IAssignmentService
 {
-    Task<RespondAssignmentDto> CreateAssignmentAsync(Guid userId, Guid chapterId, RequestAssignmentDto assignmentDto,
+    Task<RespondAssignmentDto> CreateAssignmentAsync(Guid userId, Guid chapterId, RequestCreateAssignmentDto createAssignmentDto,
         CancellationToken cancellationToken = default);
     Task<RespondAssignmentDto> UpdateAssignmentAsync(Guid userId, Guid chapterId, Guid assignmentId, RequestPartialAssignmentDto assignmentDto,
         CancellationToken cancellationToken = default);

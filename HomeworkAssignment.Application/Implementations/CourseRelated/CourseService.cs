@@ -3,6 +3,7 @@ using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 using HomeAssignment.Persistence.Abstractions;
 using HomeAssignment.Persistence.Commands.Courses;
 using HomeAssignment.Persistence.Queries.Chapters;

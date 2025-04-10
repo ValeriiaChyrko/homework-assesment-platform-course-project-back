@@ -182,6 +182,6 @@ public class CourseController(ICourseService service, HybridCache cache, ICacheK
         
         await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
-        return NoContent();
+        return Ok(courseId);
     }
 }
