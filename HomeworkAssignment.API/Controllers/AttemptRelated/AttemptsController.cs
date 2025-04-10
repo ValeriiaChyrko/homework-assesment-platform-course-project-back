@@ -7,6 +7,7 @@ using HomeworkAssignment.Controllers.Abstractions;
 using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace HomeworkAssignment.Controllers.AttemptRelated;
 
@@ -23,30 +24,50 @@ public class AttemptsController(
     ICompilationGrpcService compilationGrpc,
     IQualityGrpcService qualityGrpc,
     ITestsGrpcService testsGrpc,
-    IMapper mapper)
+    IMapper mapper,
+    HybridCache cache, 
+    ICacheKeyManager cacheKeyManager)
     : BaseController
 {
+    private readonly HybridCacheEntryOptions _cacheOptions = new()
+    {
+        LocalCacheExpiration = TimeSpan.FromMinutes(5),
+        Expiration = TimeSpan.FromMinutes(10)
+    };
+    
     /// <summary>
     /// Get a list of all attempts for a specific task.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> GetAttempts(Guid assignmentId,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> GetAttempts(Guid courseId, Guid chapterId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        var result = await attemptService.GetAttemptsByAssignmentIdAsync(userId, assignmentId, cancellationToken);
-        return Ok(result);
+        
+        var cacheKey = cacheKeyManager.AttemptList(courseId, chapterId, assignmentId);
+
+        var cachedAttempts = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await attemptService.GetAttemptsByAssignmentIdAsync(userId, assignmentId, cancellationToken),
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)],
+            cancellationToken: cancellationToken);
+
+        return Ok(cachedAttempts);
     }
 
     /// <summary>
     /// Creating a new attempt to complete a task.
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<RespondAttemptDto>> Create(Guid assignmentId, [FromBody] RequestAttemptDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<RespondAttemptDto>> Create(Guid courseId, Guid chapterId, Guid assignmentId, 
+        [FromBody] RequestAttemptDto request, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
+        
         var result = await attemptService.CreateAttemptAsync(userId, assignmentId, request, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
         return Ok(result);
     }
 
@@ -55,7 +76,7 @@ public class AttemptsController(
     /// </summary>
     [HttpGet("{attemptId:guid}/branches")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetAuthorBranches([FromQuery] RequestBranchDto query,
-        [FromServices] IValidator<RequestBranchDto> validator, CancellationToken cancellationToken)
+        [FromServices] IValidator<RequestBranchDto> validator, CancellationToken cancellationToken = default)
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
@@ -68,9 +89,9 @@ public class AttemptsController(
     /// Update information about the task attempt.
     /// </summary>
     [HttpPatch("{attemptId:guid}")]
-    public async Task<ActionResult<RespondAttemptDto>> Update(Guid assignmentId, Guid attemptId,
+    public async Task<ActionResult<RespondAttemptDto>> Update(Guid courseId, Guid chapterId, Guid assignmentId, Guid attemptId,
         [FromBody] RequestPartialAttemptDto request, [FromServices] IValidator<RequestPartialAttemptDto> validator,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
@@ -78,6 +99,8 @@ public class AttemptsController(
         var userId = GetUserId();
         var result =
             await attemptService.UpdateAttemptAsync(userId, assignmentId, attemptId, request, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
         return Ok(result);
     }
 
@@ -86,8 +109,7 @@ public class AttemptsController(
     /// </summary>
     [HttpPut("{attemptId:guid}/submit")]
     public async Task<ActionResult<RespondAttemptDto>> Submit(
-        Guid assignmentId,
-        Guid attemptId,
+        Guid courseId, Guid chapterId, Guid assignmentId, Guid attemptId,
         [FromBody] RequestSubmitAttemptDto request,
         [FromServices] IValidator<RequestSubmitAttemptDto> validator,
         CancellationToken cancellationToken = default)
@@ -126,6 +148,8 @@ public class AttemptsController(
 
         var result = await attemptService.SubmitAttemptAsync(request.UserId, assignmentId, attemptId, request.Attempt,
             cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
         return Ok(result);
     }
 

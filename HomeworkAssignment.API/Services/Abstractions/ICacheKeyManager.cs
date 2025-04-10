@@ -22,4 +22,5 @@ public interface ICacheKeyManager
     string AssignmentSingle(Guid courseId, Guid chapterId, Guid assignmentId);
     string AssignmentList(Guid courseId, Guid chapterId);
     string AssignmentProgress(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId);
+    string AttemptList(Guid courseId, Guid chapterId, Guid assignmentId);
 }

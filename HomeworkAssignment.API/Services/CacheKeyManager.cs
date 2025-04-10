@@ -54,6 +54,9 @@ public class CacheKeyManager : ICacheKeyManager
     public string AssignmentProgress(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId)
         => $"progress:single:{userId}:{courseId}:{chapterId}:{assignmentId}";
     
+    public string AttemptList(Guid courseId, Guid chapterId, Guid assignmentId)
+        => $"course:single:{courseId}:chapter:single:{chapterId}:assignments:{assignmentId}:attempts";
+    
     private static string ComputeHash(object obj)
     {
         var json = JsonSerializer.Serialize(obj);
