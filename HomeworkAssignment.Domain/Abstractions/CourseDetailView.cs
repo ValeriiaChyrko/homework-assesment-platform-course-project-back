@@ -24,7 +24,7 @@ public class CourseDetailView(
     public DateTime CreatedAt { get; init; } = createdAt;
     public DateTime UpdatedAt { get; init; } = updatedAt;
 
-    public IReadOnlyList<Chapter> Chapters { get; init; } = chapters;
+    public IReadOnlyList<Chapter> Chapters { get; set; } = chapters;
     public IReadOnlyList<Attachment> Attachments { get; init; } = attachments;
     public Category? Category { get; init; } = category;
 }

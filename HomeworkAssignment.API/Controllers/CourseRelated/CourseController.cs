@@ -1,10 +1,10 @@
-﻿using System.Text.Json;
-using FluentValidation;
+﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
 using HomeworkAssignment.Application.Abstractions.CourseRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -15,19 +15,19 @@ namespace HomeworkAssignment.Controllers.CourseRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses")]
-public class CourseController(ICourseService service, HybridCache cache) : BaseController
+public class CourseController(ICourseService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
         LocalCacheExpiration = TimeSpan.FromMinutes(5),
         Expiration = TimeSpan.FromMinutes(10)
     };
-
+    
     /// <summary>
     /// Retrieves a list of courses based on filter parameters.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] RequestCourseFilterParameters filterParameters,
+    public async Task<IActionResult> GetCourseList([FromQuery] RequestCourseFilterParameters filterParameters,
         [FromServices] IValidator<RequestCourseFilterParameters> validator,
         CancellationToken cancellationToken = default)
     {
@@ -36,12 +36,16 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
             return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var cacheKey = $"courses-{userId}-{JsonSerializer.Serialize(filterParameters)}";
-        ;
-        var result = await cache.GetOrCreateAsync(cacheKey,
+        var cacheKey = cacheKeyManager.CourseList(userId, filterParameters);
+        
+        var cachedCourses = await cache.GetOrCreateAsync(
+            key:cacheKey, 
             async _ => await service.GetCoursesFullInfoAsync(filterParameters, userId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
-        return Ok(result);
+            options:_cacheOptions,
+            tags: [cacheKeyManager.CourseListGroup(userId)],
+            cancellationToken: cancellationToken);
+
+        return Ok(cachedCourses);
     }
 
     /// <summary>
@@ -49,7 +53,7 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
     /// </summary>
     [HttpGet("owned")]
     [TeacherOnly]
-    public async Task<IActionResult> GetByOwner([FromQuery] RequestCourseFilterParameters filterParameters,
+    public async Task<IActionResult> GetByOwnerCourseList([FromQuery] RequestCourseFilterParameters filterParameters,
         [FromServices] IValidator<RequestCourseFilterParameters> validator,
         CancellationToken cancellationToken = default)
     {
@@ -58,12 +62,15 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
             return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var cacheKey = $"courses-owned-by-{userId}";
+        var cacheKey = cacheKeyManager.CourseOwned(userId);
         
-        var result = await cache.GetOrCreateAsync(cacheKey,
+        var cachedCourses = await cache.GetOrCreateAsync(
+            key:cacheKey,
             async _ => await service.GetUserCoursesFullInfoAsync(filterParameters, userId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
-        return Ok(result);
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CourseListGroup(userId)],
+            cancellationToken: cancellationToken);
+        return Ok(cachedCourses);
     }
 
     /// <summary>
@@ -80,12 +87,14 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
             return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var cacheKey = $"course-{courseId}-{JsonSerializer.Serialize(filterParameters)}";
-        // var result = await cache.GetOrCreateAsync(cacheKey,
-        //     async _ => await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId,
-        //         cancellationToken),
-        //     _cacheOptions, cancellationToken: cancellationToken);
-        var result = await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId, cancellationToken);
+        var cacheKey = cacheKeyManager.CourseSingle(courseId);
+        var result = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId, cancellationToken),
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CourseSingleGroup(courseId)],
+            cancellationToken: cancellationToken);
+        
         return Ok(result);
     }
 
@@ -105,9 +114,7 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
         var userId = GetUserId();
         var result = await service.CreateCourseAsync(userId, requestCreate, cancellationToken);
         
-        var cacheKey = $"courses-owned-by-{userId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
         return CreatedAtAction(nameof(Get), new { courseId = result.Id }, result);
     }
 
@@ -125,16 +132,11 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
             return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var response = await service.UpdateCourseAsync(userId, courseId, request, cancellationToken);
+        var result = await service.UpdateCourseAsync(userId, courseId, request, cancellationToken);
         
-        var cacheKey =
-            $"course-{courseId}-{JsonSerializer.Serialize(new RequestCourseFilterParameters())}"; 
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-        
-        cacheKey = $"courses-owned-by-{userId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-
-        return Ok(response);
+        await cache.RemoveAsync(cacheKeyManager.CourseSingle(courseId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        return Ok(result);
     }
 
     /// <summary>
@@ -147,13 +149,8 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
     {
         await service.DeleteCourseAsync(userId, courseId, cancellationToken);
         
-        var cacheKey = $"courses-owned-by-{userId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-
-        cacheKey =
-            $"course-{courseId}-{JsonSerializer.Serialize(new RequestCourseFilterParameters())}"; 
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
         return Ok(courseId);
     }
 
@@ -166,6 +163,9 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
     {
         var userId = GetUserId();
         await service.PublishCourseAsync(userId, courseId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
         return Ok(courseId);
     }
 
@@ -178,6 +178,9 @@ public class CourseController(ICourseService service, HybridCache cache) : BaseC
     {
         var userId = GetUserId();
         await service.UnpublishCourseAsync(userId, courseId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
         return NoContent();
     }
 }

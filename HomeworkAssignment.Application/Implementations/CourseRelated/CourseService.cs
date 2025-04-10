@@ -177,6 +177,13 @@ public class CourseService(
         
         var query = new GetSingleCourseDetailViewByOwnerIdQuery(filterParameters, userId, courseId);
         var result = await mediator.Send(query, cancellationToken);
+
+        if (query.FilterParameters.IncludeChapters && result?.Chapters != null)
+        {
+            result.Chapters = result.Chapters
+                .OrderBy(ch => ch.Position)
+                .ToList();
+        }
         
         _logger.LogInformation("Retrieved course for CourseId: {CourseId}", courseId);
         

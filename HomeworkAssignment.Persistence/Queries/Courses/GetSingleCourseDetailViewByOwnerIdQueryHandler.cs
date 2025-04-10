@@ -27,7 +27,7 @@ namespace HomeAssignment.Persistence.Queries.Courses
                 queryable = queryable.Include(a => a.Category);
 
             if (query.FilterParameters.IncludeChapters)
-                queryable = queryable.Include(a => a.Chapters!.Where(chapter => chapter.IsPublished));
+                queryable = queryable.Include(a => a.Chapters);
 
             if (query.FilterParameters.IncludeAttachments)
                 queryable = queryable.Include(a => a.Attachments);

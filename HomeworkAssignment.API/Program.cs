@@ -6,7 +6,6 @@ using HomeworkAssignment;
 using HomeworkAssignment.Application;
 using HomeworkAssignment.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -66,19 +65,11 @@ builder.Services.AddOpenTelemetry()
         tracing.AddOtlpExporter();
     });
 
-builder.Services.AddMemoryCache();
+builder.Services.AddOutputCache();
+builder.Services.AddHybridCache();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
-});
-
-builder.Services.AddHybridCache(options =>
-{
-    options.DefaultEntryOptions = new HybridCacheEntryOptions
-    {
-        LocalCacheExpiration = TimeSpan.FromMinutes(1),
-        Expiration = TimeSpan.FromMinutes(5)
-    };
 });
 
 var app = builder.Build();
@@ -96,6 +87,8 @@ app.UseSerilogRequestLogging();
 app.UseErrorHandler();
 
 app.MapControllers();
+
+app.UseOutputCache();
 
 app.MapGet("users/me",
     (ClaimsPrincipal claimsPrincipal) =>

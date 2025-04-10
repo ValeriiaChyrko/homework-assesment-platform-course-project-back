@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Application.Abstractions.CourseRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -13,12 +14,12 @@ namespace HomeworkAssignment.Controllers.CourseRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/attachments")]
-public class CourseAttachmentController(ICourseAttachmentService service, HybridCache cache) : BaseController
+public class CourseAttachmentController(ICourseAttachmentService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
-        LocalCacheExpiration = TimeSpan.FromMinutes(5),
-        Expiration = TimeSpan.FromMinutes(10)
+        LocalCacheExpiration = TimeSpan.FromMinutes(10),
+        Expiration = TimeSpan.FromMinutes(20)
     };
 
     /// <summary>
@@ -27,11 +28,14 @@ public class CourseAttachmentController(ICourseAttachmentService service, Hybrid
     [HttpGet]
     public async Task<IActionResult> GetAttachments(Guid courseId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"attachments-{courseId}";
+        var cacheKey = cacheKeyManager.CourseAttachments(courseId);
         
-        var cachedAttachments = await cache.GetOrCreateAsync(cacheKey, 
+        var cachedAttachments = await cache.GetOrCreateAsync(
+            key:cacheKey, 
             async _ => await service.GetCourseAttachmentsAsync(courseId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CourseSingleGroup(courseId)],
+            cancellationToken: cancellationToken);
 
         return Ok(cachedAttachments);
     }
@@ -50,12 +54,10 @@ public class CourseAttachmentController(ICourseAttachmentService service, Hybrid
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
         
-        var attachment = await service.CreateCourseAttachmentAsync(courseId, request, cancellationToken);
+        var cachedAttachment = await service.CreateCourseAttachmentAsync(courseId, request, cancellationToken);
         
-        var cacheKey = $"attachments-{courseId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-        
-        return Ok(attachment);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        return Ok(cachedAttachment);
     }
     
     /// <summary>
@@ -67,9 +69,7 @@ public class CourseAttachmentController(ICourseAttachmentService service, Hybrid
     {
         await service.DeleteCourseAttachmentAsync(attachmentId, cancellationToken);
         
-        var cacheKey = $"attachments-{courseId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-    
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(attachmentId);
     }
 }

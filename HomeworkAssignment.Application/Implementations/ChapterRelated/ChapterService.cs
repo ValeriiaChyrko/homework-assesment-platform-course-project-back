@@ -31,15 +31,17 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
             _logger.LogInformation("Started creating chapter: {@ChapterDto}", createChapterDto);
 
             var lastChapter = await mediator.Send(new GetLastChapterByIdQuery(courseId), cancellationToken);
-            var newPosition = lastChapter != null ? lastChapter.Position + 1 : 1;
+            var newPosition = lastChapter != null ? lastChapter.Position + 1 : 0;
 
             var chapter = mapper.Map<Chapter>(createChapterDto);
             chapter.Position = newPosition;
             chapter.CourseId = courseId;
 
-            chapter = await mediator.Send(new CreateChapterCommand(chapter), cancellationToken);
+            chapter = await ExecuteTransactionAsync(
+                async () => await mediator.Send(new CreateChapterCommand(chapter), cancellationToken),
+            cancellationToken: cancellationToken);
+            
             _logger.LogInformation("Successfully created chapter with ID: {ChapterId}", chapter.Id);
-
             return mapper.Map<RespondChapterDto>(chapter);
         }
 
@@ -61,18 +63,22 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
                 chapter.Position,
                 chapterDto.IsFree
             );
+            
+            var updatedChapter = await ExecuteTransactionAsync(
+                async () => await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken),
+                cancellationToken: cancellationToken);
 
-            var updatedChapter = await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken);
             _logger.LogInformation("Successfully updated chapter: {@Chapter}", updatedChapter);
-
             return mapper.Map<RespondChapterDto>(updatedChapter);
         }
 
         public async Task DeleteChapterAsync(Guid userId, Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Started deleting chapter with ID: {ChapterId}", chapterId);
-
-            await mediator.Send(new DeleteChapterCommand(chapterId), cancellationToken);
+            
+           await ExecuteTransactionAsync(
+                async () => await mediator.Send(new DeleteChapterCommand(chapterId), cancellationToken),
+                cancellationToken: cancellationToken);
 
             var isAnyPublishedChapterInCourse = await mediator.Send(new IsAnyPublishedChapterByCourseIdQuery(chapterId), cancellationToken);
             if (!isAnyPublishedChapterInCourse)
@@ -103,9 +109,11 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
 
             chapter.MarkAsPublished();
 
-            var updatedChapter = await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken);
+            var updatedChapter = await ExecuteTransactionAsync(
+                async () => await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken),
+                cancellationToken: cancellationToken);
+            
             _logger.LogInformation("Successfully published chapter: {@Chapter}", updatedChapter);
-
             return mapper.Map<RespondChapterDto>(updatedChapter);
         }
 
@@ -122,7 +130,9 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
 
             chapter.MarkAsUnpublished();
 
-            var updatedChapter = await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken);
+            var updatedChapter = await ExecuteTransactionAsync(
+                async () => await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken),
+                cancellationToken: cancellationToken);
 
             var isAnyPublishedChapterInCourse = await mediator.Send(new IsAnyPublishedChapterByCourseIdQuery(courseId), cancellationToken);
             if (!isAnyPublishedChapterInCourse)
@@ -138,18 +148,16 @@ namespace HomeworkAssignment.Application.Implementations.ChapterRelated
         public async Task ReorderChapterAsync(Guid userId, Guid courseId, IEnumerable<RequestReorderChapterDto> chapterDtos, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Started reordering chapters for COURSE_ID: {CourseId}", courseId);
-
-            var course = await mediator.Send(new GetCourseByOwnerIdQuery(courseId, userId), cancellationToken);
-            if (course == null)
-            {
-                _logger.LogWarning("Course with ID: {id} does not exist.", courseId);
-                throw new ArgumentException("Course does not exist.");
-            }
-
-            foreach (var chapter in chapterDtos)
-            {
-                await mediator.Send(new UpdatePartialChapterCommand(chapter.Id, chapter.Position), cancellationToken);
-            }
+            
+            await ExecuteTransactionAsync(
+                async () =>
+                {
+                    foreach (var chapter in chapterDtos)
+                    {
+                        await mediator.Send(new UpdatePartialChapterCommand(chapter.Id, chapter.Position), cancellationToken);
+                    }
+                },
+                cancellationToken: cancellationToken);
 
             _logger.LogInformation("Successfully reordered chapters for COURSE_ID: {CourseId}", courseId);
         }
