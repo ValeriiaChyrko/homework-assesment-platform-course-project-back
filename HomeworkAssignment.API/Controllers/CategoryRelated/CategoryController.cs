@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using HomeAssignment.DTOs.RequestDTOs;
-using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.CategoryRelated;
 using HomeworkAssignment.AuthorizationFilters;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -16,23 +16,28 @@ namespace HomeworkAssignment.Controllers.CategoryRelated;
 [Authorize]
 [ApiController]
 [Route("api/categories")]
-public class CategoryController(ICategoryService categoryService, HybridCache cache) : ControllerBase
+public class CategoryController(ICategoryService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : ControllerBase
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
-        LocalCacheExpiration = TimeSpan.FromMinutes(30),
-        Expiration = TimeSpan.FromHours(1) 
+        LocalCacheExpiration = TimeSpan.FromHours(1),
+        Expiration = TimeSpan.FromHours(12) 
     };
 
     /// <summary>
-    /// Getting a list of categories (cached).
+    /// Getting a list of categories.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
     {
-        var cachedCategories = await cache.GetOrCreateAsync("categories",
-            async _ => await categoryService.GetCategoriesAsync(cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
+        var cacheKey = cacheKeyManager.CategoryList();
+        
+        var cachedCategories = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await service.GetCategoriesAsync(cancellationToken),
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CategoryListGroup()],
+            cancellationToken: cancellationToken);
 
         return Ok(cachedCategories);
     }
@@ -51,9 +56,9 @@ public class CategoryController(ICategoryService categoryService, HybridCache ca
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
-        var result = await categoryService.CreateCategoryAsync(request, cancellationToken);
-        await cache.RemoveAsync("categories", cancellationToken); 
+        var result = await service.CreateCategoryAsync(request, cancellationToken);
 
+        await cache.RemoveByTagAsync(cacheKeyManager.CategoryListGroup(), cancellationToken);
         return Ok(result);
     }
 
@@ -64,9 +69,9 @@ public class CategoryController(ICategoryService categoryService, HybridCache ca
     [AdminOnly]
     public async Task<IActionResult> Delete(Guid categoryId, CancellationToken cancellationToken = default)
     {
-        await categoryService.DeleteCategoryAsync(categoryId, cancellationToken);
-        await cache.RemoveAsync("categories", cancellationToken);
-
+        await service.DeleteCategoryAsync(categoryId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CategoryListGroup(), cancellationToken);
         return NoContent();
     }
 
@@ -85,9 +90,9 @@ public class CategoryController(ICategoryService categoryService, HybridCache ca
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
-        var response = await categoryService.UpdateCategoryAsync(categoryId, request, cancellationToken);
-        await cache.RemoveAsync("categories", cancellationToken); 
-
+        var response = await service.UpdateCategoryAsync(categoryId, request, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CategoryListGroup(), cancellationToken);
         return Ok(response);
     }
 }

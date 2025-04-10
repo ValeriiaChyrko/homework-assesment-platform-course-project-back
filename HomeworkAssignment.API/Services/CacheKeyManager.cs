@@ -6,6 +6,8 @@ namespace HomeworkAssignment.Services;
 
 public class CacheKeyManager : ICacheKeyManager
 {
+    public string CategoryListGroup()
+        => $"category:list";
     public string EnrollmentListGroup(Guid userId) =>
         $"enrollment:list:{userId}";
     public string CourseListGroup(Guid userId)
@@ -14,6 +16,11 @@ public class CacheKeyManager : ICacheKeyManager
         => $"course:single:{courseId}";
     public string ChapterSingleGroup(Guid courseId, Guid chapterId)
         => $"course:list:{courseId}:chapters:{chapterId}";
+    public string AssignmentSingleGroup(Guid courseId, Guid chapterId, Guid assignmentId)
+        => $"course:list:{courseId}:chapters:{chapterId}:assignments:{assignmentId}";
+    
+    public string CategoryList()
+        => $"category:list";
     
     public string CourseList(Guid userId, object filter)
         => $"course:list:{userId}:{ComputeHash(filter)}";
@@ -38,6 +45,14 @@ public class CacheKeyManager : ICacheKeyManager
     
     public string ChapterProgress(Guid userId, Guid courseId, Guid chapterId)
         => $"progress:single:{userId}:{courseId}:{chapterId}";
+    
+    public string AssignmentSingle(Guid courseId, Guid chapterId, Guid assignmentId)
+        => $"course:single:{courseId}:chapter:single:{chapterId}:assignment:single:{assignmentId}";
+    public string AssignmentList(Guid courseId, Guid chapterId)
+        => $"course:single:{courseId}:chapter:single:{chapterId}:assignments";
+    
+    public string AssignmentProgress(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId)
+        => $"progress:single:{userId}:{courseId}:{chapterId}:{assignmentId}";
     
     private static string ComputeHash(object obj)
     {

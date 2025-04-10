@@ -2,6 +2,8 @@
 
 public interface ICacheKeyManager
 {
+    string CategoryListGroup();
+    string CategoryList();
     string CourseList(Guid userId, object filter);
     string CourseListGroup(Guid userId);
     string CourseOwned(Guid userId);
@@ -16,4 +18,8 @@ public interface ICacheKeyManager
     string ChapterFirst(Guid courseId);
     string ChapterAttachments(Guid courseId, Guid chapterId);
     string ChapterProgress(Guid userId, Guid courseId, Guid chapterId);
+    string AssignmentSingleGroup(Guid courseId, Guid chapterId, Guid assignmentId);
+    string AssignmentSingle(Guid courseId, Guid chapterId, Guid assignmentId);
+    string AssignmentList(Guid courseId, Guid chapterId);
+    string AssignmentProgress(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId);
 }

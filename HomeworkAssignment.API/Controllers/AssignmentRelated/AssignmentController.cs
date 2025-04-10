@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Application.Abstractions.AssignmentRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -16,7 +17,7 @@ namespace HomeworkAssignment.Controllers.AssignmentRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/chapters/{chapterId:guid}/assignments")]
-public class AssignmentController(IAssignmentService assignmentService, HybridCache cache) : BaseController
+public class AssignmentController(IAssignmentService assignmentService, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
@@ -31,11 +32,15 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     public async Task<IActionResult> GetAssignments(Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"assignments-{courseId}-{chapterId}";
-        var cachedAssignments = await cache.GetOrCreateAsync(cacheKey,
-            async _ => await assignmentService.GetAssignmentsAsync(chapterId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
+        var cacheKey = cacheKeyManager.AssignmentList(courseId, chapterId);
 
+        var cachedAssignments = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await assignmentService.GetAssignmentsAsync(chapterId, cancellationToken),
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken: cancellationToken);
+        
         return Ok(cachedAssignments);
     }
 
@@ -46,13 +51,15 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     public async Task<IActionResult> GetAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"assignment-{courseId}-{chapterId}-{assignmentId}";
-        var cachedAssignment = await cache.GetOrCreateAsync(cacheKey,
+        var cacheKey = cacheKeyManager.AssignmentSingle(courseId, chapterId, assignmentId);
+        var cachedAssignment = await cache.GetOrCreateAsync(
+            key:cacheKey,
             async _ => await assignmentService.GetAssignmentByIdAsync(chapterId, assignmentId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)],
+            cancellationToken: cancellationToken);
 
         if (cachedAssignment == null) return NotFound();
-
         return Ok(cachedAssignment);
     }
 
@@ -70,8 +77,8 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var assignmentId = await assignmentService.CreateAssignmentAsync(request.UserId, chapterId, request, cancellationToken);
-        await cache.RemoveAsync($"assignments-{courseId}-{chapterId}", cancellationToken);
-
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return CreatedAtAction(nameof(GetAssignment), new { courseId, chapterId, assignmentId }, assignmentId);
     }
 
@@ -89,36 +96,11 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var updatedAssignment = await assignmentService.UpdateAssignmentAsync(request.UserId, chapterId, assignmentId, request, cancellationToken);
-        await cache.RemoveAsync($"assignments-{courseId}-{chapterId}", cancellationToken);
-
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(updatedAssignment);
     }
-
-    /// <summary>
-    /// Publishing an assignment.
-    /// </summary>
-    [HttpPatch("{assignmentId:guid}/publish")]
-    [TeacherOnly]
-    public async Task<IActionResult> PublishAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
-        CancellationToken cancellationToken = default)
-    {
-        await assignmentService.PublishAssignmentAsync(courseId, chapterId, assignmentId, cancellationToken);
-        return Ok(assignmentId);
-    }
-
-    /// <summary>
-    /// Unpublishing an assignment.
-    /// </summary>
-    [HttpPatch("{assignmentId:guid}/unpublish")]
-    [TeacherOnly]
-    public async Task<IActionResult> UnpublishAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
-        CancellationToken cancellationToken = default)
-    {
-        var userId = GetUserId();
-        await assignmentService.UnpublishAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        return Ok(assignmentId);
-    }
-
+    
     /// <summary>
     /// Deleting an assignment by ID.
     /// </summary>
@@ -129,8 +111,8 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     {
         var userId = GetUserId();
         await assignmentService.DeleteAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        await cache.RemoveAsync($"assignments-{courseId}-{chapterId}", cancellationToken);
-
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return NoContent();
     }
 
@@ -145,6 +127,37 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     {
         var userId = GetUserId();
         await assignmentService.ReorderAssignmentAsync(userId, courseId, chapterId, assignmentDtos, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(courseId);
+    }
+
+    /// <summary>
+    /// Publishing an assignment.
+    /// </summary>
+    [HttpPatch("{assignmentId:guid}/publish")]
+    [TeacherOnly]
+    public async Task<IActionResult> PublishAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
+    {
+        await assignmentService.PublishAssignmentAsync(courseId, chapterId, assignmentId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
+        return Ok(assignmentId);
+    }
+
+    /// <summary>
+    /// Unpublishing an assignment.
+    /// </summary>
+    [HttpPatch("{assignmentId:guid}/unpublish")]
+    [TeacherOnly]
+    public async Task<IActionResult> UnpublishAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        await assignmentService.UnpublishAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
+        return Ok(assignmentId);
     }
 }
