@@ -1,6 +1,7 @@
 ﻿using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Application.Abstractions.ChapterRelated;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -11,11 +12,11 @@ namespace HomeworkAssignment.Controllers.ChapterRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/chapters/{chapterId:guid}/progress")]
-public class ChapterProgressController(IChapterProgressService service, HybridCache cache) : BaseController
+public class ChapterProgressController(IChapterProgressService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
-        LocalCacheExpiration = TimeSpan.FromMinutes(1),
+        LocalCacheExpiration = TimeSpan.FromMinutes(2),
         Expiration = TimeSpan.FromMinutes(5)
     };
     
@@ -26,11 +27,14 @@ public class ChapterProgressController(IChapterProgressService service, HybridCa
     public async Task<IActionResult> GetProgress(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        var cacheKey = $"progress-{courseId}-{chapterId}-{userId}";
+        var cacheKey = cacheKeyManager.ChapterProgress(userId, courseId, chapterId);
         
-        var cachedProgress = await cache.GetOrCreateAsync(cacheKey, 
+        var cachedProgress = await cache.GetOrCreateAsync(
+            key:cacheKey, 
             async _ => await service.GetProgressAsync(userId, courseId, chapterId, cancellationToken), 
-            _cacheOptions, cancellationToken: cancellationToken);
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken: cancellationToken);
 
         return Ok(cachedProgress);
     }
@@ -47,9 +51,7 @@ public class ChapterProgressController(IChapterProgressService service, HybridCa
         var userId = GetUserId();
         await service.UpdateProgressAsync(userId, courseId, chapterId, request, cancellationToken);
         
-        var cacheKey = $"progress-{courseId}-{chapterId}-{userId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(courseId);
     }
 }

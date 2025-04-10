@@ -12,22 +12,32 @@ public class CacheKeyManager : ICacheKeyManager
         => $"course:list:{userId}";
     public string CourseSingleGroup(Guid courseId)
         => $"course:single:{courseId}";
+    public string ChapterSingleGroup(Guid courseId, Guid chapterId)
+        => $"course:list:{courseId}:chapters:{chapterId}";
     
     public string CourseList(Guid userId, object filter)
         => $"course:list:{userId}:{ComputeHash(filter)}";
     public string CourseOwned(Guid userId)
-        => $"course:owned:{userId}";
-
+        => $"course:list:owned:{userId}";
     public string CourseSingle(Guid courseId)
         => $"course:single:{courseId}";
-
     public string CourseAttachments(Guid courseId)
-        => $"course:attachments:{courseId}";
+        => $"course:list:attachments:{courseId}";
     
     public string EnrollmentList(Guid userId)
         => $"enrollment:list:{userId}";
     public string Enrollment(Guid userId, Guid courseId)
         => $"enrollment:single:{userId}:{courseId}";
+    
+    public string ChapterSingle(Guid courseId, Guid chapterId)
+        => $"course:single:{courseId}:chapter:single:{chapterId}";
+    public string ChapterFirst(Guid courseId)
+        => $"course:single:{courseId}:chapters:first";
+    public string ChapterAttachments(Guid courseId, Guid chapterId)
+        => $"course:single:{courseId}:chapter:single:attachments:{chapterId}";
+    
+    public string ChapterProgress(Guid userId, Guid courseId, Guid chapterId)
+        => $"progress:single:{userId}:{courseId}:{chapterId}";
     
     private static string ComputeHash(object obj)
     {

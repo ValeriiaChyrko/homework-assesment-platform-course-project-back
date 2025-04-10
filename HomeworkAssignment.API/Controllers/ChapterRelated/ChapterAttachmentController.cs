@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Application.Abstractions.ChapterRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -13,12 +14,12 @@ namespace HomeworkAssignment.Controllers.ChapterRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/chapters/{chapterId:guid}/attachments")]
-public class ChapterAttachmentController(IChapterAttachmentService service, HybridCache cache) : BaseController
+public class ChapterAttachmentController(IChapterAttachmentService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
-        LocalCacheExpiration = TimeSpan.FromMinutes(5),
-        Expiration = TimeSpan.FromMinutes(10)
+        LocalCacheExpiration = TimeSpan.FromMinutes(10),
+        Expiration = TimeSpan.FromMinutes(20)
     };
 
     /// <summary>
@@ -27,12 +28,15 @@ public class ChapterAttachmentController(IChapterAttachmentService service, Hybr
     [HttpGet]
     public async Task<IActionResult> GetAttachments(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"attachments-{courseId}-{chapterId}";
-        
-        var cachedAttachments = await cache.GetOrCreateAsync(cacheKey, 
-            async _ => await service.GetChapterAttachmentsAsync(courseId, chapterId, cancellationToken),
-            _cacheOptions, cancellationToken: cancellationToken);
+        var cacheKey = cacheKeyManager.ChapterAttachments(courseId, chapterId);
 
+        var cachedAttachments = await cache.GetOrCreateAsync(
+            key:cacheKey, 
+            async _ => await service.GetChapterAttachmentsAsync(courseId, chapterId, cancellationToken),
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken: cancellationToken);
+        
         return Ok(cachedAttachments);
     }
 
@@ -52,9 +56,7 @@ public class ChapterAttachmentController(IChapterAttachmentService service, Hybr
         
         var attachment = await service.CreateChapterAttachmentAsync(courseId, chapterId, request, cancellationToken);
         
-        var cacheKey = $"attachments-{courseId}-{chapterId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-        
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(attachment);
     }
     
@@ -67,9 +69,7 @@ public class ChapterAttachmentController(IChapterAttachmentService service, Hybr
     {
         await service.DeleteChapterAttachmentAsync(attachmentId, cancellationToken);
         
-        var cacheKey = $"attachments-{courseId}-{chapterId}";
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-    
+        await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return NoContent();
     }
 }

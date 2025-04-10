@@ -88,14 +88,15 @@ public class CourseController(ICourseService service, HybridCache cache, ICacheK
 
         var userId = GetUserId();
         var cacheKey = cacheKeyManager.CourseSingle(courseId);
-        var result = await cache.GetOrCreateAsync(
+        var cachedCourse = await cache.GetOrCreateAsync(
             key:cacheKey,
             async _ => await service.GetSingleCourseFullInfoAsync(filterParameters, userId, courseId, cancellationToken),
             options:_cacheOptions, 
             tags: [cacheKeyManager.CourseSingleGroup(courseId)],
             cancellationToken: cancellationToken);
         
-        return Ok(result);
+        if (cachedCourse == null) return NotFound(courseId);
+        return Ok(cachedCourse);
     }
 
     /// <summary>

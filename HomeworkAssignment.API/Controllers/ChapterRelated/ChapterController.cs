@@ -3,6 +3,7 @@ using HomeAssignment.DTOs.RequestDTOs;
 using HomeworkAssignment.Application.Abstractions.ChapterRelated;
 using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
+using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -16,7 +17,7 @@ namespace HomeworkAssignment.Controllers.ChapterRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/chapters")]
-public class ChapterController(IChapterService chapterService, HybridCache cache) : BaseController
+public class ChapterController(IChapterService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
@@ -25,34 +26,39 @@ public class ChapterController(IChapterService chapterService, HybridCache cache
     };
 
     /// <summary>
-    /// Getting the first chapter of a course.
-    /// </summary>
-    [HttpGet("first")]
-    public async Task<IActionResult> GetFirst(Guid courseId, CancellationToken cancellationToken = default)
-    {
-        var cacheKey = $"first-chapter-{courseId}"; 
-        var cachedChapter = await cache.GetOrCreateAsync(cacheKey, 
-            async _ => await chapterService.GetFirstChapterByCourseIdAsync(courseId, cancellationToken), 
-            _cacheOptions, cancellationToken: cancellationToken);
-
-        if (cachedChapter == null) return NotFound();
-
-        return Ok(cachedChapter);
-    }
-
-    /// <summary>
     /// Getting a single chapter by ID for a course.
     /// </summary>
     [HttpGet("{chapterId:guid}")]
     public async Task<IActionResult> Get(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"chapter-{courseId}-{chapterId}";
-        var cachedChapter = await cache.GetOrCreateAsync(cacheKey, 
-            async _ => await chapterService.GetChapterByIdAsync(courseId, chapterId, cancellationToken), 
-            _cacheOptions, cancellationToken: cancellationToken);
+        var cacheKey = cacheKeyManager.ChapterSingle(courseId, chapterId);
 
-        if (cachedChapter == null) return NotFound();
-
+        var cachedChapter = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await service.GetChapterByIdAsync(courseId, chapterId, cancellationToken), 
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CourseSingleGroup(courseId), cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken: cancellationToken);
+        
+        if (cachedChapter == null) return NotFound(chapterId);
+        return Ok(cachedChapter);
+    }
+    
+    /// <summary>
+    /// Getting the first chapter of a course.
+    /// </summary>
+    [HttpGet("first")]
+    public async Task<IActionResult> GetFirst(Guid courseId, CancellationToken cancellationToken = default)
+    {
+        var cacheKey = cacheKeyManager.ChapterFirst(courseId);
+        var cachedChapter = await cache.GetOrCreateAsync(
+            key:cacheKey,
+            async _ => await service.GetFirstChapterByCourseIdAsync(courseId, cancellationToken), 
+            options:_cacheOptions, 
+            tags: [cacheKeyManager.CourseSingleGroup(courseId)],
+            cancellationToken: cancellationToken);
+        
+        if (cachedChapter == null) return NotFound(courseId);
         return Ok(cachedChapter);
     }
 
@@ -70,9 +76,9 @@ public class ChapterController(IChapterService chapterService, HybridCache cache
         var validationResult = await validator.ValidateAsync(requestCreate, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
         
-        var chapter = await chapterService.CreateChapterAsync(courseId, requestCreate, cancellationToken);
-        await cache.RemoveAsync($"chapters-{courseId}", cancellationToken);
-
+        var chapter = await service.CreateChapterAsync(courseId, requestCreate, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return CreatedAtAction(nameof(Get), new { courseId, chapterId = chapter.Id }, chapter);
     }
 
@@ -90,35 +96,26 @@ public class ChapterController(IChapterService chapterService, HybridCache cache
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
         
-        var chapter = await chapterService.UpdateChapterAsync(courseId, chapterId, request, cancellationToken);
-        await cache.RemoveAsync($"chapters-{courseId}", cancellationToken);
-
+        var chapter = await service.UpdateChapterAsync(courseId, chapterId, request, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(chapter);
     }
-
+    
     /// <summary>
-    /// Publishing a chapter for a course.
+    /// Deleting a chapter by ID for a course.
     /// </summary>
-    [HttpPatch("{chapterId:guid}/publish")]
+    [HttpDelete("{chapterId:guid}")]
     [TeacherOnly]
-    public async Task<IActionResult> Publish(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
-    {
-        await chapterService.PublishChapterAsync(courseId, chapterId, cancellationToken);
-        return Ok(chapterId);
-    }
-
-    /// <summary>
-    /// Unpublishing a chapter for a course.
-    /// </summary>
-    [HttpPatch("{chapterId:guid}/unpublish")]
-    [TeacherOnly]
-    public async Task<IActionResult> Unpublish(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Delete(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        await chapterService.UnpublishChapterAsync(userId, courseId, chapterId, cancellationToken);
+        await service.DeleteChapterAsync(userId, courseId, chapterId, cancellationToken);
+       
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(chapterId);
     }
-
+    
     /// <summary>
     /// Reordering chapters for a course.
     /// </summary>
@@ -130,21 +127,36 @@ public class ChapterController(IChapterService chapterService, HybridCache cache
     )
     {
         var userId = GetUserId();
-        await chapterService.ReorderChapterAsync(userId, courseId, chapterDtos, cancellationToken);
+        await service.ReorderChapterAsync(userId, courseId, chapterDtos, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(courseId);
+    }
+    
+    /// <summary>
+    /// Publishing a chapter for a course.
+    /// </summary>
+    [HttpPatch("{chapterId:guid}/publish")]
+    [TeacherOnly]
+    public async Task<IActionResult> Publish(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
+    {
+        await service.PublishChapterAsync(courseId, chapterId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        return Ok(chapterId);
     }
 
     /// <summary>
-    /// Deleting a chapter by ID for a course.
+    /// Unpublishing a chapter for a course.
     /// </summary>
-    [HttpDelete("{chapterId:guid}")]
+    [HttpPatch("{chapterId:guid}/unpublish")]
     [TeacherOnly]
-    public async Task<IActionResult> Delete(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Unpublish(Guid courseId, Guid chapterId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        await chapterService.DeleteChapterAsync(userId, courseId, chapterId, cancellationToken);
-        await cache.RemoveAsync($"chapters-{courseId}", cancellationToken);
-
-        return NoContent();
+        await service.UnpublishChapterAsync(userId, courseId, chapterId, cancellationToken);
+        
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
+        return Ok(chapterId);
     }
 }
