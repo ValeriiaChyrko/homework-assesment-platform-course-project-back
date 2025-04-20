@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.UserChapterProgresses;
 
-public sealed class GetUserProgressPercentageQueryHandler 
+public sealed class GetUserProgressPercentageQueryHandler
     : IRequestHandler<GetUserProgressPercentageQuery, int>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
     private const int PercentageMultiplier = 100;
+    private readonly IHomeworkAssignmentDbContext _context;
 
     public GetUserProgressPercentageQueryHandler(IHomeworkAssignmentDbContext context)
     {
@@ -25,8 +25,8 @@ public sealed class GetUserProgressPercentageQueryHandler
         if (totalChapters == 0) return 0;
 
         var completedChapters = await _context.UserChapterProgressEntities
-            .Where(up => up.UserId == query.UserId && 
-                         totalChaptersQuery.Any(c => c.Id == up.ChapterId) && 
+            .Where(up => up.UserId == query.UserId &&
+                         totalChaptersQuery.Any(c => c.Id == up.ChapterId) &&
                          up.IsCompleted)
             .CountAsync(cancellationToken);
 

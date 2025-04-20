@@ -18,7 +18,8 @@ public sealed class CreateUserProgressCommandHandler : IRequestHandler<CreateUse
     }
 
 
-    public async Task<ChapterUserProgress> Handle(CreateUserProgressCommand progressCommand, CancellationToken cancellationToken)
+    public async Task<ChapterUserProgress> Handle(CreateUserProgressCommand progressCommand,
+        CancellationToken cancellationToken)
     {
         if (progressCommand is null) throw new ArgumentNullException(nameof(progressCommand));
 

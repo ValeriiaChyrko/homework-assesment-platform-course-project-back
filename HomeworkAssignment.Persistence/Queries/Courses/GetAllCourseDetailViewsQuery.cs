@@ -5,7 +5,8 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public class GetAllCourseDetailViewsQuery(RequestCourseFilterParameters filterParameters, Guid userId) : IRequest<PagedList<CourseDetailView>>
+public class GetAllCourseDetailViewsQuery(RequestCourseFilterParameters filterParameters, Guid userId)
+    : IRequest<PagedList<CourseDetailView>>
 {
     public RequestCourseFilterParameters FilterParameters { get; init; } = filterParameters;
     public Guid UserId { get; init; } = userId;

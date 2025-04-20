@@ -6,7 +6,7 @@ namespace HomeAssignment.DTOs.RequestDTOs.validators;
 public class RequestCategoryDtoValidator : AbstractValidator<RequestCategoryDto>
 {
     private const int MaxLengthNamePropertyLength = 64;
-    
+
     public RequestCategoryDtoValidator()
     {
         RuleFor(x => x.Name)

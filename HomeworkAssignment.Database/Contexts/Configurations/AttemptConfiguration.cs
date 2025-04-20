@@ -12,14 +12,14 @@ public class AttemptConfiguration : IEntityTypeConfiguration<AttemptEntity>
             .WithMany(g => g.Attempts)
             .HasForeignKey(mr => mr.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasOne(a => a.Assignment)
             .WithMany(p => p.Attempts)
             .HasForeignKey(mr => mr.AssignmentId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.BranchName).HasMaxLength(64);
-        
+
         builder.HasIndex(mr => mr.AssignmentId);
     }
 }

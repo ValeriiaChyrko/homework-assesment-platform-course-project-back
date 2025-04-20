@@ -8,7 +8,7 @@ public class RequestPartialCourseDtoValidator : AbstractValidator<RequestPartial
     private const int MaxLengthTitlePropertyLength = 64;
     private const int MaxLengthDescriptionPropertyLength = 512;
     private const int MaxLengthUrlPropertyLength = 256;
-    
+
     public RequestPartialCourseDtoValidator()
     {
         RuleFor(x => x.CategoryId)
@@ -21,13 +21,13 @@ public class RequestPartialCourseDtoValidator : AbstractValidator<RequestPartial
             .MaximumLength(MaxLengthTitlePropertyLength)
             .WithMessage($"Title cannot exceed {MaxLengthTitlePropertyLength} characters.")
             .When(x => x.Title != null);
-        
+
         RuleFor(dto => dto.Description)
             .NotEmpty().WithMessage("Description cannot be empty.")
             .MaximumLength(MaxLengthDescriptionPropertyLength)
             .WithMessage($"Specialization cannot exceed {MaxLengthDescriptionPropertyLength} characters.")
             .When(x => x.Description != null);
-        
+
         RuleFor(dto => dto.ImageUrl)
             .NotEmpty().WithMessage("URL must be a valid property name.")
             .MaximumLength(MaxLengthUrlPropertyLength)

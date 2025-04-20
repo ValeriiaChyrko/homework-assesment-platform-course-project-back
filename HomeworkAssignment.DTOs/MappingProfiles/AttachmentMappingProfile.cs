@@ -28,7 +28,7 @@ public class AttachmentMappingProfile : Profile
             .ForMember(dest => dest.ChapterId, opt => opt.MapFrom(src => src.ChapterId))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
-        
+
         CreateMap<Attachment, RespondAttachmentDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Key, opt => opt.MapFrom(src => src.UploadthingKey))

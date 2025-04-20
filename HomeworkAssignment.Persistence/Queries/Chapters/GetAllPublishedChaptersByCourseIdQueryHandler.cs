@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeAssignment.Persistence.Queries.Chapters;
 
 public sealed class
-    GetAllPublishedChaptersByCourseIdQueryHandler : IRequestHandler<GetAllPublishedChaptersByCourseIdQuery, IEnumerable<Chapter>>
+    GetAllPublishedChaptersByCourseIdQueryHandler : IRequestHandler<GetAllPublishedChaptersByCourseIdQuery,
+    IEnumerable<Chapter>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;

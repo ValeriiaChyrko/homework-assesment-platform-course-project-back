@@ -1,6 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
 using HomeworkAssignment.Services.Abstractions;
 using RepoAnalisys.Grpc;

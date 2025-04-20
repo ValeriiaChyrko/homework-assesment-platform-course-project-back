@@ -25,8 +25,8 @@ public sealed class
         var enrollmentEntities = await _context
             .EnrollmentEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                    mr.CourseId == query.CourseId && mr.UserId == query.UserId, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.CourseId == query.CourseId && mr.UserId == query.UserId,
                 cancellationToken
             );
 

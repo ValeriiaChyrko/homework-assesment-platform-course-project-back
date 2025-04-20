@@ -21,7 +21,7 @@ public class AssignmentUserProgress(
     public static AssignmentUserProgress Create(bool isCompleted, Guid userId, Guid assignmentId)
     {
         return new AssignmentUserProgress(
-            Guid.NewGuid(), 
+            Guid.NewGuid(),
             isCompleted,
             userId,
             assignmentId,

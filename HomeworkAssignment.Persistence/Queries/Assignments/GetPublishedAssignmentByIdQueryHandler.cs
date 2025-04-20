@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public sealed class GetPublishedAssignmentByIdQueryHandler : IRequestHandler<GetPublishedAssignmentByIdQuery, Assignment?>
+public sealed class
+    GetPublishedAssignmentByIdQueryHandler : IRequestHandler<GetPublishedAssignmentByIdQuery, Assignment?>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -22,10 +23,10 @@ public sealed class GetPublishedAssignmentByIdQueryHandler : IRequestHandler<Get
         var assignment = await _context
             .AssignmentEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.Id 
-                && mr.ChapterId == query.ChapterId
-                && mr.IsPublished == true, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.Id
+                    && mr.ChapterId == query.ChapterId
+                    && mr.IsPublished == true,
                 cancellationToken
             );
 

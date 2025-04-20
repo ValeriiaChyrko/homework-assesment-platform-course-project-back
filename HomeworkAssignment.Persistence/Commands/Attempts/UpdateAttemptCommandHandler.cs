@@ -21,7 +21,7 @@ public sealed record UpdateAttemptCommandHandler : IRequestHandler<UpdateAttempt
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var attemptEntity = _mapper.Map<AttemptEntity>(command.Attempt);
         attemptEntity.Id = command.Id;
         _context.AttemptEntities.Update(attemptEntity);

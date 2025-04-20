@@ -11,22 +11,25 @@ using Microsoft.Extensions.Caching.Hybrid;
 namespace HomeworkAssignment.Controllers.AssignmentRelated;
 
 /// <summary>
-/// Controller for managing assignments within a course.
+///     Controller for managing assignments within a course.
 /// </summary>
 [Produces("application/json")]
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/chapters/{chapterId:guid}/assignments")]
-public class AssignmentController(IAssignmentService assignmentService, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
+public class AssignmentController(
+    IAssignmentService assignmentService,
+    HybridCache cache,
+    ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
         LocalCacheExpiration = TimeSpan.FromMinutes(5),
         Expiration = TimeSpan.FromMinutes(10)
     };
-
+    
     /// <summary>
-    /// Getting a list of assignments for a chapter.
+    ///     Getting a list of assignments for a chapter.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAssignments(Guid courseId, Guid chapterId,
@@ -35,17 +38,17 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         var cacheKey = cacheKeyManager.AssignmentList(courseId, chapterId);
 
         var cachedAssignments = await cache.GetOrCreateAsync(
-            key:cacheKey,
+            cacheKey,
             async _ => await assignmentService.GetAssignmentsAsync(chapterId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
-            cancellationToken: cancellationToken);
-        
+            _cacheOptions,
+            [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken);
+
         return Ok(cachedAssignments);
     }
 
     /// <summary>
-    /// Getting an assignment by ID for a chapter.
+    ///     Getting an assignment by ID for a chapter.
     /// </summary>
     [HttpGet("{assignmentId:guid}")]
     public async Task<IActionResult> GetAssignment(Guid courseId, Guid chapterId, Guid assignmentId,
@@ -53,18 +56,42 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     {
         var cacheKey = cacheKeyManager.AssignmentSingle(courseId, chapterId, assignmentId);
         var cachedAssignment = await cache.GetOrCreateAsync(
-            key:cacheKey,
+            cacheKey,
             async _ => await assignmentService.GetAssignmentByIdAsync(chapterId, assignmentId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)],
-            cancellationToken: cancellationToken);
+            _cacheOptions,
+            [
+                cacheKeyManager.ChapterSingleGroup(courseId, chapterId),
+                cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)
+            ],
+            cancellationToken);
 
         if (cachedAssignment == null) return NotFound();
         return Ok(cachedAssignment);
     }
+    
+    /// <summary>
+    ///     Getting an analityc for a assignment.
+    /// </summary>
+    [HttpGet("{assignmentId:guid}/statistics")]
+    [TeacherOnly]
+    public async Task<IActionResult> GetAssignmentAnalytics(Guid courseId, Guid chapterId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        var cacheKey = cacheKeyManager.AssignmentAnalytics(userId, courseId, chapterId, assignmentId);
+
+        var cachedAssignments = await cache.GetOrCreateAsync(
+            cacheKey,
+            async _ => await assignmentService.GetAssignmentAnalyticsAsync(chapterId, assignmentId, cancellationToken),
+            _cacheOptions,
+            [cacheKeyManager.ChapterSingleGroup(courseId, chapterId)],
+            cancellationToken);
+
+        return Ok(cachedAssignments);
+    }
 
     /// <summary>
-    /// Creating a new assignment for a chapter.
+    ///     Creating a new assignment for a chapter.
     /// </summary>
     [HttpPost]
     [TeacherOnly]
@@ -77,14 +104,15 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var userId = GetUserId();
-        var assignment = await assignmentService.CreateAssignmentAsync(userId, chapterId, requestCreate, cancellationToken);
-        
+        var assignment =
+            await assignmentService.CreateAssignmentAsync(userId, chapterId, requestCreate, cancellationToken);
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(assignment);
     }
 
     /// <summary>
-    /// Updating an assignment for a chapter.
+    ///     Updating an assignment for a chapter.
     /// </summary>
     [HttpPatch("{assignmentId:guid}")]
     [TeacherOnly]
@@ -96,14 +124,16 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
-        var updatedAssignment = await assignmentService.UpdateAssignmentAsync(request.UserId, chapterId, assignmentId, request, cancellationToken);
-        
+        var updatedAssignment =
+            await assignmentService.UpdateAssignmentAsync(request.UserId, chapterId, assignmentId, request,
+                cancellationToken);
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(updatedAssignment);
     }
-    
+
     /// <summary>
-    /// Deleting an assignment by ID.
+    ///     Deleting an assignment by ID.
     /// </summary>
     [HttpDelete("{assignmentId:guid}")]
     [TeacherOnly]
@@ -112,29 +142,29 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     {
         var userId = GetUserId();
         await assignmentService.DeleteAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(assignmentId);
     }
 
     /// <summary>
-    /// Reordering assignment for a chapter.
+    ///     Reordering assignment for a chapter.
     /// </summary>
     [HttpPut("reorder")]
     [TeacherOnly]
     public async Task<IActionResult> Reorder(Guid courseId, Guid chapterId,
-        [FromBody] RequestReorderAssignmentDto[] assignmentDtos, 
+        [FromBody] RequestReorderAssignmentDto[] assignmentDtos,
         CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         await assignmentService.ReorderAssignmentAsync(userId, courseId, chapterId, assignmentDtos, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(courseId);
     }
 
     /// <summary>
-    /// Publishing an assignment.
+    ///     Publishing an assignment.
     /// </summary>
     [HttpPatch("{assignmentId:guid}/publish")]
     [TeacherOnly]
@@ -142,13 +172,13 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
         CancellationToken cancellationToken = default)
     {
         await assignmentService.PublishAssignmentAsync(courseId, chapterId, assignmentId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         return Ok(assignmentId);
     }
 
     /// <summary>
-    /// Unpublishing an assignment.
+    ///     Unpublishing an assignment.
     /// </summary>
     [HttpPatch("{assignmentId:guid}/unpublish")]
     [TeacherOnly]
@@ -157,7 +187,7 @@ public class AssignmentController(IAssignmentService assignmentService, HybridCa
     {
         var userId = GetUserId();
         await assignmentService.UnpublishAssignmentAsync(userId, courseId, chapterId, assignmentId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.ChapterSingleGroup(courseId, chapterId), cancellationToken);
         await cache.RemoveByTagAsync(cacheKeyManager.CourseSingle(courseId), cancellationToken);
         return Ok(assignmentId);

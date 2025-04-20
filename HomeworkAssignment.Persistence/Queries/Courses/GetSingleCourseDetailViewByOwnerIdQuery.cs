@@ -4,7 +4,10 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public class GetSingleCourseDetailViewByOwnerIdQuery(RequestCourseFilterParameters filterParameters, Guid userId, Guid courseId) : IRequest<CourseDetailView?>
+public class GetSingleCourseDetailViewByOwnerIdQuery(
+    RequestCourseFilterParameters filterParameters,
+    Guid userId,
+    Guid courseId) : IRequest<CourseDetailView?>
 {
     public RequestCourseFilterParameters FilterParameters { get; init; } = filterParameters;
     public Guid UserId { get; init; } = userId;

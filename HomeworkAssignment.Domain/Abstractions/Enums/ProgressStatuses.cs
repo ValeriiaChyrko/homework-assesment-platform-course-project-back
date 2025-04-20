@@ -5,5 +5,5 @@ public enum ProgressStatuses
     Started,
     InProgress,
     Submitted,
-    Finished,
+    Finished
 }

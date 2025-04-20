@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CategoryRelated;
 using HomeworkAssignment.Application.Abstractions.CategoryRelated;
 using HomeworkAssignment.AuthorizationFilters;
@@ -11,40 +10,41 @@ using Microsoft.Extensions.Caching.Hybrid;
 namespace HomeworkAssignment.Controllers.CategoryRelated;
 
 /// <summary>
-/// Controller for managing course categories.
+///     Controller for managing course categories.
 /// </summary>
 [Produces("application/json")]
 [Authorize]
 [ApiController]
 [Route("api/categories")]
-public class CategoryController(ICategoryService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : ControllerBase
+public class CategoryController(ICategoryService service, HybridCache cache, ICacheKeyManager cacheKeyManager)
+    : ControllerBase
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
         LocalCacheExpiration = TimeSpan.FromHours(1),
-        Expiration = TimeSpan.FromHours(12) 
+        Expiration = TimeSpan.FromHours(12)
     };
 
     /// <summary>
-    /// Getting a list of categories.
+    ///     Getting a list of categories.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
     {
         var cacheKey = cacheKeyManager.CategoryList();
-        
+
         var cachedCategories = await cache.GetOrCreateAsync(
-            key:cacheKey,
+            cacheKey,
             async _ => await service.GetCategoriesAsync(cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.CategoryListGroup()],
-            cancellationToken: cancellationToken);
+            _cacheOptions,
+            [cacheKeyManager.CategoryListGroup()],
+            cancellationToken);
 
         return Ok(cachedCategories);
     }
 
     /// <summary>
-    /// Creating a new category.
+    ///     Creating a new category.
     /// </summary>
     [HttpPost]
     [AdminOnly]
@@ -64,20 +64,20 @@ public class CategoryController(ICategoryService service, HybridCache cache, ICa
     }
 
     /// <summary>
-    /// Deleting a category by ID.
+    ///     Deleting a category by ID.
     /// </summary>
     [HttpDelete("{categoryId:guid}")]
     [AdminOnly]
     public async Task<IActionResult> Delete(Guid categoryId, CancellationToken cancellationToken = default)
     {
         await service.DeleteCategoryAsync(categoryId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.CategoryListGroup(), cancellationToken);
         return NoContent();
     }
 
     /// <summary>
-    /// Updating a category by ID.
+    ///     Updating a category by ID.
     /// </summary>
     [HttpPut("{categoryId:guid}")]
     [AdminOnly]
@@ -92,7 +92,7 @@ public class CategoryController(ICategoryService service, HybridCache cache, ICa
             return BadRequest(validationResult.Errors);
 
         var response = await service.UpdateCategoryAsync(categoryId, request, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.CategoryListGroup(), cancellationToken);
         return Ok(response);
     }

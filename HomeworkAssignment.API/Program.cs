@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Authorization:ValidIssuer"],
             ValidAudience = builder.Configuration["Authorization:Audience"],
-            ClockSkew = TimeSpan.Zero, 
+            ClockSkew = TimeSpan.Zero,
             RoleClaimType = "role"
         };
     });

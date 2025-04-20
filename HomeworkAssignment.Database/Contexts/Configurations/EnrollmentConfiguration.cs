@@ -12,12 +12,12 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<EnrollmentEntity
             .WithMany(g => g.Enrollments)
             .HasForeignKey(mr => mr.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasOne(a => a.User)
             .WithMany(g => g.Enrollments)
             .HasForeignKey(mr => mr.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasIndex(mr => mr.CourseId);
         builder.HasIndex(u => new { u.UserId, u.CourseId }).IsUnique();
     }

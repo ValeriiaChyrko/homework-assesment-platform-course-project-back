@@ -40,7 +40,7 @@ public class User(
     public IReadOnlyList<Guid> EnrollmentIds => _enrollmentIds.AsReadOnly();
     public IReadOnlyList<Guid> UsersProgressIds => _userProgressIds.AsReadOnly();
 
-    public static User CreateStudent(string fullName, string email, string passwordHash, string? githubUsername, 
+    public static User CreateStudent(string fullName, string email, string passwordHash, string? githubUsername,
         string? githubProfileUrl, string? githubPictureUrl)
     {
         var roleType = UserRoles.Student.ToString();
@@ -64,8 +64,8 @@ public class User(
 
         return newStudent;
     }
-    
-    public static User CreateTeacher(string fullName, string email, string passwordHash, string? githubUsername, 
+
+    public static User CreateTeacher(string fullName, string email, string passwordHash, string? githubUsername,
         string? githubProfileUrl, string? githubPictureUrl)
     {
         var roleType = UserRoles.Teacher.ToString();
@@ -90,7 +90,7 @@ public class User(
         return newTeacher;
     }
 
-    public void Update(string fullName, string email, string passwordHash, string? githubUsername, 
+    public void Update(string fullName, string email, string passwordHash, string? githubUsername,
         string? githubProfileUrl, string? githubPictureUrl)
     {
         FullName = fullName;
@@ -99,7 +99,7 @@ public class User(
         GithubUsername = githubUsername;
         GithubProfileUrl = githubProfileUrl;
         GithubPictureUrl = githubPictureUrl;
-        
+
         UpdatedAt = DateTime.UtcNow;
     }
 }

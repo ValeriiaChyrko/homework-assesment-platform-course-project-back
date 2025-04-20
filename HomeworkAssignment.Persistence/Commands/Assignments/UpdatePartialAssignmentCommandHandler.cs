@@ -16,14 +16,11 @@ public sealed record UpdatePartialAssignmentCommandHandler : IRequestHandler<Upd
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var assignmentEntity = await _context.AssignmentEntities.FindAsync([command.Id], cancellationToken);
-    
-        if (assignmentEntity == null)
-        {
-            throw new ArgumentNullException($"Assignment with ID {command.Id} not found.");
-        }
-        
+
+        if (assignmentEntity == null) throw new ArgumentNullException($"Assignment with ID {command.Id} not found.");
+
         assignmentEntity.Position = command.Position;
         assignmentEntity.UpdatedAt = DateTime.UtcNow;
     }

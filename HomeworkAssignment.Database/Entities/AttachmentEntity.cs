@@ -9,10 +9,10 @@ public class AttachmentEntity
 
     public Guid? CourseId { get; init; }
     public CourseEntity? Course { get; init; }
-    
+
     public Guid? ChapterId { get; init; }
     public ChapterEntity? Chapter { get; init; }
 
     public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; init; } 
+    public DateTime UpdatedAt { get; init; }
 }

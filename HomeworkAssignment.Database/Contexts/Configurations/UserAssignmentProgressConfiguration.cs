@@ -16,7 +16,7 @@ public class UserAssignmentProgressConfiguration : IEntityTypeConfiguration<User
 
         builder
             .HasOne(up => up.Assignment)
-            .WithMany(a => a.UsersProgress) 
+            .WithMany(a => a.UsersProgress)
             .HasForeignKey(up => up.AssignmentId)
             .OnDelete(DeleteBehavior.Cascade);
     }

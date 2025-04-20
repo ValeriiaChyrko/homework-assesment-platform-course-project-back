@@ -16,7 +16,7 @@ public sealed class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttac
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var attachmentEntity = await _context.AttachmentEntities.FindAsync([command.Id], cancellationToken: cancellationToken);
+        var attachmentEntity = await _context.AttachmentEntities.FindAsync([command.Id], cancellationToken);
         if (attachmentEntity != null) _context.AttachmentEntities.Remove(attachmentEntity);
     }
 }

@@ -16,7 +16,7 @@ public sealed class DeleteEnrollmentCommandHandler : IRequestHandler<DeleteEnrol
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var enrollmentEntity = await _context.EnrollmentEntities.FindAsync([command.Id], cancellationToken: cancellationToken);
+        var enrollmentEntity = await _context.EnrollmentEntities.FindAsync([command.Id], cancellationToken);
         if (enrollmentEntity != null) _context.EnrollmentEntities.Remove(enrollmentEntity);
     }
 }

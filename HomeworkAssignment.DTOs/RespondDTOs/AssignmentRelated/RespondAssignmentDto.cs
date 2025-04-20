@@ -8,14 +8,14 @@ public class RespondAssignmentDto
     public string? RepositoryName { get; set; }
     public string? RepositoryOwner { get; set; }
     public string? RepositoryUrl { get; set; }
-    public DateTime Deadline { get; set; } 
+    public DateTime Deadline { get; set; }
 
-    public ushort MaxScore { get; set; } 
-    public ushort MaxAttemptsAmount { get; set; } 
+    public ushort MaxScore { get; set; }
+    public ushort MaxAttemptsAmount { get; set; }
     public ushort Position { get; set; }
-    
-    public bool IsPublished { get; set; } 
-    
+
+    public bool IsPublished { get; set; }
+
     public Guid? ChapterId { get; set; }
 
     public bool AttemptCompilationSectionEnable { get; set; }
@@ -25,9 +25,9 @@ public class RespondAssignmentDto
     public ushort AttemptCompilationMaxScore { get; set; }
     public ushort AttemptCompilationMinScore { get; set; }
 
-    public ushort AttemptTestsMaxScore { get; set; } 
+    public ushort AttemptTestsMaxScore { get; set; }
     public ushort AttemptTestsMinScore { get; set; }
 
-    public ushort AttemptQualityMaxScore { get; set; } 
-    public ushort AttemptQualityMinScore { get; set; } 
+    public ushort AttemptQualityMaxScore { get; set; }
+    public ushort AttemptQualityMinScore { get; set; }
 }

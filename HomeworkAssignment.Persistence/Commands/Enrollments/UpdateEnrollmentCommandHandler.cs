@@ -21,7 +21,7 @@ public sealed record UpdateEnrollmentCommandHandler : IRequestHandler<UpdateEnro
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var enrollmentEntity = _mapper.Map<EnrollmentEntity>(command.Enrollment);
         enrollmentEntity.Id = command.Id;
         _context.EnrollmentEntities.Update(enrollmentEntity);

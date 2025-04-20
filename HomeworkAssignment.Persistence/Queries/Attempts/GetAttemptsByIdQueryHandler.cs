@@ -22,7 +22,7 @@ public sealed class GetAttemptsByIdQueryHandler : IRequestHandler<GetAttemptById
         var attempt = await _context
             .AttemptEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
+            .SingleOrDefaultAsync(mr =>
                     mr.Id == query.AttemptId && mr.AssignmentId == query.AssignmentId,
                 cancellationToken
             );

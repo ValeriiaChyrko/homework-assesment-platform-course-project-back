@@ -6,7 +6,9 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.AssignmentUserProgresses;
 
-public sealed record UpdateAssignmentUserProgressCommandHandler : IRequestHandler<UpdateAssignmentUserProgressCommand, AssignmentUserProgress>
+public sealed record
+    UpdateAssignmentUserProgressCommandHandler : IRequestHandler<UpdateAssignmentUserProgressCommand,
+    AssignmentUserProgress>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;

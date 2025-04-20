@@ -13,13 +13,7 @@ public class UserChapterProgressConfiguration : IEntityTypeConfiguration<UserCha
             .WithMany(u => u.UsersProgress)
             .HasForeignKey(u => u.UserId)
             .OnDelete(DeleteBehavior.NoAction);
-        
-        builder
-            .HasOne(a => a.Chapter)
-            .WithMany(u => u.UsersProgress)
-            .HasForeignKey(u => u.ChapterId)
-            .OnDelete(DeleteBehavior.NoAction);
-        
+
         builder.HasIndex(mr => mr.ChapterId);
         builder.HasIndex(u => new { u.UserId, u.ChapterId }).IsUnique();
     }

@@ -22,9 +22,9 @@ public sealed class GetFirstChapterByIdQueryHandler : IRequestHandler<GetFirstCh
         var chapter = await _context
             .ChapterEntities
             .AsNoTracking()
-            .Where(mr => mr.CourseId == query.CourseId) 
-            .OrderBy(mr => mr.Position) 
-            .FirstOrDefaultAsync(cancellationToken); 
+            .Where(mr => mr.CourseId == query.CourseId)
+            .OrderBy(mr => mr.Position)
+            .FirstOrDefaultAsync(cancellationToken);
 
         return chapter != null ? _mapper.Map<Chapter>(chapter) : null;
     }

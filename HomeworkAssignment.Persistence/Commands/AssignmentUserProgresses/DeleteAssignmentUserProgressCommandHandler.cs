@@ -16,7 +16,8 @@ public sealed class DeleteAssignmentUserProgressCommandHandler : IRequestHandler
     {
         if (progressCommand is null) throw new ArgumentNullException(nameof(progressCommand));
 
-        var userProgressEntity = await _context.UserAssignmentProgressEntities.FindAsync(progressCommand.Id, cancellationToken);
+        var userProgressEntity =
+            await _context.UserAssignmentProgressEntities.FindAsync(progressCommand.Id, cancellationToken);
         if (userProgressEntity != null) _context.UserAssignmentProgressEntities.Remove(userProgressEntity);
     }
 }

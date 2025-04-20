@@ -16,14 +16,11 @@ public sealed record UpdatePartialChapterCommandHandler : IRequestHandler<Update
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var chapterEntity = await _context.ChapterEntities.FindAsync([command.ChapterId], cancellationToken);
-    
-        if (chapterEntity == null)
-        {
-            throw new ArgumentNullException($"Chapter with ID {command.ChapterId} not found.");
-        }
-        
+
+        if (chapterEntity == null) throw new ArgumentNullException($"Chapter with ID {command.ChapterId} not found.");
+
         chapterEntity.Position = command.Position;
         chapterEntity.UpdatedAt = DateTime.UtcNow;
     }

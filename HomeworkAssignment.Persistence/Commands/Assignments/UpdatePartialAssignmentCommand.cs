@@ -1,5 +1,4 @@
-﻿using HomeAssignment.Domain.Abstractions;
-using MediatR;
+﻿using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Assignments;
 

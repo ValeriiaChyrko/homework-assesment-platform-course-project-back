@@ -8,8 +8,8 @@ public class RespondCourseWithCategoryDto
     public required string Title { get; set; }
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
-    
-    public bool IsPublished { get; set; } 
+
+    public bool IsPublished { get; set; }
 
     public RespondCategoryDto? Category { get; set; }
     public required Guid UserId { get; set; }

@@ -17,17 +17,17 @@ public class CourseConfiguration : IEntityTypeConfiguration<CourseEntity>
             .WithOne(g => g.Course)
             .HasForeignKey(mr => mr.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasMany(a => a.Attachments)
             .WithOne(g => g.Course)
             .HasForeignKey(mr => mr.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasMany(a => a.Enrollments)
             .WithOne(g => g.Course)
             .HasForeignKey(mr => mr.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasOne(a => a.User)
             .WithMany(p => p.Courses)
             .HasForeignKey(mr => mr.UserId)
@@ -36,7 +36,7 @@ public class CourseConfiguration : IEntityTypeConfiguration<CourseEntity>
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.Description).HasMaxLength(512);
         builder.Property(mr => mr.ImageUrl).HasMaxLength(256);
-        
+
         builder.HasIndex(mr => mr.CategoryId);
     }
 }

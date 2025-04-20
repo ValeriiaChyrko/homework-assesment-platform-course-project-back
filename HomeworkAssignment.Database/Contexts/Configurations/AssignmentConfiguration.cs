@@ -23,7 +23,7 @@ public class AssignmentConfiguration : IEntityTypeConfiguration<AssignmentEntity
         builder.Property(mr => mr.RepositoryName).HasMaxLength(64);
         builder.Property(mr => mr.RepositoryOwner).HasMaxLength(64);
         builder.Property(mr => mr.RepositoryUrl).HasMaxLength(256);
-        
+
         builder.HasIndex(mr => mr.ChapterId);
     }
 }

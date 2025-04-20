@@ -22,8 +22,8 @@ public sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByI
         var assignment = await _context
             .CategoryEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.Id,
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.Id,
                 cancellationToken
             );
 

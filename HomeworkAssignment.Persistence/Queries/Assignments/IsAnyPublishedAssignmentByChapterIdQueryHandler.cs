@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public sealed class IsAnyPublishedAssignmentByChapterIdQueryHandler : IRequestHandler<IsAnyPublishedAssignmentByChapterIdQuery, bool>
+public sealed class
+    IsAnyPublishedAssignmentByChapterIdQueryHandler : IRequestHandler<IsAnyPublishedAssignmentByChapterIdQuery, bool>
 {
     private readonly IHomeworkAssignmentDbContext _context;
 

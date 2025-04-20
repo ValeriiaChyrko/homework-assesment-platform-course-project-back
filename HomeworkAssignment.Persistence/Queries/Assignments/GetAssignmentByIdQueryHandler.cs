@@ -22,8 +22,8 @@ public sealed class GetAssignmentByIdQueryHandler : IRequestHandler<GetAssignmen
         var assignment = await _context
             .AssignmentEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.AssignmentId && mr.ChapterId == query.ChapterId, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.AssignmentId && mr.ChapterId == query.ChapterId,
                 cancellationToken
             );
 

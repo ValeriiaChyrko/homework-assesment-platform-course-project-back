@@ -22,10 +22,10 @@ public sealed class GetPublishedCourseByIdQueryHandler : IRequestHandler<GetPubl
         var assignment = await _context
             .CourseEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.Id 
-                && mr.UserId == query.OwnerId
-                && mr.IsPublished == true, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.Id
+                    && mr.UserId == query.OwnerId
+                    && mr.IsPublished == true,
                 cancellationToken
             );
 

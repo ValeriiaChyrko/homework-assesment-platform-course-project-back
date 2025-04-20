@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class GetCoursesByIdsQueryHandler : IRequestHandler<GetCoursesByIdsQuery, List<Course>?>
+public sealed class GetCoursesByIdsQueryHandler : IRequestHandler<GetCoursesByIdsQuery, List<Course>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ public sealed class GetCoursesByIdsQueryHandler : IRequestHandler<GetCoursesById
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<List<Course>?> Handle(GetCoursesByIdsQuery query, CancellationToken cancellationToken)
+    public async Task<List<Course>> Handle(GetCoursesByIdsQuery query, CancellationToken cancellationToken)
     {
         var courseEntities = await _context
             .CourseEntities
@@ -26,6 +26,6 @@ public sealed class GetCoursesByIdsQueryHandler : IRequestHandler<GetCoursesById
             .Where(x => query.CourseIds.Contains(x.Id) && x.IsPublished)
             .ToListAsync(cancellationToken);
 
-        return courseEntities.Count == 0 ? null :  _mapper.Map<List<Course>>(courseEntities);
+        return courseEntities.Count == 0 ? [] : _mapper.Map<List<Course>>(courseEntities);
     }
 }

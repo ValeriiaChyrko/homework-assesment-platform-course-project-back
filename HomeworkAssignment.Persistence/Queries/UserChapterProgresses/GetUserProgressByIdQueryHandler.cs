@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeAssignment.Persistence.Queries.UserChapterProgresses;
 
 public sealed class
-    GetUserProgressByIdQueryHandler : IRequestHandler<GetUserProgressByIdQuery,
+    GetUserProgressByIdQueryHandler : IRequestHandler<GetUserChapterProgressByIdQuery,
     ChapterUserProgress?>
 {
     private readonly IHomeworkAssignmentDbContext _context;
@@ -19,7 +19,7 @@ public sealed class
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<ChapterUserProgress?> Handle(GetUserProgressByIdQuery query,
+    public async Task<ChapterUserProgress?> Handle(GetUserChapterProgressByIdQuery query,
         CancellationToken cancellationToken)
     {
         var userProgressEntity = await _context
@@ -27,8 +27,8 @@ public sealed class
             .AsNoTracking()
             .SingleOrDefaultAsync(
                 a => a.ChapterId == query.ChapterId
-                && a.UserId == query.UserId, 
-                cancellationToken: cancellationToken
+                     && a.UserId == query.UserId,
+                cancellationToken
             );
 
         return userProgressEntity != null ? _mapper.Map<ChapterUserProgress>(userProgressEntity) : null;

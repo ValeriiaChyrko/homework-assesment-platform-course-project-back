@@ -22,8 +22,8 @@ public sealed class GetChapterByIdQueryHandler : IRequestHandler<GetChapterByIdQ
         var chapter = await _context
             .ChapterEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.ChapterId && mr.CourseId == query.CourseId, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.ChapterId && mr.CourseId == query.CourseId,
                 cancellationToken
             );
 

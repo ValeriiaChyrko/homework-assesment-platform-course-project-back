@@ -6,7 +6,9 @@ namespace HomeworkAssignment.Application.Abstractions;
 
 public class DatabaseTransactionManager(IHomeworkAssignmentDbContext context) : IDatabaseTransactionManager
 {
-    private readonly IHomeworkAssignmentDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly IHomeworkAssignmentDbContext
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+
     private IDbContextTransaction? _transaction;
 
     public bool HasActiveTransaction => _transaction != null;

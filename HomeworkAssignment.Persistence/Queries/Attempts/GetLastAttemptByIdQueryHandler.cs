@@ -22,9 +22,9 @@ public sealed class GetLastAttemptByIdQueryHandler : IRequestHandler<GetLastAtte
         var chapter = await _context
             .AttemptEntities
             .AsNoTracking()
-            .Where(mr => mr.UserId == query.UserId && mr.AssignmentId == query.AssignmentId) 
-            .OrderByDescending(mr => mr.Position) 
-            .FirstOrDefaultAsync(cancellationToken); 
+            .Where(mr => mr.UserId == query.UserId && mr.AssignmentId == query.AssignmentId)
+            .OrderByDescending(mr => mr.Position)
+            .FirstOrDefaultAsync(cancellationToken);
 
         return chapter != null ? _mapper.Map<Attempt>(chapter) : null;
     }

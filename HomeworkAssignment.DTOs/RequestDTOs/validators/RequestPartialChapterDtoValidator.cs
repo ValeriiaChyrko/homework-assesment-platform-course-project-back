@@ -16,13 +16,13 @@ public class RequestPartialChapterDtoValidator : AbstractValidator<RequestPartia
             .MaximumLength(MaxLengthTitlePropertyLength)
             .WithMessage($"Full name cannot exceed {MaxLengthTitlePropertyLength} characters.")
             .When(dto => dto.Title != null);
-        
+
         RuleFor(dto => dto.Description)
             .NotEmpty().WithMessage("Description cannot be empty.")
             .MaximumLength(MaxLengthDescriptionPropertyLength)
             .WithMessage($"Specialization cannot exceed {MaxLengthDescriptionPropertyLength} characters.")
             .When(x => x.Description != null);
-        
+
         RuleFor(dto => dto.VideoUrl)
             .NotEmpty().WithMessage("Video URL cannot be empty.")
             .MaximumLength(MaxLengthUrlPropertyLength)

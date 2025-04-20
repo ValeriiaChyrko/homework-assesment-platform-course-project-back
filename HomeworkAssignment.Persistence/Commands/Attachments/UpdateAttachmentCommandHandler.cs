@@ -21,7 +21,7 @@ public sealed record UpdateAttachmentCommandHandler : IRequestHandler<UpdateAtta
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var attachmentEntity = _mapper.Map<AttachmentEntity>(command.Attachment);
         attachmentEntity.Id = command.Id;
         _context.AttachmentEntities.Update(attachmentEntity);

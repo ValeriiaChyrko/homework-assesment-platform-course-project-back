@@ -22,9 +22,9 @@ public sealed class GetCategoryByCourseIdQueryHandler : IRequestHandler<GetCateg
         var categoryEntity = await _context
             .CategoryEntities
             .AsNoTracking()
-            .Include(c => c.Courses) 
-            .SingleOrDefaultAsync(c => 
-                    c.Courses.Any(course => course.Id == query.CourseId), 
+            .Include(c => c.Courses)
+            .SingleOrDefaultAsync(c =>
+                    c.Courses.Any(course => course.Id == query.CourseId),
                 cancellationToken
             );
 

@@ -16,17 +16,17 @@ public sealed class DeleteCourseUserProgressCommandHandler : IRequestHandler<Del
     public async Task Handle(DeleteCourseUserProgressCommand command, CancellationToken cancellationToken)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var chapters = await _context.ChapterEntities
             .Where(ch => ch.CourseId == command.CourseId)
             .Select(ch => ch.Id)
-            .ToListAsync(cancellationToken: cancellationToken);
-        
-        if (chapters.Count == 0) 
+            .ToListAsync(cancellationToken);
+
+        if (chapters.Count == 0)
             return;
 
         await _context.UserChapterProgressEntities
             .Where(up => up.ChapterId != null && chapters.Contains(up.ChapterId.Value))
-            .ExecuteDeleteAsync(cancellationToken: cancellationToken); 
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }

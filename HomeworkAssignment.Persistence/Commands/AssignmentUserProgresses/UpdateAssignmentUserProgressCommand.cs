@@ -3,4 +3,5 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.AssignmentUserProgresses;
 
-public sealed record UpdateAssignmentUserProgressCommand(AssignmentUserProgress AssignmentUserProgress) : IRequest<AssignmentUserProgress>;
+public sealed record UpdateAssignmentUserProgressCommand(AssignmentUserProgress AssignmentUserProgress)
+    : IRequest<AssignmentUserProgress>;

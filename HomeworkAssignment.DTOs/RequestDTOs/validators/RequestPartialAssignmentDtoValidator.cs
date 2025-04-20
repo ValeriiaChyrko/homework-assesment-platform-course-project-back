@@ -16,8 +16,8 @@ public class RequestPartialAssignmentDtoValidator : AbstractValidator<RequestPar
             .NotEmpty().WithMessage("Title cannot be empty.")
             .MaximumLength(MaxLengthTitlePropertyLength)
             .WithMessage($"Full name cannot exceed {MaxLengthTitlePropertyLength} characters.")
-            .When(x=>x.Title != null);
-        
+            .When(x => x.Title != null);
+
         RuleFor(dto => dto.Description)
             .NotEmpty().WithMessage("Description cannot be empty.")
             .MaximumLength(MaxLengthDescriptionPropertyLength)
@@ -29,13 +29,13 @@ public class RequestPartialAssignmentDtoValidator : AbstractValidator<RequestPar
             .MaximumLength(MaxLengthRepositoryPropertyLength)
             .WithMessage($"Repository name cannot exceed {MaxLengthRepositoryPropertyLength} characters.")
             .When(x => x.RepositoryName != null);
-        
+
         RuleFor(dto => dto.RepositoryOwner)
             .NotEmpty().WithMessage("Repository owner cannot be empty.")
             .MaximumLength(MaxLengthRepositoryPropertyLength)
             .WithMessage($"Repository owner cannot exceed {MaxLengthRepositoryPropertyLength} characters.")
             .When(x => x.RepositoryOwner != null);
-        
+
         RuleFor(dto => dto.RepositoryUrl)
             .NotEmpty().WithMessage("Repository URL cannot be empty.")
             .MaximumLength(MaxLengthRepositoryUrlPropertyLength)

@@ -22,9 +22,9 @@ public sealed class GetLastAssignmentByIdQueryHandler : IRequestHandler<GetLastA
         var assignment = await _context
             .AssignmentEntities
             .AsNoTracking()
-            .Where(mr => mr.ChapterId == query.ChapterId) 
-            .OrderByDescending(mr => mr.Position) 
-            .FirstOrDefaultAsync(cancellationToken); 
+            .Where(mr => mr.ChapterId == query.ChapterId)
+            .OrderByDescending(mr => mr.Position)
+            .FirstOrDefaultAsync(cancellationToken);
 
         return assignment != null ? _mapper.Map<Assignment>(assignment) : null;
     }

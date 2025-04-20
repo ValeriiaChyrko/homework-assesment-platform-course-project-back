@@ -3,5 +3,5 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.UserChapterProgresses;
 
-public record GetUserProgressByIdQuery(Guid UserId, Guid ChapterId)
+public record GetUserChapterProgressByIdQuery(Guid UserId, Guid ChapterId)
     : IRequest<ChapterUserProgress?>;

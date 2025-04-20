@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
-using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.DTOs.RespondDTOs.AttemptRelated;
 using HomeworkAssignment.Application.Abstractions.AttemptRelated;
 using HomeworkAssignment.Controllers.Abstractions;
@@ -14,7 +12,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 namespace HomeworkAssignment.Controllers.AttemptRelated;
 
 /// <summary>
-/// A controller for managing student attempts.
+///     A controller for managing student attempts.
 /// </summary>
 [Produces("application/json")]
 [Authorize]
@@ -27,57 +25,59 @@ public class AttemptsController(
     IQualityGrpcService qualityGrpc,
     ITestsGrpcService testsGrpc,
     IMapper mapper,
-    HybridCache cache, 
+    HybridCache cache,
     ICacheKeyManager cacheKeyManager)
     : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
-        LocalCacheExpiration = TimeSpan.FromMinutes(5),
-        Expiration = TimeSpan.FromMinutes(10)
+        LocalCacheExpiration = TimeSpan.FromMinutes(2),
+        Expiration = TimeSpan.FromMinutes(5)
     };
-    
+
     /// <summary>
-    /// Get a list of all attempts for a specific task.
+    ///     Get a list of all attempts for a specific task.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> GetAttempts(Guid courseId, Guid chapterId, Guid assignmentId,
+    public async Task<ActionResult<IReadOnlyList<RespondAttemptDto>>> GetAttempts(Guid courseId, Guid chapterId,
+        Guid assignmentId,
         CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        
+
         var cacheKey = cacheKeyManager.AttemptList(courseId, chapterId, assignmentId);
 
         var cachedAttempts = await cache.GetOrCreateAsync(
-            key:cacheKey,
+            cacheKey,
             async _ => await attemptService.GetAttemptsByAssignmentIdAsync(userId, assignmentId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)],
-            cancellationToken: cancellationToken);
+            _cacheOptions,
+            [cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId)],
+            cancellationToken);
 
         return Ok(cachedAttempts);
     }
 
     /// <summary>
-    /// Creating a new attempt to complete a task.
+    ///     Creating a new attempt to complete a task.
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<RespondAttemptDto>> Create(Guid courseId, Guid chapterId, Guid assignmentId, 
-        [FromBody] RequestAttemptDto request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<RespondAttemptDto>> Create(Guid courseId, Guid chapterId, Guid assignmentId,
+        CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        
-        var result = await attemptService.CreateAttemptAsync(userId, assignmentId, request, cancellationToken);
-        
-        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
+
+        var result = await attemptService.CreateAttemptAsync(userId, assignmentId, cancellationToken);
+
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId),
+            cancellationToken);
         return Ok(result);
     }
 
     /// <summary>
-    /// Get a list of branches of a user's repository.
+    ///     Get a list of branches of a user's repository.
     /// </summary>
-    [HttpGet("{attemptId:guid}/branches")]
-    public async Task<ActionResult<IReadOnlyList<string>>> GetAuthorBranches([FromQuery] RequestBranchDto query,
+    [HttpPost("{attemptId:guid}/branches")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetAuthorBranches([FromBody] RequestBranchDto query,
         [FromServices] IValidator<RequestBranchDto> validator, CancellationToken cancellationToken = default)
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
@@ -88,10 +88,11 @@ public class AttemptsController(
     }
 
     /// <summary>
-    /// Update information about the task attempt.
+    ///     Update information about the task attempt.
     /// </summary>
     [HttpPatch("{attemptId:guid}")]
-    public async Task<ActionResult<RespondAttemptDto>> Update(Guid courseId, Guid chapterId, Guid assignmentId, Guid attemptId,
+    public async Task<ActionResult<RespondAttemptDto>> Update(Guid courseId, Guid chapterId, Guid assignmentId,
+        Guid attemptId,
         [FromBody] RequestPartialAttemptDto request, [FromServices] IValidator<RequestPartialAttemptDto> validator,
         CancellationToken cancellationToken = default)
     {
@@ -101,13 +102,14 @@ public class AttemptsController(
         var userId = GetUserId();
         var result =
             await attemptService.UpdateAttemptAsync(userId, assignmentId, attemptId, request, cancellationToken);
-        
-        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
+
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId),
+            cancellationToken);
         return Ok(result);
     }
 
     /// <summary>
-    /// Submit an attempt for automatic verification.
+    ///     Submit an attempt for automatic verification.
     /// </summary>
     [HttpPut("{attemptId:guid}/submit")]
     public async Task<ActionResult<RespondAttemptDto>> Submit(
@@ -148,10 +150,12 @@ public class AttemptsController(
 
         UpdateScores(request, scores.ToArray());
 
-        var result = await attemptService.SubmitAttemptAsync(request.UserId, assignmentId, attemptId, request.Attempt,
+        var userId = GetUserId();
+        var result = await attemptService.SubmitAttemptAsync(userId, assignmentId, attemptId, request,
             cancellationToken);
-        
-        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId), cancellationToken);
+
+        await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId),
+            cancellationToken);
         return Ok(result);
     }
 

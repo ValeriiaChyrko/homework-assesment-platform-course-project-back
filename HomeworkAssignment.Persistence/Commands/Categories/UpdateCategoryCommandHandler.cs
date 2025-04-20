@@ -21,7 +21,7 @@ public sealed record UpdateCategoryCommandHandler : IRequestHandler<UpdateCatego
         CancellationToken cancellationToken = default)
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
-        
+
         var categoryEntity = _mapper.Map<CategoryEntity>(command.Category);
         categoryEntity.Id = command.Id;
         _context.CategoryEntities.Update(categoryEntity);

@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.AssignmentRelated;
-using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.DTOs.RespondDTOs.AssignmentRelated;
+using HomeAssignment.DTOs.RespondDTOs.AttemptRelated;
 using HomeAssignment.Persistence.Commands.Assignments;
 using HomeAssignment.Persistence.Queries.Assignments;
+using HomeAssignment.Persistence.Queries.Attempts;
+using HomeAssignment.Persistence.Queries.Users;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.AssignmentRelated;
 using HomeworkAssignment.Application.Abstractions.ChapterRelated;
@@ -114,11 +115,9 @@ public class AssignmentService(
         var isAnyPublishedAssignmentInChapter = await ExecuteTransactionAsync(
             async () => await mediator.Send(new IsAnyPublishedAssignmentByChapterIdQuery(chapterId), cancellationToken),
             cancellationToken: cancellationToken);
-        
+
         if (!isAnyPublishedAssignmentInChapter)
-        {
             await chapterService.UnpublishChapterAsync(userId, courseId, chapterId, cancellationToken);
-        }
 
         _logger.LogInformation("Successfully deleted assignment with ID: {AssignmentId}", assignmentId);
     }
@@ -175,9 +174,7 @@ public class AssignmentService(
             cancellationToken: cancellationToken);
 
         if (!isAnyPublishedAssignmentInChapter)
-        {
             await chapterService.UnpublishChapterAsync(userId, courseId, chapterId, cancellationToken);
-        }
 
         _logger.LogInformation("Successfully unpublished assignment: {@Assignment}", updatedAssignment);
         return mapper.Map<RespondAssignmentDto>(updatedAssignment);
@@ -187,15 +184,13 @@ public class AssignmentService(
         IEnumerable<RequestReorderAssignmentDto> assignmentDtos, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started reordering assignments in Chapter ID: {ChapterId}", chapterId);
-        
+
         await ExecuteTransactionAsync(
             async () =>
             {
                 foreach (var assignment in assignmentDtos)
-                {
                     await mediator.Send(new UpdatePartialAssignmentCommand(assignment.Id, assignment.Position),
                         cancellationToken);
-                }
             },
             cancellationToken: cancellationToken);
 
@@ -234,4 +229,54 @@ public class AssignmentService(
         _logger.LogInformation("Successfully retrieved assignment with ID: {AssignmentId}", assignmentId);
         return mapper.Map<RespondAssignmentDto>(result);
     }
+    
+    public async Task<RespondAssignmentAnalyticsDto?> GetAssignmentAnalyticsAsync(
+    Guid chapterId,
+    Guid assignmentId,
+    CancellationToken cancellationToken = default)
+{
+    _logger.LogInformation("Started retrieving assignment analytic with ID: {AssignmentId}", assignmentId);
+
+    var attempts = await mediator.Send(new GetAllAttemptsByAssignmentIdQuery(assignmentId), cancellationToken);
+
+    if (!attempts.Any())
+    {
+        _logger.LogWarning("Assignment with ID: {AssignmentId} does not have analytic.", assignmentId);
+        return null;
+    }
+    
+    var attemptAnalyticsTasks = attempts.Select(async attempt => new RespondAttemptAnalyticsDto
+    {
+        StudentFullName = await mediator.Send(new GetUserFullnameQuery(attempt.UserId), cancellationToken),
+        CompilationScore = attempt.CompilationScore,
+        QualityScore = attempt.QualityScore,
+        TestsScore = attempt.TestsScore,
+        FinalScore = attempt.FinalScore,
+    });
+
+    var attemptAnalytics = await Task.WhenAll(attemptAnalyticsTasks);
+
+    var assignment = await mediator.Send(new GetAssignmentByIdQuery(chapterId, assignmentId), cancellationToken);
+
+    var attemptFinalResults = attempts.Select(a => a.FinalScore).ToList();
+
+    var passedCoefficient = assignment.CompilationSection.MinScore +
+                             assignment.QualitySection.MinScore +
+                             assignment.TestsSection.MinScore;
+
+    var result = new RespondAssignmentAnalyticsDto
+    {
+        Attempts = attemptAnalytics.ToList(),
+        AssignmentTitle = assignment.Title,
+        AverageScore = attemptFinalResults.Average(Convert.ToDouble),
+        HighestScore = attemptFinalResults.Max(),
+        SuccessCoefficient = (ushort)Math.Round(
+            (double)attemptFinalResults.Count(score => score >= passedCoefficient) / attemptFinalResults.Count * 100
+        )
+    };
+
+    _logger.LogInformation("Successfully retrieved assignment analytic with ID: {AssignmentId}", assignmentId);
+    return result;
+}
+
 }

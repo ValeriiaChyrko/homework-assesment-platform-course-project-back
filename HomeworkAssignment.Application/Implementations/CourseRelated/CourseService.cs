@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.CourseRelated;
-using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 using HomeAssignment.Persistence.Abstractions;
 using HomeAssignment.Persistence.Commands.Courses;
 using HomeAssignment.Persistence.Queries.Chapters;
 using HomeAssignment.Persistence.Queries.Courses;
+using HomeAssignment.Persistence.Queries.Enrollments;
 using HomeAssignment.Persistence.Queries.UserChapterProgresses;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
@@ -27,9 +27,11 @@ public class CourseService(
 {
     private readonly ILogger<CourseService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    public async Task<RespondCourseDto> CreateCourseAsync(Guid userId, RequestCreateCourseDto createCourseDto, CancellationToken cancellationToken = default)
+    public async Task<RespondCourseDto> CreateCourseAsync(Guid userId, RequestCreateCourseDto createCourseDto,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started creating course for UserId: {UserId}. Course: {@CourseDto}", userId, createCourseDto);
+        _logger.LogInformation("Started creating course for UserId: {UserId}. Course: {@CourseDto}", userId,
+            createCourseDto);
 
         var course = mapper.Map<Course>(createCourseDto);
         course.UserId = userId;
@@ -46,7 +48,7 @@ public class CourseService(
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started updating course. CourseId: {CourseId}, UserId: {UserId}", courseId, userId);
-        
+
         var course = await mediator.Send(new GetCourseByOwnerIdQuery(courseId, userId), cancellationToken);
         if (course == null)
         {
@@ -54,7 +56,8 @@ public class CourseService(
             throw new ArgumentException("Course does not exist.");
         }
 
-        course.PatchUpdate(courseDto.Title, courseDto.Description, courseDto.ImageUrl, courseDto.CategoryId ?? course.CategoryId);
+        course.PatchUpdate(courseDto.Title, courseDto.Description, courseDto.ImageUrl,
+            courseDto.CategoryId ?? course.CategoryId);
 
         var updatedCourse = await ExecuteTransactionAsync(
             async () => await mediator.Send(new UpdateCourseCommand(courseId, course), cancellationToken),
@@ -75,14 +78,17 @@ public class CourseService(
         _logger.LogInformation("Course deleted successfully. CourseId: {CourseId}", courseId);
     }
 
-    public async Task<RespondCourseDto> PublishCourseAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<RespondCourseDto> PublishCourseAsync(Guid userId, Guid courseId,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started publishing course. CourseId: {CourseId}, UserId: {UserId}", courseId, userId);
 
-        var hasPublishedChapters = await mediator.Send(new IsAnyPublishedChapterByCourseIdQuery(courseId), cancellationToken);
+        var hasPublishedChapters =
+            await mediator.Send(new IsAnyPublishedChapterByCourseIdQuery(courseId), cancellationToken);
         if (!hasPublishedChapters)
         {
-            _logger.LogInformation("Course with ID: {CourseId} cannot be published. No published chapters found.", courseId);
+            _logger.LogInformation("Course with ID: {CourseId} cannot be published. No published chapters found.",
+                courseId);
             throw new ArgumentException("Course does not have published chapters.");
         }
 
@@ -103,7 +109,8 @@ public class CourseService(
         return mapper.Map<RespondCourseDto>(updatedCourse);
     }
 
-    public async Task<RespondCourseDto> UnpublishCourseAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<RespondCourseDto> UnpublishCourseAsync(Guid userId, Guid courseId,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Started unpublishing course. CourseId: {CourseId}, UserId: {UserId}", courseId, userId);
 
@@ -123,43 +130,43 @@ public class CourseService(
         _logger.LogInformation("Course unpublished successfully. CourseId: {CourseId}", updatedCourse.Id);
         return mapper.Map<RespondCourseDto>(updatedCourse);
     }
-    
-    public async Task<PagedList<RespondCourseFullInfoDto>> GetCoursesFullInfoAsync(RequestCourseFilterParameters filterParameters, Guid userId, CancellationToken cancellationToken = default)
+
+    public async Task<PagedList<RespondCourseFullInfoDto>> GetCoursesFullInfoAsync(
+        RequestCourseFilterParameters filterParameters, Guid userId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving all courses for UserId: {UserId} with filter: {@Filter}", userId, filterParameters);
-        
+        _logger.LogInformation("Retrieving all courses for UserId: {UserId} with filter: {@Filter}", userId,
+            filterParameters);
+
         var query = new GetAllCourseDetailViewsQuery(filterParameters, userId);
         var result = await mediator.Send(query, cancellationToken);
 
         var mappedItems = new List<RespondCourseFullInfoDto>();
-        
-        if (filterParameters.IncludeProgress)
-        {
+
+        if (filterParameters.IncludeStudentProgress)
             foreach (var course in result.Items)
             {
-                var progress = await mediator.Send(new GetUserProgressPercentageQuery(userId, course.Id), cancellationToken);
-                
+                var progress = await mediator.Send(new GetUserProgressPercentageQuery(userId, course.Id),
+                    cancellationToken);
+
                 var dto = mapper.Map<RespondCourseFullInfoDto>(course);
                 dto.Progress = progress;
                 mappedItems.Add(dto);
             }
-        }
         else
-        {
             mappedItems = result.Items
                 .Select(mapper.Map<RespondCourseFullInfoDto>)
                 .ToList();
-        }
 
         _logger.LogInformation("Retrieved {Count} courses for UserId: {UserId}", mappedItems.Count, userId);
-        
+
         return new PagedList<RespondCourseFullInfoDto>(mappedItems, result.TotalCount, result.Page, result.PageSize);
     }
-    
-    public async Task<PagedList<RespondCourseFullInfoDto>> GetUserCoursesFullInfoAsync(RequestCourseFilterParameters filterParameters, Guid userId, CancellationToken cancellationToken = default)
+
+    public async Task<PagedList<RespondCourseFullInfoDto>> GetUserCoursesFullInfoAsync(
+        RequestCourseFilterParameters filterParameters, Guid userId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Retrieving all courses for UserId: {UserId}", userId);
-        
+
         var query = new GetAllCourseDetailViewsByOwnerIdQuery(filterParameters, userId);
         var result = await mediator.Send(query, cancellationToken);
 
@@ -168,26 +175,70 @@ public class CourseService(
             .ToList();
 
         _logger.LogInformation("Retrieved {Count} courses for UserId: {UserId}", mappedItems.Count, userId);
-        
+
         return new PagedList<RespondCourseFullInfoDto>(mappedItems, result.TotalCount, result.Page, result.PageSize);
     }
-    
-    public async Task<RespondCourseFullInfoDto?> GetSingleCourseFullInfoAsync(RequestCourseFilterParameters filterParameters, Guid userId, Guid courseId, CancellationToken cancellationToken = default)
+
+    public async Task<RespondCourseFullInfoDto?> GetSingleCourseFullInfoAsync(
+        RequestCourseFilterParameters filterParameters, Guid userId, Guid courseId,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Retrieving course for CourseId: {CourseId}", courseId);
-        
+
         var query = new GetSingleCourseDetailViewByOwnerIdQuery(filterParameters, userId, courseId);
         var result = await mediator.Send(query, cancellationToken);
 
-        if (query.FilterParameters.IncludeChapters && result?.Chapters != null)
-        {
+        if (result == null) return null;
+
+        if (filterParameters.IncludeChapters && result.Chapters.Count > 1)
             result.Chapters = result.Chapters
                 .OrderBy(ch => ch.Position)
                 .ToList();
-        }
-        
+
         _logger.LogInformation("Retrieved course for CourseId: {CourseId}", courseId);
-        
+
         return mapper.Map<RespondCourseFullInfoDto>(result);
+    }
+
+    public async Task<RespondCourseFullInfoDto?> GetSingleCourseFullInfoByStudentIdAsync(
+        RequestCourseFilterParameters filterParameters, Guid userId, Guid courseId,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Retrieving course for CourseId: {CourseId}", courseId);
+
+        var query = new GetSingleCourseDetailViewByStudentIdQuery(filterParameters, userId, courseId);
+        var result = await mediator.Send(query, cancellationToken);
+
+        if (result == null) return null;
+
+        if (filterParameters.IncludeChapters && result.Chapters.Count > 1)
+            result.Chapters = result.Chapters
+                .OrderBy(ch => ch.Position)
+                .ToList();
+
+        var dto = mapper.Map<RespondCourseFullInfoDto>(result);
+
+        if (filterParameters.IncludeStudentProgress)
+        {
+            var enrollment = await mediator.Send(new GetEnrollmentByIdQuery(userId, courseId), cancellationToken);
+            dto.IsEnrolled = enrollment != null;
+
+            var progress = await mediator.Send(new GetUserProgressPercentageQuery(userId, courseId), cancellationToken);
+            dto.Progress = progress;
+        }
+
+        if (query.FilterParameters is { IncludeUserProgress: true, IncludeChapters: true } && result.Chapters.Any())
+            foreach (var chapter in dto.Chapters!)
+            {
+                var chapterProgress = await mediator.Send(new GetUserChapterProgressByIdQuery(userId, chapter.Id),
+                    cancellationToken);
+                chapter.UserProgress = chapterProgress == null
+                    ? null
+                    : mapper.Map<RespondChapterUserProgressDto>(chapterProgress);
+            }
+
+        _logger.LogInformation("Retrieved course for CourseId: {CourseId}", courseId);
+
+        return dto;
     }
 }

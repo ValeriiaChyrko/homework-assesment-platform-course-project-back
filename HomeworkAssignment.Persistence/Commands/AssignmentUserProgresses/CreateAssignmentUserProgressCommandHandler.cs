@@ -6,7 +6,9 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.AssignmentUserProgresses;
 
-public sealed class CreateAssignmentUserProgressCommandHandler : IRequestHandler<CreateAssignmentUserProgressCommand, AssignmentUserProgress>
+public sealed class
+    CreateAssignmentUserProgressCommandHandler : IRequestHandler<CreateAssignmentUserProgressCommand,
+    AssignmentUserProgress>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -18,7 +20,8 @@ public sealed class CreateAssignmentUserProgressCommandHandler : IRequestHandler
     }
 
 
-    public async Task<AssignmentUserProgress> Handle(CreateAssignmentUserProgressCommand progressCommand, CancellationToken cancellationToken)
+    public async Task<AssignmentUserProgress> Handle(CreateAssignmentUserProgressCommand progressCommand,
+        CancellationToken cancellationToken)
     {
         if (progressCommand is null) throw new ArgumentNullException(nameof(progressCommand));
 

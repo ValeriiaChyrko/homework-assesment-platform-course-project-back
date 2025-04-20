@@ -9,11 +9,11 @@ public class RespondCourseFullInfoDto
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required string ImageUrl { get; set; }
-    
-    public bool IsEnrolled { get; set; } = false;
-    public bool IsPublished { get; set; } = false;
-    
-    public int Progress { get; set; } 
+
+    public bool IsEnrolled { get; set; }
+    public bool IsPublished { get; set; }
+
+    public int Progress { get; set; }
 
     public RespondCategoryDto? Category { get; set; }
     public required List<RespondChapterDto>? Chapters { get; set; }

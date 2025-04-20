@@ -1,5 +1,4 @@
-﻿using HomeAssignment.Domain.Abstractions.Enums;
-using MediatR;
+﻿using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Users;
 

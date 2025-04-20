@@ -10,12 +10,12 @@ public class UserEntity
     public string? GithubUsername { get; init; }
     public string? GithubProfileUrl { get; init; }
     public string? GithubPictureUrl { get; init; }
-    
+
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
-    
-    public ICollection<AttemptEntity>? Attempts { get; init; } 
-    public ICollection<CourseEntity>? Courses { get; init; } 
-    public ICollection<EnrollmentEntity>? Enrollments { get; init; } 
-    public ICollection<UserChapterProgressEntity>? UsersProgress { get; init; } 
+
+    public ICollection<AttemptEntity>? Attempts { get; init; }
+    public ICollection<CourseEntity>? Courses { get; init; }
+    public ICollection<EnrollmentEntity>? Enrollments { get; init; }
+    public ICollection<UserChapterProgressEntity>? UsersProgress { get; init; }
 }

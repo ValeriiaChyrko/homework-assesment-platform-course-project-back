@@ -1,4 +1,5 @@
 ﻿using HomeworkAssignment.Application.Abstractions.CourseRelated;
+using HomeworkAssignment.AuthorizationFilters;
 using HomeworkAssignment.Controllers.Abstractions;
 using HomeworkAssignment.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -11,75 +12,80 @@ namespace HomeworkAssignment.Controllers.CourseRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/enrollments")]
-public class CourseEnrollmentController(ICourseEnrollmentService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
+public class CourseEnrollmentController(
+    ICourseEnrollmentService service,
+    HybridCache cache,
+    ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
         LocalCacheExpiration = TimeSpan.FromMinutes(2),
         Expiration = TimeSpan.FromMinutes(5)
     };
-    
+
     /// <summary>
-    /// Gets all enrolled courses for a user.
+    ///     Gets all enrolled courses for a user.
     /// </summary>
-    [HttpGet("/all")]
-    public async Task<IActionResult> GetEnrollmentWithCoursesAsync(CancellationToken cancellationToken = default)
+    [HttpGet("/api/courses/enrollments/statistics")]
+    [TeacherOnly]
+    public async Task<IActionResult> GetEnrollmentsAnalytics(CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
-        var cacheKey = cacheKeyManager.EnrollmentList(userId);
-        
+        var cacheKey = cacheKeyManager.EnrollmentsAnalytics(userId);
+
         var cachedEnrollments = await cache.GetOrCreateAsync(
-            key:cacheKey, 
-            async _ => await service.GetEnrolledCoursesAsync(userId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.EnrollmentListGroup(userId)],
-            cancellationToken: cancellationToken);
-        
+            cacheKey,
+            async _ => await service.GetEnrollmentsAnalyticsAsync(userId, cancellationToken),
+            _cacheOptions,
+            [cacheKeyManager.EnrollmentListGroup(userId)],
+            cancellationToken);
+
         return Ok(cachedEnrollments);
     }
-    
+
     /// <summary>
-    /// Gets enrollment details of a user for a course.
+    ///     Gets enrollment details of a user for a course.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetEnrollment(Guid courseId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         var cacheKey = cacheKeyManager.Enrollment(userId, courseId);
-        
+
         var cachedEnrollment = await cache.GetOrCreateAsync(
-            key:cacheKey, 
+            cacheKey,
             async _ => await service.GetEnrollmentAsync(userId, courseId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.EnrollmentListGroup(userId)],
-            cancellationToken: cancellationToken);
-        
+            _cacheOptions,
+            [cacheKeyManager.EnrollmentListGroup(userId)],
+            cancellationToken);
+
         return Ok(cachedEnrollment);
     }
-    
+
     /// <summary>
-    /// Enrolls a user in a course.
+    ///     Enrolls a user in a course.
     /// </summary>
     [HttpPost]
     public async Task<IActionResult> Enroll(Guid courseId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         var result = await service.EnrollAsync(userId, courseId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.EnrollmentListGroup(userId), cancellationToken);
         await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
+        await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(result);
     }
-    
+
     /// <summary>
-    /// Withdraws a user from a course.
+    ///     Withdraws a user from a course.
     /// </summary>
     [HttpPatch("withdraw")]
     public async Task<IActionResult> Withdraw(Guid courseId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         await service.WithdrawAsync(userId, courseId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.EnrollmentListGroup(userId), cancellationToken);
         await cache.RemoveByTagAsync(cacheKeyManager.CourseListGroup(userId), cancellationToken);
         return Ok(courseId);

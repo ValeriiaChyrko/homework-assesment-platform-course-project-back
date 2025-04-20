@@ -17,12 +17,9 @@ public sealed class GetUserGitHubUsernameQueryHandler : IRequestHandler<GetUserG
     {
         var user = await _context.UserEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Id == query.UserId, cancellationToken); 
-        
-        if (user == null)
-        {
-            return null; 
-        }
+            .SingleOrDefaultAsync(u => u.Id == query.UserId, cancellationToken);
+
+        if (user == null) return null;
 
         return user.GithubUsername;
     }

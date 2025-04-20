@@ -22,8 +22,8 @@ public sealed class GetCourseByOwnerIdQueryHandler : IRequestHandler<GetCourseBy
         var courseEntity = await _context
             .CourseEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr => 
-                mr.Id == query.CourseId && mr.UserId == query.OwnerId, 
+            .SingleOrDefaultAsync(mr =>
+                    mr.Id == query.CourseId && mr.UserId == query.OwnerId,
                 cancellationToken
             );
 

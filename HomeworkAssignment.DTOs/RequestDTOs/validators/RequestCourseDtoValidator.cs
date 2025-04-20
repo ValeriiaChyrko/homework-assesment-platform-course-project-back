@@ -8,7 +8,7 @@ public class RequestCourseDtoValidator : AbstractValidator<RequestCreateCourseDt
     private const int MaxLengthTitlePropertyLength = 64;
     private const int MaxLengthDescriptionPropertyLength = 512;
     private const int MaxLengthUrlPropertyLength = 256;
-    
+
     public RequestCourseDtoValidator()
     {
         RuleFor(x => x.Title)

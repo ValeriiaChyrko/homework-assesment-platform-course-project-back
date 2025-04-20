@@ -23,30 +23,23 @@ public sealed class
         CancellationToken cancellationToken)
     {
         var chaptersQuery = _context.ChapterEntities.AsNoTracking();
-        
+
         if (!string.IsNullOrEmpty(query.FilterParameters.Title))
-        {
             chaptersQuery = chaptersQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
-        }
-        
+
         if (query.FilterParameters.CourseId.HasValue)
-        {
             chaptersQuery = chaptersQuery.Where(a => a.CourseId == query.FilterParameters.CourseId.Value);
-        }
-        
+
         if (query.FilterParameters.IsPublished.HasValue)
-        {
             chaptersQuery = chaptersQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished.Value);
-        }
-        
+
         if (!string.IsNullOrEmpty(query.FilterParameters.SortBy))
-        {
             chaptersQuery = query.FilterParameters.IsAscending
                 ? chaptersQuery.OrderBy(a => EF.Property<object>(a, query.FilterParameters.SortBy))
                 : chaptersQuery.OrderByDescending(a => EF.Property<object>(a, query.FilterParameters.SortBy));
-        }
-        
+
         var assignmentDtos = chaptersQuery.Select(entityModel => _mapper.Map<Chapter>(entityModel));
-        return await PagedList<Chapter>.CreateAsync(assignmentDtos, query.FilterParameters.PageNumber, query.FilterParameters.PageSize, cancellationToken);
+        return await PagedList<Chapter>.CreateAsync(assignmentDtos, query.FilterParameters.PageNumber,
+            query.FilterParameters.PageSize, cancellationToken);
     }
 }

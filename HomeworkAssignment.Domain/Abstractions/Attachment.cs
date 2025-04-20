@@ -2,17 +2,14 @@
 
 public class Attachment
 {
-    public Attachment(Guid id, string uploadthingKey, string name, string url, Guid? courseId, Guid? chapterId, DateTime createdAt)
+    public Attachment(Guid id, string uploadthingKey, string name, string url, Guid? courseId, Guid? chapterId,
+        DateTime createdAt)
     {
         if (courseId != null && chapterId != null)
-        {
             throw new ArgumentException("Attachment cannot belong to both a course and a chapter.");
-        }
 
         if (courseId == null && chapterId == null)
-        {
             throw new ArgumentException("Attachment must belong to either a course or a chapter.");
-        }
 
         Id = id;
         UploadthingKey = uploadthingKey;

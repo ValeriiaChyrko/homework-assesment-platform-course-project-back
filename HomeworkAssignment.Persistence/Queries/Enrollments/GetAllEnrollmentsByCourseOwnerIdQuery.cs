@@ -3,4 +3,4 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Enrollments;
 
-public record GetAllEnrollmentsByCourseOwnerIdQuery(Guid OwnerId)  : IRequest<IEnumerable<Enrollment>>;
+public record GetAllEnrollmentsByCourseOwnerIdQuery(Guid OwnerId) : IRequest<IEnumerable<Enrollment>>;

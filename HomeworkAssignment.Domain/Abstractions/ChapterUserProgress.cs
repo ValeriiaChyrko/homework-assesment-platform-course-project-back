@@ -32,7 +32,7 @@ public class ChapterUserProgress(
             DateTime.UtcNow
         );
     }
-    
+
     public void UpdateProgress(bool isCompleted)
     {
         IsCompleted = isCompleted;

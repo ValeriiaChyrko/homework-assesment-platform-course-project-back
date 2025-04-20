@@ -12,7 +12,9 @@ public static class DependencyInjection
     {
         services.AddSingleton<ICacheKeyManager, CacheKeyManager>();
         services.AddSingleton<IConnectionMultiplexer>(
-            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? throw new InvalidOperationException("Redis connection string is not configured."))
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ??
+                                          throw new InvalidOperationException(
+                                              "Redis connection string is not configured."))
         );
 
         services.AddScoped<IAccountGrpcService, AccountGrpcService>();

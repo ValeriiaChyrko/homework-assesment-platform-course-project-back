@@ -13,7 +13,7 @@ public class Enrollment(Guid id, Guid userId, Guid courseId, DateTime createdAt,
     public static Enrollment Create(Guid userId, Guid courseId)
     {
         return new Enrollment(
-            Guid.NewGuid(), 
+            Guid.NewGuid(),
             userId,
             courseId,
             DateTime.UtcNow,

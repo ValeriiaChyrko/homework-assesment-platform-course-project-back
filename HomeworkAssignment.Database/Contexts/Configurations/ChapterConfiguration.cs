@@ -17,12 +17,12 @@ public class ChapterConfiguration : IEntityTypeConfiguration<ChapterEntity>
             .WithOne(g => g.Chapter)
             .HasForeignKey(mr => mr.ChapterId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasMany(a => a.Attachments)
             .WithOne(g => g.Chapter)
             .HasForeignKey(mr => mr.ChapterId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasMany(a => a.Assignments)
             .WithOne(g => g.Chapter)
             .HasForeignKey(mr => mr.ChapterId)
@@ -31,7 +31,7 @@ public class ChapterConfiguration : IEntityTypeConfiguration<ChapterEntity>
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.Description).HasMaxLength(10000);
         builder.Property(mr => mr.VideoUrl).HasMaxLength(256);
-        
+
         builder.HasIndex(mr => mr.CourseId);
     }
 }

@@ -16,7 +16,7 @@ public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategor
     {
         if (command is null) throw new ArgumentNullException(nameof(command));
 
-        var categoryEntity = await _context.CategoryEntities.FindAsync([command.Id], cancellationToken: cancellationToken);
+        var categoryEntity = await _context.CategoryEntities.FindAsync([command.Id], cancellationToken);
         if (categoryEntity != null) _context.CategoryEntities.Remove(categoryEntity);
     }
 }

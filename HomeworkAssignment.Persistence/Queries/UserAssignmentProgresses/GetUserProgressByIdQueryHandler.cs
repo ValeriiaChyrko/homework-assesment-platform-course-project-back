@@ -27,8 +27,8 @@ public sealed class
             .AsNoTracking()
             .SingleOrDefaultAsync(
                 a => a.AssignmentId == query.AssignmentId
-                && a.UserId == query.UserId, 
-                cancellationToken: cancellationToken
+                     && a.UserId == query.UserId,
+                cancellationToken
             );
 
         return userProgressEntity != null ? _mapper.Map<AssignmentUserProgress>(userProgressEntity) : null;

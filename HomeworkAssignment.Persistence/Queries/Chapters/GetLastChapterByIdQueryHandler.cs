@@ -22,9 +22,9 @@ public sealed class GetLastChapterByIdQueryHandler : IRequestHandler<GetLastChap
         var chapter = await _context
             .ChapterEntities
             .AsNoTracking()
-            .Where(mr => mr.CourseId == query.CourseId) 
-            .OrderByDescending(mr => mr.Position) 
-            .FirstOrDefaultAsync(cancellationToken); 
+            .Where(mr => mr.CourseId == query.CourseId)
+            .OrderByDescending(mr => mr.Position)
+            .FirstOrDefaultAsync(cancellationToken);
 
         return chapter != null ? _mapper.Map<Chapter>(chapter) : null;
     }

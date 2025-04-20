@@ -14,7 +14,10 @@ namespace HomeworkAssignment.Controllers.CourseRelated;
 [Authorize]
 [ApiController]
 [Route("api/courses/{courseId:guid}/attachments")]
-public class CourseAttachmentController(ICourseAttachmentService service, HybridCache cache, ICacheKeyManager cacheKeyManager) : BaseController
+public class CourseAttachmentController(
+    ICourseAttachmentService service,
+    HybridCache cache,
+    ICacheKeyManager cacheKeyManager) : BaseController
 {
     private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
@@ -23,52 +26,53 @@ public class CourseAttachmentController(ICourseAttachmentService service, Hybrid
     };
 
     /// <summary>
-    /// Getting attachments for a course.
+    ///     Getting attachments for a course.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAttachments(Guid courseId, CancellationToken cancellationToken = default)
     {
         var cacheKey = cacheKeyManager.CourseAttachments(courseId);
-        
+
         var cachedAttachments = await cache.GetOrCreateAsync(
-            key:cacheKey, 
+            cacheKey,
             async _ => await service.GetCourseAttachmentsAsync(courseId, cancellationToken),
-            options:_cacheOptions, 
-            tags: [cacheKeyManager.CourseSingleGroup(courseId)],
-            cancellationToken: cancellationToken);
+            _cacheOptions,
+            [cacheKeyManager.CourseSingleGroup(courseId)],
+            cancellationToken);
 
         return Ok(cachedAttachments);
     }
 
     /// <summary>
-    /// Creating an attachment for a course.
+    ///     Creating an attachment for a course.
     /// </summary>
     [HttpPost]
     [TeacherOnly]
     public async Task<IActionResult> CreateAttachment(Guid courseId,
-        [FromBody] RequestAttachmentDto request, 
-        [FromServices] IValidator<RequestAttachmentDto> validator, 
+        [FromBody] RequestAttachmentDto request,
+        [FromServices] IValidator<RequestAttachmentDto> validator,
         CancellationToken cancellationToken = default
     )
     {
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-        
+
         var cachedAttachment = await service.CreateCourseAttachmentAsync(courseId, request, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(cachedAttachment);
     }
-    
+
     /// <summary>
-    /// Deleting an attachment for a course.
+    ///     Deleting an attachment for a course.
     /// </summary>
     [HttpDelete("{attachmentId:guid}")]
     [TeacherOnly]
-    public async Task<IActionResult> DeleteAttachment(Guid courseId, Guid attachmentId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteAttachment(Guid courseId, Guid attachmentId,
+        CancellationToken cancellationToken = default)
     {
         await service.DeleteCourseAttachmentAsync(attachmentId, cancellationToken);
-        
+
         await cache.RemoveByTagAsync(cacheKeyManager.CourseSingleGroup(courseId), cancellationToken);
         return Ok(attachmentId);
     }

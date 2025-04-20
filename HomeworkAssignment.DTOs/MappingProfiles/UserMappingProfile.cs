@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.UserRelated;
-using HomeAssignment.DTOs.RespondDTOs;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 
@@ -20,7 +18,7 @@ public class UserMappingProfile : Profile
                 dto.GithubProfileUrl,
                 dto.GithubPictureUrl
             ));
-        
+
         CreateMap<User, UserEntity>()
             .ForMember(dest => dest.Attempts, opt => opt.Ignore())
             .ForMember(dest => dest.Courses, opt => opt.Ignore())

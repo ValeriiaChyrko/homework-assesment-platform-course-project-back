@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RequestDTOs;
 using HomeAssignment.DTOs.RequestDTOs.ChapterRelated;
-using HomeAssignment.DTOs.RespondDTOs;
 using HomeAssignment.DTOs.RespondDTOs.ChapterRelated;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
@@ -16,7 +14,7 @@ public class ChapterMappingProfile : Profile
             .ConstructUsing(src => Chapter.Create(
                 src.Title
             ));
-        
+
         CreateMap<ChapterEntity, Chapter>()
             .ConstructUsing(src => new Chapter(
                 src.Id,
@@ -32,13 +30,13 @@ public class ChapterMappingProfile : Profile
                 src.CreatedAt,
                 src.UpdatedAt
             ));
-        
+
         CreateMap<Chapter, ChapterEntity>()
             .ForMember(dest => dest.Attachments, opt => opt.Ignore())
-            .ForMember(dest => dest.UsersProgress, opt => opt.Ignore()) 
+            .ForMember(dest => dest.UsersProgress, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
-        
+
         CreateMap<Chapter, RespondChapterDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))

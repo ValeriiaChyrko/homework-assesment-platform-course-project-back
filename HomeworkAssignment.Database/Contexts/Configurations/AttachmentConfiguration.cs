@@ -12,7 +12,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<AttachmentEntity
             .WithMany(g => g.Attachments)
             .HasForeignKey(mr => mr.CourseId)
             .OnDelete(DeleteBehavior.NoAction);
-        
+
         builder.HasOne(a => a.Chapter)
             .WithMany(p => p.Attachments)
             .HasForeignKey(mr => mr.ChapterId)
@@ -21,7 +21,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<AttachmentEntity
         builder.Property(mr => mr.UploadthingKey).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.Name).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.Url).IsRequired().HasMaxLength(512);
-        
+
         builder.HasIndex(mr => mr.CourseId);
     }
 }

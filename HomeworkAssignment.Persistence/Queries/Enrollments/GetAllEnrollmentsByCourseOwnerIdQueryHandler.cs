@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Enrollments;
 
-public sealed class GetAllEnrollmentsByCourseOwnerIdQueryHandler : IRequestHandler<GetAllEnrollmentsByCourseOwnerIdQuery, IEnumerable<Enrollment>>
+public sealed class
+    GetAllEnrollmentsByCourseOwnerIdQueryHandler : IRequestHandler<GetAllEnrollmentsByCourseOwnerIdQuery,
+    IEnumerable<Enrollment>>
 {
     private readonly IHomeworkAssignmentDbContext _context;
     private readonly IMapper _mapper;
@@ -17,7 +19,8 @@ public sealed class GetAllEnrollmentsByCourseOwnerIdQueryHandler : IRequestHandl
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<Enrollment>> Handle(GetAllEnrollmentsByCourseOwnerIdQuery query, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Enrollment>> Handle(GetAllEnrollmentsByCourseOwnerIdQuery query,
+        CancellationToken cancellationToken)
     {
         var enrollmentEntities = await _context
             .EnrollmentEntities
