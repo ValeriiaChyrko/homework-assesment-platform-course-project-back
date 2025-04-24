@@ -9,6 +9,13 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
+        MapDtoToDomain();
+        MapDomainToEntity();
+        MapDomainToRespondDto();
+    }
+
+    private void MapDtoToDomain()
+    {
         CreateMap<UserDto, User>()
             .ConstructUsing(dto => User.CreateUser(
                 dto.Id,
@@ -18,13 +25,19 @@ public class UserMappingProfile : Profile
                 dto.GithubProfileUrl,
                 dto.GithubPictureUrl
             ));
+    }
 
+    private void MapDomainToEntity()
+    {
         CreateMap<User, UserEntity>()
             .ForMember(dest => dest.Attempts, opt => opt.Ignore())
             .ForMember(dest => dest.Courses, opt => opt.Ignore())
             .ForMember(dest => dest.Enrollments, opt => opt.Ignore())
             .ForMember(dest => dest.UsersProgress, opt => opt.Ignore());
+    }
 
+    private void MapDomainToRespondDto()
+    {
         CreateMap<UserEntity, User>()
             .ConstructUsing(src => new User(
                 src.UserRoles != null ? src.UserRoles.Select(a => a.RoleId).ToList() : null,

@@ -115,12 +115,8 @@ public class AttemptsController(
     public async Task<ActionResult<RespondAttemptDto>> Submit(
         Guid courseId, Guid chapterId, Guid assignmentId, Guid attemptId,
         [FromBody] RequestSubmitAttemptDto request,
-        [FromServices] IValidator<RequestSubmitAttemptDto> validator,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-
         var dto = mapper.Map<RequestRepositoryWithBranchDto>(request);
         var scores = new List<ushort>();
 

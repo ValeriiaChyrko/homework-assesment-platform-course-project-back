@@ -10,11 +10,20 @@ public class ChapterMappingProfile : Profile
 {
     public ChapterMappingProfile()
     {
-        CreateMap<RequestCreateChapterDto, Chapter>()
-            .ConstructUsing(src => Chapter.Create(
-                src.Title
-            ));
+        MapRequestToDomain();
+        MapEntityToDomain();
+        MapDomainToEntity();
+        MapDomainToRespondDto();
+    }
 
+    private void MapRequestToDomain()
+    {
+        CreateMap<RequestCreateChapterDto, Chapter>()
+            .ConstructUsing(src => Chapter.Create(src.Title));
+    }
+
+    private void MapEntityToDomain()
+    {
         CreateMap<ChapterEntity, Chapter>()
             .ConstructUsing(src => new Chapter(
                 src.Id,
@@ -26,25 +35,23 @@ public class ChapterMappingProfile : Profile
                 src.IsFree,
                 src.CourseId,
                 src.Attachments != null ? src.Attachments.Select(a => a.Id).ToList() : null,
-                src.UsersProgress != null ? src.UsersProgress.Select(up => up.Id).ToList() : null,
+                src.UsersProgress != null ? src.UsersProgress.Select(a => a.Id).ToList() : null,
                 src.CreatedAt,
                 src.UpdatedAt
             ));
+    }
 
+    private void MapDomainToEntity()
+    {
         CreateMap<Chapter, ChapterEntity>()
             .ForMember(dest => dest.Attachments, opt => opt.Ignore())
             .ForMember(dest => dest.UsersProgress, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
+    }
 
-        CreateMap<Chapter, RespondChapterDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-            .ForMember(dest => dest.VideoUrl, opt => opt.MapFrom(src => src.VideoUrl))
-            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
-            .ForMember(dest => dest.IsPublished, opt => opt.MapFrom(src => src.IsPublished))
-            .ForMember(dest => dest.IsFree, opt => opt.MapFrom(src => src.IsFree))
-            .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId));
+    private void MapDomainToRespondDto()
+    {
+        CreateMap<Chapter, RespondChapterDto>();
     }
 }

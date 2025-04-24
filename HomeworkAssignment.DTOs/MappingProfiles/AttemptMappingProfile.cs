@@ -10,13 +10,31 @@ public class AttemptMappingProfile : Profile
 {
     public AttemptMappingProfile()
     {
+        MapDomainToEntity();
+        MapEntityToDomain();
+        MapDomainToDto();
+        MapSubmitDtoToRepoRequest();
+    }
+
+    private void MapDomainToEntity()
+    {
         CreateMap<Attempt, AttemptEntity>()
             .ForMember(dest => dest.User, opt => opt.Ignore())
-            .ForMember(dest => dest.Assignment, opt => opt.Ignore())
-            .ReverseMap();
+            .ForMember(dest => dest.Assignment, opt => opt.Ignore());
+    }
 
+    private void MapEntityToDomain()
+    {
+        CreateMap<AttemptEntity, Attempt>();
+    }
+
+    private void MapDomainToDto()
+    {
         CreateMap<Attempt, RespondAttemptDto>();
+    }
 
+    private void MapSubmitDtoToRepoRequest()
+    {
         CreateMap<RequestSubmitAttemptDto, RequestRepositoryWithBranchDto>()
             .ForMember(dest => dest.RepoTitle, opt => opt.MapFrom(src => src.Assignment.RepositoryName))
             .ForMember(dest => dest.BranchTitle, opt => opt.MapFrom(src => src.Attempt.BranchName))

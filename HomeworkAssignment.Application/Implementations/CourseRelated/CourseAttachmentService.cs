@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RequestDTOs;
+using HomeAssignment.DTOs.RequestDTOs.AttachmentRelated;
 using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.DTOs.RespondDTOs.AttachmentRelated;
 using HomeAssignment.Persistence.Commands.Attachments;
 using HomeAssignment.Persistence.Queries.Attachments;
 using HomeworkAssignment.Application.Abstractions;

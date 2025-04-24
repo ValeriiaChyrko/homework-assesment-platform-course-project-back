@@ -10,20 +10,36 @@ public class CategoryMappingProfile : Profile
 {
     public CategoryMappingProfile()
     {
+        MapRequestToDomain();
+        MapDomainToEntity();
+        MapEntityToDomain();
+        MapDomainToRespondDto();
+    }
+
+    private void MapRequestToDomain()
+    {
         CreateMap<RequestCategoryDto, Category>()
             .ConstructUsing(dto => Category.Create(dto.Name, null));
+    }
 
+    private void MapDomainToEntity()
+    {
         CreateMap<Category, CategoryEntity>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Courses, opt => opt.Ignore());
+    }
 
+    private void MapEntityToDomain()
+    {
         CreateMap<CategoryEntity, Category>()
-            .ConstructUsing(src => new Category(src.Id, src.Name,
-                src.Courses != null ? src.Courses.Select(c => c.Id).ToList() : new List<Guid>()));
+            .ConstructUsing(src => new Category(
+                src.Id,
+                src.Name, 
+                src.Courses != null ? src.Courses.Select(a => a.Id).ToList() : null
+            ));
+    }
 
-        CreateMap<Category, RespondCategoryDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+    private void MapDomainToRespondDto()
+    {
+        CreateMap<Category, RespondCategoryDto>();
     }
 }

@@ -10,15 +10,20 @@ public class EnrollmentMappingProfile : Profile
 {
     public EnrollmentMappingProfile()
     {
+        MapRequestToDomain();
+        MapEntityToDomain();
+        MapDomainToEntity();
+        MapDomainToRespondDto();
+    }
+
+    private void MapRequestToDomain()
+    {
         CreateMap<RequestEnrollmentDto, Enrollment>()
             .ConstructUsing(dto => Enrollment.Create(dto.UserId, dto.CourseId));
+    }
 
-        CreateMap<Enrollment, EnrollmentEntity>()
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
-
+    private void MapEntityToDomain()
+    {
         CreateMap<EnrollmentEntity, Enrollment>()
             .ConstructUsing(entity => new Enrollment(
                 entity.Id,
@@ -27,9 +32,19 @@ public class EnrollmentMappingProfile : Profile
                 entity.CreatedAt,
                 entity.UpdatedAt
             ));
+    }
 
-        CreateMap<Enrollment, RespondEnrollmentDto>()
+    private void MapDomainToEntity()
+    {
+        CreateMap<Enrollment, EnrollmentEntity>()
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId));
+            .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
+    }
+
+    private void MapDomainToRespondDto()
+    {
+        CreateMap<Enrollment, RespondEnrollmentDto>();
     }
 }
