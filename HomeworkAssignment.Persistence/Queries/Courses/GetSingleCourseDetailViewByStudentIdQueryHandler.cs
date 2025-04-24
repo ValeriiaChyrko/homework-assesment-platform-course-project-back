@@ -6,36 +6,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class
-    GetSingleCourseDetailViewByStudentIdQueryHandler : IRequestHandler<GetSingleCourseDetailViewByStudentIdQuery,
-    CourseDetailView?>
+public sealed class GetSingleCourseDetailViewByStudentIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetSingleCourseDetailViewByStudentIdQuery, CourseDetailView?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetSingleCourseDetailViewByStudentIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public async Task<CourseDetailView?> Handle(GetSingleCourseDetailViewByStudentIdQuery query,
+    public async Task<CourseDetailView?> Handle(
+        GetSingleCourseDetailViewByStudentIdQuery query,
         CancellationToken cancellationToken)
     {
-        var queryable = _context.CourseEntities
+        ArgumentNullException.ThrowIfNull(query);
+
+        var filters = query.FilterParameters;
+
+        var queryable = context.CourseEntities
             .AsNoTracking()
-            .Where(mr => mr.Id == query.CourseId && mr.IsPublished);
+            .Where(c => c.Id == query.CourseId && c.IsPublished);
 
-        if (query.FilterParameters.IncludeCategory)
-            queryable = queryable.Include(a => a.Category);
+        if (filters.IncludeCategory)
+            queryable = queryable.Include(c => c.Category);
 
-        if (query.FilterParameters.IncludeChapters)
-            queryable = queryable.Include(a => a.Chapters!.Where(chapter => chapter.IsPublished));
+        if (filters.IncludeChapters)
+            queryable = queryable.Include(c => c.Chapters!.Where(ch => ch.IsPublished));
 
-        if (query.FilterParameters.IncludeAttachments)
-            queryable = queryable.Include(a => a.Attachments);
+        if (filters.IncludeAttachments)
+            queryable = queryable.Include(c => c.Attachments);
 
         var courseEntity = await queryable.SingleOrDefaultAsync(cancellationToken);
-        return courseEntity != null ? _mapper.Map<CourseDetailView>(courseEntity) : null;
+
+        return courseEntity is null
+            ? null
+            : mapper.Map<CourseDetailView>(courseEntity);
     }
 }

@@ -25,7 +25,7 @@ public class ChapterController(IChapterService service, HybridCache cache, ICach
         LocalCacheExpiration = TimeSpan.FromMinutes(5),
         Expiration = TimeSpan.FromMinutes(10)
     };
-    
+
     /// <summary>
     ///     Getting the all chapters of a course.
     /// </summary>
@@ -39,7 +39,7 @@ public class ChapterController(IChapterService service, HybridCache cache, ICach
             _cacheOptions,
             [cacheKeyManager.CourseSingleGroup(courseId)],
             cancellationToken);
-        
+
         return Ok(cachedChapter);
     }
 

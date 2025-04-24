@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Chapters;
 
-public sealed record UpdateChapterCommandHandler : IRequestHandler<UpdateChapterCommand, Chapter>
+public sealed class UpdateChapterCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<UpdateChapterCommand, Chapter>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public UpdateChapterCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     public Task<Chapter> Handle(UpdateChapterCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var chapterEntity = _mapper.Map<ChapterEntity>(command.Chapter);
         chapterEntity.Id = command.ChapterId;

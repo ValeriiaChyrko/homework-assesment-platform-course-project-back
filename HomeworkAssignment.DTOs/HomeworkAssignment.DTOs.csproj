@@ -17,8 +17,4 @@
         <ProjectReference Include="..\HomeworkAssignment.Domain\HomeworkAssignment.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="SharedDTOs\"/>
-    </ItemGroup>
-
 </Project>

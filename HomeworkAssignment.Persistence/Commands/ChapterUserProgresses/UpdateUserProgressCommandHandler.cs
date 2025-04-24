@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.ChapterUserProgresses;
 
-public sealed record UpdateUserProgressCommandHandler : IRequestHandler<UpdateUserProgressCommand, ChapterUserProgress>
+public sealed class UpdateUserProgressCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<UpdateUserProgressCommand, ChapterUserProgress>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public UpdateUserProgressCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     public Task<ChapterUserProgress> Handle(UpdateUserProgressCommand progressCommand,
         CancellationToken cancellationToken = default)
     {
-        if (progressCommand is null) throw new ArgumentNullException(nameof(progressCommand));
+        ArgumentNullException.ThrowIfNull(progressCommand);
 
         var userProgressEntity = _mapper.Map<UserChapterProgressEntity>(progressCommand.ChapterUserProgress);
         _context.UserChapterProgressEntities.Update(userProgressEntity);

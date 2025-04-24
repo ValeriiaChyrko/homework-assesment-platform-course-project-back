@@ -7,48 +7,48 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class
-    GetAllCourseDetailViewsQueryHandler : IRequestHandler<GetAllCourseDetailViewsQuery, PagedList<CourseDetailView>>
+public sealed class GetAllCourseDetailViewsQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetAllCourseDetailViewsQuery, PagedList<CourseDetailView>>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAllCourseDetailViewsQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<PagedList<CourseDetailView>> Handle(GetAllCourseDetailViewsQuery query,
         CancellationToken cancellationToken)
     {
-        var coursesQuery = _context.CourseEntities.AsNoTracking();
+        ArgumentNullException.ThrowIfNull(query);
 
-        if (query.FilterParameters.FilterByStudent)
-            coursesQuery = coursesQuery.Where(course =>
-                _context.EnrollmentEntities
-                    .Where(enrollment => enrollment.CourseId == course.Id)
-                    .Any(enrollment => enrollment.UserId == query.UserId));
+        var filter = query.FilterParameters;
+        var baseQuery = context.CourseEntities.AsNoTracking();
 
+        if (filter.FilterByStudent)
+            baseQuery = from course in baseQuery
+                join enrollment in context.EnrollmentEntities
+                    on course.Id equals enrollment.CourseId
+                where enrollment.UserId == query.UserId
+                select course;
 
-        if (!string.IsNullOrEmpty(query.FilterParameters.Title))
-            coursesQuery = coursesQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
+        if (!string.IsNullOrWhiteSpace(filter.Title))
+            baseQuery = baseQuery.Where(course => EF.Functions.ILike(course.Title, $"%{filter.Title}%"));
 
-        if (query.FilterParameters.CategoryId.HasValue)
-            coursesQuery = coursesQuery.Where(a => a.CategoryId == query.FilterParameters.CategoryId.Value);
+        if (filter.CategoryId.HasValue)
+            baseQuery = baseQuery.Where(course => course.CategoryId == filter.CategoryId.Value);
 
-        if (query.FilterParameters.IsPublished)
-            coursesQuery = coursesQuery.Where(a => a.IsPublished == query.FilterParameters.IsPublished);
+        if (filter.IsPublished) baseQuery = baseQuery.Where(course => course.IsPublished);
 
-        if (query.FilterParameters.IncludeCategory) coursesQuery = coursesQuery.Include(a => a.Category);
+        if (filter.IncludeCategory) baseQuery = baseQuery.Include(course => course.Category);
 
-        if (query.FilterParameters.IncludeChapters)
-            coursesQuery = coursesQuery.Include(a => a.Chapters!.Where(chapter => chapter.IsPublished));
+        if (filter.IncludeChapters)
+            baseQuery = baseQuery.Include(course => course.Chapters!
+                .Where(chapter => chapter.IsPublished));
 
-        coursesQuery = coursesQuery.OrderByDescending(a => a.CreatedAt);
+        baseQuery = baseQuery.OrderByDescending(course => course.CreatedAt);
 
-        var assignmentDtos = coursesQuery.Select(entityModel => _mapper.Map<CourseDetailView>(entityModel));
-        return await PagedList<CourseDetailView>.CreateAsync(assignmentDtos, query.FilterParameters.Page,
-            query.FilterParameters.PageSize, cancellationToken);
+        var projectedQuery = baseQuery.Select(course => mapper.Map<CourseDetailView>(course));
+
+        return await PagedList<CourseDetailView>.CreateAsync(
+            projectedQuery,
+            filter.Page,
+            filter.PageSize,
+            cancellationToken);
     }
 }

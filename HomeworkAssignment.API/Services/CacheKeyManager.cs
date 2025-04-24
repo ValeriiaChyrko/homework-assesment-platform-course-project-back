@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using HomeworkAssignment.Services.Abstractions;
 
+namespace HomeworkAssignment.Services;
+
 public class CacheKeyManager : ICacheKeyManager
 {
     // === CATEGORY ===
@@ -73,7 +75,7 @@ public class CacheKeyManager : ICacheKeyManager
     {
         return $"group:course:{courseId}:chapter:{chapterId}";
     }
-    
+
     public string ChapterList(Guid courseId)
     {
         return $"course:{courseId}:chapter:list";
@@ -120,7 +122,7 @@ public class CacheKeyManager : ICacheKeyManager
     {
         return $"course:{courseId}:chapter:{chapterId}:assignments";
     }
-    
+
     public string AssignmentAnalytics(Guid userId, Guid courseId, Guid chapterId, Guid assignmentId)
     {
         return $"assignment:analytics:{userId}:course:{courseId}:chapter:{chapterId}:assignments";

@@ -7,6 +7,6 @@ public class RespondAttemptAnalyticsDto
     public ushort CompilationScore { get; set; }
     public ushort QualityScore { get; set; }
     public ushort TestsScore { get; set; }
-    
+
     public required string? StudentFullName { get; set; }
 }

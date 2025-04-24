@@ -3,18 +3,15 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attachments;
 
-public sealed class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttachmentCommand>
+public sealed class DeleteAttachmentCommandHandler(IHomeworkAssignmentDbContext context)
+    : IRequestHandler<DeleteAttachmentCommand>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public DeleteAttachmentCommandHandler(IHomeworkAssignmentDbContext context)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public async Task Handle(DeleteAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var attachmentEntity = await _context.AttachmentEntities.FindAsync([command.Id], cancellationToken);
         if (attachmentEntity != null) _context.AttachmentEntities.Remove(attachmentEntity);

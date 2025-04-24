@@ -6,27 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class GetCourseByOwnerIdQueryHandler : IRequestHandler<GetCourseByOwnerIdQuery, Course?>
+public sealed class GetCourseByOwnerIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetCourseByOwnerIdQuery, Course?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetCourseByOwnerIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<Course?> Handle(GetCourseByOwnerIdQuery query, CancellationToken cancellationToken)
     {
-        var courseEntity = await _context
-            .CourseEntities
-            .AsNoTracking()
-            .SingleOrDefaultAsync(mr =>
-                    mr.Id == query.CourseId && mr.UserId == query.OwnerId,
-                cancellationToken
-            );
+        ArgumentNullException.ThrowIfNull(query);
 
-        return courseEntity != null ? _mapper.Map<Course>(courseEntity) : null;
+        var courseEntity = await context.CourseEntities
+            .AsNoTracking()
+            .Where(c => c.Id == query.CourseId && c.UserId == query.OwnerId)
+            .Select(c => mapper.Map<Course>(c))
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return courseEntity;
     }
 }

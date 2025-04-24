@@ -33,8 +33,6 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.Property(mr => mr.FullName).IsRequired().HasMaxLength(128);
         builder.Property(mr => mr.Email).IsRequired().HasMaxLength(254);
-        builder.Property(mr => mr.PasswordHash).IsRequired().HasMaxLength(254);
-        builder.Property(mr => mr.RoleType).HasMaxLength(32);
 
         builder.Property(mr => mr.GithubUsername).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.GithubProfileUrl).IsRequired().HasMaxLength(128);

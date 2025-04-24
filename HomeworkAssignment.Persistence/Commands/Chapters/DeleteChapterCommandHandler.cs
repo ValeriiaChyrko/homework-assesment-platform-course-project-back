@@ -3,18 +3,15 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Chapters;
 
-public sealed class DeleteChapterCommandHandler : IRequestHandler<DeleteChapterCommand>
+public sealed class DeleteChapterCommandHandler(IHomeworkAssignmentDbContext context)
+    : IRequestHandler<DeleteChapterCommand>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public DeleteChapterCommandHandler(IHomeworkAssignmentDbContext context)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public async Task Handle(DeleteChapterCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var chapterEntity = await _context.ChapterEntities.FindAsync([command.Id], cancellationToken);
         if (chapterEntity != null) _context.ChapterEntities.Remove(chapterEntity);

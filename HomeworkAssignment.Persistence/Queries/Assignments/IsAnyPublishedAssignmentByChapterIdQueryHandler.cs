@@ -4,24 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public sealed class
-    IsAnyPublishedAssignmentByChapterIdQueryHandler : IRequestHandler<IsAnyPublishedAssignmentByChapterIdQuery, bool>
+public sealed class IsAnyPublishedAssignmentByChapterIdQueryHandler(
+    IHomeworkAssignmentDbContext context)
+    : IRequestHandler<IsAnyPublishedAssignmentByChapterIdQuery, bool>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public IsAnyPublishedAssignmentByChapterIdQueryHandler(IHomeworkAssignmentDbContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
-
     public async Task<bool> Handle(IsAnyPublishedAssignmentByChapterIdQuery query, CancellationToken cancellationToken)
     {
-        var assignments = await _context
-            .AssignmentEntities
-            .AsNoTracking()
-            .Where(mr => mr.ChapterId == query.ChapterId && mr.IsPublished)
-            .ToListAsync(cancellationToken);
+        ArgumentNullException.ThrowIfNull(query);
 
-        return assignments.Count != 0;
+        return await context.AssignmentEntities
+            .AsNoTracking()
+            .AnyAsync(a => a.ChapterId == query.ChapterId && a.IsPublished, cancellationToken);
     }
 }

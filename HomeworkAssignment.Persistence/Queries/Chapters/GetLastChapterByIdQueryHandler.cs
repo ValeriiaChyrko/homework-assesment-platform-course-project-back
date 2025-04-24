@@ -6,26 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Chapters;
 
-public sealed class GetLastChapterByIdQueryHandler : IRequestHandler<GetLastChapterByIdQuery, Chapter?>
+public sealed class GetLastChapterByIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetLastChapterByIdQuery, Chapter?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetLastChapterByIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<Chapter?> Handle(GetLastChapterByIdQuery query, CancellationToken cancellationToken)
     {
-        var chapter = await _context
-            .ChapterEntities
+        ArgumentNullException.ThrowIfNull(query);
+
+        var chapterEntity = await context.ChapterEntities
             .AsNoTracking()
-            .Where(mr => mr.CourseId == query.CourseId)
-            .OrderByDescending(mr => mr.Position)
+            .Where(c => c.CourseId == query.CourseId)
+            .OrderByDescending(c => c.Position)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return chapter != null ? _mapper.Map<Chapter>(chapter) : null;
+        return chapterEntity is null ? null : mapper.Map<Chapter>(chapterEntity);
     }
 }

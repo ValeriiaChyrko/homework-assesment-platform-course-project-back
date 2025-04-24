@@ -4,18 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Commands.ChapterUserProgresses;
 
-public sealed class DeleteCourseUserProgressCommandHandler : IRequestHandler<DeleteCourseUserProgressCommand>
+public sealed class DeleteCourseUserProgressCommandHandler(IHomeworkAssignmentDbContext context)
+    : IRequestHandler<DeleteCourseUserProgressCommand>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public DeleteCourseUserProgressCommandHandler(IHomeworkAssignmentDbContext context)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public async Task Handle(DeleteCourseUserProgressCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var chapters = await _context.ChapterEntities
             .Where(ch => ch.CourseId == command.CourseId)

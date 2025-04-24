@@ -5,6 +5,7 @@ using HomeworkAssignment.Application.Abstractions.CategoryRelated;
 using HomeworkAssignment.Application.Abstractions.ChapterRelated;
 using HomeworkAssignment.Application.Abstractions.Contracts;
 using HomeworkAssignment.Application.Abstractions.CourseRelated;
+using HomeworkAssignment.Application.Abstractions.UserRelated;
 using HomeworkAssignment.Application.Implementations.AssignmentRelated;
 using HomeworkAssignment.Application.Implementations.AttemptRelated;
 using HomeworkAssignment.Application.Implementations.CategoryRelated;
@@ -33,7 +34,5 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
 
         services.AddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
-
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
     }
 }

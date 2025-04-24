@@ -1,7 +1,8 @@
-﻿namespace HomeworkAssignment.Application.Abstractions;
+﻿using HomeAssignment.DTOs.SharedDTOs;
+
+namespace HomeworkAssignment.Application.Abstractions.UserRelated;
 
 public interface IUserService
 {
-    Task<bool> CheckIfUserInTeacherRole(Guid userId, CancellationToken cancellationToken = default);
-    Task<string> GetUserGitHubUsername(Guid userId, CancellationToken cancellationToken = default);
+    Task CreateOrUpdateUserAcync(UserDto userDto, CancellationToken cancellationToken = default);
 }

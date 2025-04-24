@@ -2,4 +2,4 @@
 
 namespace HomeAssignment.Persistence.Commands.Users;
 
-public sealed record DeleteUserCommand(Guid Id) : IRequest;
+public sealed record DeleteAllUserRolesCommand(Guid UserId) : IRequest;

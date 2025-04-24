@@ -6,31 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.UserChapterProgresses;
 
-public sealed class
-    GetUserProgressByIdQueryHandler : IRequestHandler<GetUserChapterProgressByIdQuery,
-    ChapterUserProgress?>
+public sealed class GetUserProgressByIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetUserChapterProgressByIdQuery, ChapterUserProgress?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetUserProgressByIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public async Task<ChapterUserProgress?> Handle(GetUserChapterProgressByIdQuery query,
+    public async Task<ChapterUserProgress?> Handle(
+        GetUserChapterProgressByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var userProgressEntity = await _context
-            .UserChapterProgressEntities
+        ArgumentNullException.ThrowIfNull(query);
+
+        var progressEntity = await context.UserChapterProgressEntities
             .AsNoTracking()
             .SingleOrDefaultAsync(
-                a => a.ChapterId == query.ChapterId
-                     && a.UserId == query.UserId,
-                cancellationToken
-            );
+                p => p.ChapterId == query.ChapterId && p.UserId == query.UserId,
+                cancellationToken);
 
-        return userProgressEntity != null ? _mapper.Map<ChapterUserProgress>(userProgressEntity) : null;
+        return progressEntity is not null
+            ? mapper.Map<ChapterUserProgress>(progressEntity)
+            : null;
     }
 }

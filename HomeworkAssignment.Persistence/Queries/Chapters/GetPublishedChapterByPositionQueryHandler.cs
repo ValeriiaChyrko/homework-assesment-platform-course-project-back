@@ -6,30 +6,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Chapters;
 
-public sealed class
-    GetPublishedChapterByPositionQueryHandler : IRequestHandler<GetPublishedChapterByPositionQuery, Chapter?>
+public sealed class GetPublishedChapterByPositionQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetPublishedChapterByPositionQuery, Chapter?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetPublishedChapterByPositionQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<Chapter?> Handle(GetPublishedChapterByPositionQuery query, CancellationToken cancellationToken)
     {
-        var chapterEntity = await _context
-            .ChapterEntities
+        ArgumentNullException.ThrowIfNull(query);
+
+        var chapterEntity = await context.ChapterEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr =>
-                    mr.Position == query.Position
-                    && mr.CourseId == query.CourseId
-                    && mr.IsPublished == true,
+            .SingleOrDefaultAsync(
+                c => c.Position == query.Position &&
+                     c.CourseId == query.CourseId &&
+                     c.IsPublished,
                 cancellationToken
             );
 
-        return chapterEntity != null ? _mapper.Map<Chapter>(chapterEntity) : null;
+        return chapterEntity is null ? null : mapper.Map<Chapter>(chapterEntity);
     }
 }

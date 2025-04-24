@@ -1,8 +1,7 @@
-﻿using HomeAssignment.Domain.Abstractions.Enums;
-
-namespace HomeAssignment.Domain.Abstractions;
+﻿namespace HomeAssignment.Domain.Abstractions;
 
 public class User(
+    List<int>? roleIds,
     List<Guid>? attemptsIds,
     List<Guid>? courseIds,
     List<Guid>? enrollmentIds,
@@ -10,8 +9,6 @@ public class User(
     Guid id,
     string fullName,
     string email,
-    string passwordHash,
-    string roleType,
     string? githubUsername,
     string? githubProfileUrl,
     string? githubPictureUrl,
@@ -21,13 +18,13 @@ public class User(
     private readonly List<Guid> _attemptsIds = attemptsIds ?? [];
     private readonly List<Guid> _courseIds = courseIds ?? [];
     private readonly List<Guid> _enrollmentIds = enrollmentIds ?? [];
+    private readonly List<int> _roleIds = roleIds ?? [];
     private readonly List<Guid> _userProgressIds = userProgressIds ?? [];
 
     public Guid Id { get; init; } = id;
     public string FullName { get; set; } = fullName;
     public string Email { get; set; } = email;
-    public string PasswordHash { get; set; } = passwordHash;
-    public string RoleType { get; private set; } = roleType;
+
     public string? GithubUsername { get; set; } = githubUsername;
     public string? GithubProfileUrl { get; set; } = githubProfileUrl;
     public string? GithubPictureUrl { get; set; } = githubPictureUrl;
@@ -35,51 +32,24 @@ public class User(
     public DateTime CreatedAt { get; init; } = createdAt;
     public DateTime UpdatedAt { get; set; } = updatedAt;
 
+    public IReadOnlyList<int> RoleIds => _roleIds.AsReadOnly();
     public IReadOnlyList<Guid> AttemptIds => _attemptsIds.AsReadOnly();
     public IReadOnlyList<Guid> CourseIds => _courseIds.AsReadOnly();
     public IReadOnlyList<Guid> EnrollmentIds => _enrollmentIds.AsReadOnly();
     public IReadOnlyList<Guid> UsersProgressIds => _userProgressIds.AsReadOnly();
 
-    public static User CreateStudent(string fullName, string email, string passwordHash, string? githubUsername,
+    public static User CreateUser(Guid id, string fullName, string email, string? githubUsername,
         string? githubProfileUrl, string? githubPictureUrl)
     {
-        var roleType = UserRoles.Student.ToString();
-
-        var newStudent = new User(
-            null,
-            null,
-            null,
-            null,
-            Guid.NewGuid(),
-            fullName,
-            email,
-            passwordHash,
-            roleType,
-            githubUsername,
-            githubProfileUrl,
-            githubPictureUrl,
-            DateTime.UtcNow,
-            DateTime.UtcNow
-        );
-
-        return newStudent;
-    }
-
-    public static User CreateTeacher(string fullName, string email, string passwordHash, string? githubUsername,
-        string? githubProfileUrl, string? githubPictureUrl)
-    {
-        var roleType = UserRoles.Teacher.ToString();
-
         var newTeacher = new User(
             null,
             null,
             null,
             null,
-            Guid.NewGuid(),
+            null,
+            id,
             fullName,
             email,
-            passwordHash,
-            roleType,
             githubUsername,
             githubProfileUrl,
             githubPictureUrl,
@@ -90,15 +60,18 @@ public class User(
         return newTeacher;
     }
 
-    public void Update(string fullName, string email, string passwordHash, string? githubUsername,
-        string? githubProfileUrl, string? githubPictureUrl)
+    public void PatchUpdate(
+        string? fullName = null,
+        string? email = null,
+        string? githubUsername = null,
+        string? githubProfileUrl = null,
+        string? githubPictureUrl = null)
     {
-        FullName = fullName;
-        Email = email;
-        PasswordHash = passwordHash;
-        GithubUsername = githubUsername;
-        GithubProfileUrl = githubProfileUrl;
-        GithubPictureUrl = githubPictureUrl;
+        FullName = fullName ?? FullName;
+        Email = email ?? Email;
+        GithubUsername = githubUsername ?? GithubUsername;
+        GithubProfileUrl = githubProfileUrl ?? GithubProfileUrl;
+        GithubPictureUrl = githubPictureUrl ?? GithubPictureUrl;
 
         UpdatedAt = DateTime.UtcNow;
     }

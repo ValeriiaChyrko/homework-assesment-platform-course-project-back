@@ -3,6 +3,7 @@ using HomeAssignment.Domain.Abstractions;
 using HomeAssignment.DTOs.RespondDTOs.CourseRelated;
 using HomeAssignment.Persistence.Commands.ChapterUserProgresses;
 using HomeAssignment.Persistence.Commands.Enrollments;
+using HomeAssignment.Persistence.Queries.Courses;
 using HomeAssignment.Persistence.Queries.Enrollments;
 using HomeworkAssignment.Application.Abstractions;
 using HomeworkAssignment.Application.Abstractions.Contracts;
@@ -25,7 +26,7 @@ public class CourseEnrollmentService(
     public async Task<RespondEnrollmentDto> EnrollAsync(Guid userId, Guid courseId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting enrollment process for course ID: {CourseId}", courseId);
+        _logger.LogInformation("Enrolling in course. Course Id: {CourseId}", courseId);
 
         var existingEnrollment = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetEnrollmentByIdQuery(userId, courseId), cancellationToken),
@@ -33,8 +34,8 @@ public class CourseEnrollmentService(
 
         if (existingEnrollment != null)
         {
-            _logger.LogWarning("User is already enrolled in course ID: {CourseId}", courseId);
-            throw new ArgumentException("User is already enrolled.");
+            _logger.LogWarning("User  is already enrolled in the course. Course Id: {CourseId}", courseId);
+            throw new ArgumentException("User  is already enrolled.");
         }
 
         var enrollment = Enrollment.Create(userId, courseId);
@@ -43,13 +44,13 @@ public class CourseEnrollmentService(
             async () => await mediator.Send(new CreateEnrollmentCommand(enrollment), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully enrolled user in course ID: {CourseId}", courseId);
+        _logger.LogInformation("User  enrolled in the course. Course Id: {CourseId}", courseId);
         return mapper.Map<RespondEnrollmentDto>(addedEnrollment);
     }
 
     public async Task WithdrawAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting withdrawal process for course ID: {CourseId}", courseId);
+        _logger.LogInformation("Withdrawing from course. Course Id: {CourseId}", courseId);
 
         var existingEnrollment = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetEnrollmentByIdQuery(userId, courseId), cancellationToken),
@@ -57,7 +58,7 @@ public class CourseEnrollmentService(
 
         if (existingEnrollment == null)
         {
-            _logger.LogWarning("No enrollment found for course ID: {CourseId}", courseId);
+            _logger.LogWarning("Enrollment not found. Course Id: {CourseId}", courseId);
             throw new ArgumentException("Enrollment does not exist.");
         }
 
@@ -67,26 +68,26 @@ public class CourseEnrollmentService(
             await mediator.Send(new DeleteEnrollmentCommand(existingEnrollment.Id), cancellationToken);
         }, cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully withdrew user from course ID: {CourseId}", courseId);
+        _logger.LogInformation("User  withdrawn from the course. Course Id: {CourseId}", courseId);
     }
 
     public async Task<RespondEnrollmentDto?> GetEnrollmentAsync(Guid userId, Guid courseId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving enrollment details for course ID: {CourseId}", courseId);
+        _logger.LogInformation("Retrieving enrollment data for course. Course Id: {CourseId}", courseId);
 
         var result = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetEnrollmentByIdQuery(userId, courseId), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully retrieved enrollment details for course ID: {CourseId}", courseId);
+        _logger.LogInformation("Enrollment data retrieved for course. Course Id: {CourseId}", courseId);
         return mapper.Map<RespondEnrollmentDto>(result);
     }
-    
+
     public async Task<RespondEnrollmentsAnalyticsDto> GetEnrollmentsAnalyticsAsync(Guid userId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving enrolled courses for user {UserId}", userId);
+        _logger.LogInformation("Retrieving enrollment analytics for the course owner.");
 
         var enrollments = await ExecuteWithExceptionHandlingAsync(
             () => mediator.Send(new GetAllEnrollmentsByCourseOwnerIdQuery(userId), cancellationToken)
@@ -95,10 +96,10 @@ public class CourseEnrollmentService(
         var enrollmentList = enrollments.ToList();
         if (enrollmentList.Count == 0)
         {
-            _logger.LogInformation("No enrollments found for user {UserId}", userId);
+            _logger.LogInformation("No analytics found. No enrollments.");
             return new RespondEnrollmentsAnalyticsDto
             {
-                Analysis = [],
+                Analysis = new List<RespondCourseAnalyticsDto>(),
                 TotalStudents = 0
             };
         }
@@ -121,8 +122,7 @@ public class CourseEnrollmentService(
             })
             .ToList();
 
-        _logger.LogInformation("Successfully retrieved {Count} enrolled courses for user {UserId}", analysis.Count,
-            userId);
+        _logger.LogInformation("Analytics retrieved for {Count} courses", analysis.Count);
 
         return new RespondEnrollmentsAnalyticsDto
         {

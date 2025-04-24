@@ -13,6 +13,8 @@ public interface IHomeworkAssignmentDbContext : IUnitOfWork
     DbSet<CourseEntity> CourseEntities { get; set; }
     DbSet<EnrollmentEntity> EnrollmentEntities { get; set; }
     DbSet<UserEntity> UserEntities { get; set; }
+    DbSet<RoleEntity> RoleEntities { get; set; }
+    DbSet<UserRolesEntity> UserRolesEntities { get; set; }
     DbSet<UserChapterProgressEntity> UserChapterProgressEntities { get; set; }
     DbSet<UserAssignmentProgressEntity> UserAssignmentProgressEntities { get; set; }
 }

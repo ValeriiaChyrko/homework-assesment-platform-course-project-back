@@ -25,14 +25,15 @@ public class CourseAttachmentService(
     public async Task<IReadOnlyList<RespondAttachmentDto>> GetCourseAttachmentsAsync(Guid courseId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Fetching attachments for COURSE_ID: {CourseId}", courseId);
+        _logger.LogInformation("Retrieving course attachments. Course Id: {CourseId}", courseId);
 
         var attachments = await ExecuteTransactionAsync(
             () => mediator.Send(new GetAllAttachmentsByCourseIdQuery(courseId), cancellationToken),
             cancellationToken: cancellationToken);
 
         var attachmentList = attachments.ToList();
-        _logger.LogInformation("Fetched {Count} attachments for COURSE_ID: {CourseId}", attachmentList.Count, courseId);
+        _logger.LogInformation("Retrieved {Count} attachments for course.", attachmentList.Count);
+
         return attachmentList.Select(mapper.Map<RespondAttachmentDto>).ToList();
     }
 
@@ -40,7 +41,8 @@ public class CourseAttachmentService(
         RequestAttachmentDto attachmentDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Creating attachment '{Name}' for COURSE_ID: {CourseId}", attachmentDto.Name, courseId);
+        _logger.LogInformation("Creating attachment '{Name}' for course. Course Id: {CourseId}", attachmentDto.Name,
+            courseId);
 
         var attachment = Attachment.CreateForCourse(courseId, attachmentDto.Key, attachmentDto.Name, attachmentDto.Url);
 
@@ -48,19 +50,19 @@ public class CourseAttachmentService(
             () => mediator.Send(new CreateAttachmentCommand(attachment), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Created attachment ID: {AttachmentId} for COURSE_ID: {CourseId}", addedAttachment.Id,
-            courseId);
+        _logger.LogInformation("Attachment created. Attachment Id: {AttachmentId} for course.", addedAttachment.Id);
+
         return mapper.Map<RespondAttachmentDto>(addedAttachment);
     }
 
     public async Task DeleteCourseAttachmentAsync(Guid attachmentId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Deleting attachment ID: {AttachmentId}", attachmentId);
+        _logger.LogInformation("Deleting attachment. Attachment Id: {AttachmentId}", attachmentId);
 
         await ExecuteTransactionAsync(
             () => mediator.Send(new DeleteAttachmentCommand(attachmentId), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Deleted attachment ID: {AttachmentId}", attachmentId);
+        _logger.LogInformation("Attachment deleted. Attachment Id: {AttachmentId}", attachmentId);
     }
 }

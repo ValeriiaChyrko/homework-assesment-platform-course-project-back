@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HomeAssignment.Database.Migrations
 {
     [DbContext(typeof(HomeworkAssignmentDbContext))]
-    [Migration("20250331190446_Autolearn platform")]
+    [Migration("20250422180740_Autolearn platform")]
     partial class Autolearnplatform
     {
         /// <inheritdoc />
@@ -132,6 +132,11 @@ namespace HomeAssignment.Database.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UploadthingKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -333,6 +338,23 @@ namespace HomeAssignment.Database.Migrations
                     b.ToTable("EnrollmentEntities");
                 });
 
+            modelBuilder.Entity("HomeAssignment.Database.Entities.RoleEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleEntities");
+                });
+
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserAssignmentProgressEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -427,16 +449,6 @@ namespace HomeAssignment.Database.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)");
-
-                    b.Property<string>("RoleType")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -449,6 +461,21 @@ namespace HomeAssignment.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("UserEntities");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserRolesEntity", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRolesEntities");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
@@ -568,7 +595,7 @@ namespace HomeAssignment.Database.Migrations
                     b.HasOne("HomeAssignment.Database.Entities.ChapterEntity", "Chapter")
                         .WithMany("UsersProgress")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
                         .WithMany("UsersProgress")
@@ -577,6 +604,25 @@ namespace HomeAssignment.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Chapter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserRolesEntity", b =>
+                {
+                    b.HasOne("HomeAssignment.Database.Entities.RoleEntity", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -611,6 +657,11 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Enrollments");
                 });
 
+            modelBuilder.Entity("HomeAssignment.Database.Entities.RoleEntity", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserEntity", b =>
                 {
                     b.Navigation("Attempts");
@@ -618,6 +669,8 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Enrollments");
+
+                    b.Navigation("UserRoles");
 
                     b.Navigation("UsersProgress");
                 });

@@ -6,28 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Categories;
 
-public sealed class GetCategoryByCourseIdQueryHandler : IRequestHandler<GetCategoryByCourseIdQuery, Category?>
+public sealed class GetCategoryByCourseIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetCategoryByCourseIdQuery, Category?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetCategoryByCourseIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<Category?> Handle(GetCategoryByCourseIdQuery query, CancellationToken cancellationToken)
     {
-        var categoryEntity = await _context
-            .CategoryEntities
-            .AsNoTracking()
-            .Include(c => c.Courses)
-            .SingleOrDefaultAsync(c =>
-                    c.Courses.Any(course => course.Id == query.CourseId),
-                cancellationToken
-            );
+        ArgumentNullException.ThrowIfNull(query);
 
-        return categoryEntity != null ? _mapper.Map<Category>(categoryEntity) : null;
+        var categoryEntity = await context.CategoryEntities
+            .AsNoTracking()
+            .Where(c => c.Courses != null && c.Courses.Any(course => course.Id == query.CourseId))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return categoryEntity != null ? mapper.Map<Category>(categoryEntity) : null;
     }
 }

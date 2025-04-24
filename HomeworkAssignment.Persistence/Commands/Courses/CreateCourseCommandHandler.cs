@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Courses;
 
-public sealed class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, Course>
+public sealed class CreateCourseCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<CreateCourseCommand, Course>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public CreateCourseCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
 
     public async Task<Course> Handle(CreateCourseCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var courseEntity = _mapper.Map<CourseEntity>(command.Course);
         var addedEntity = await _context.CourseEntities.AddAsync(courseEntity, cancellationToken);

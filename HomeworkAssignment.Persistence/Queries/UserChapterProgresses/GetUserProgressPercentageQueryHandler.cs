@@ -4,31 +4,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.UserChapterProgresses;
 
-public sealed class GetUserProgressPercentageQueryHandler
+public sealed class GetUserProgressPercentageQueryHandler(
+    IHomeworkAssignmentDbContext context)
     : IRequestHandler<GetUserProgressPercentageQuery, int>
 {
     private const int PercentageMultiplier = 100;
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public GetUserProgressPercentageQueryHandler(IHomeworkAssignmentDbContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public async Task<int> Handle(GetUserProgressPercentageQuery query, CancellationToken cancellationToken)
     {
-        var totalChaptersQuery = _context.ChapterEntities
-            .Where(c => c.CourseId == query.CourseId && c.IsPublished);
+        ArgumentNullException.ThrowIfNull(query);
 
-        var totalChapters = await totalChaptersQuery.CountAsync(cancellationToken);
+        var publishedChapterIds = await context.ChapterEntities
+            .Where(c => c.CourseId == query.CourseId && c.IsPublished)
+            .Select(c => c.Id)
+            .ToListAsync(cancellationToken);
 
+        var totalChapters = publishedChapterIds.Count;
         if (totalChapters == 0) return 0;
 
-        var completedChapters = await _context.UserChapterProgressEntities
-            .Where(up => up.UserId == query.UserId &&
-                         totalChaptersQuery.Any(c => c.Id == up.ChapterId) &&
-                         up.IsCompleted)
-            .CountAsync(cancellationToken);
+        var completedChapters = await context.UserChapterProgressEntities
+            .CountAsync(
+                up => up.ChapterId.HasValue &&
+                      publishedChapterIds.Contains(up.ChapterId.Value) &&
+                      up.UserId == query.UserId &&
+                      up.IsCompleted,
+                cancellationToken);
 
         return (int)Math.Round((decimal)completedChapters / totalChapters * PercentageMultiplier);
     }

@@ -31,7 +31,7 @@ public interface IAssignmentService
 
     Task<RespondAssignmentDto?> GetAssignmentByIdAsync(Guid chapterId, Guid assignmentId,
         CancellationToken cancellationToken = default);
-    
+
     Task<RespondAssignmentAnalyticsDto?> GetAssignmentAnalyticsAsync(Guid chapterId, Guid assignmentId,
         CancellationToken cancellationToken = default);
 }

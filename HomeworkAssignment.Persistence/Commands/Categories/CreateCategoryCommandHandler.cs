@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Categories;
 
-public sealed class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Category>
+public sealed class CreateCategoryCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<CreateCategoryCommand, Category>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public CreateCategoryCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
 
     public async Task<Category> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var categoryEntity = _mapper.Map<CategoryEntity>(command.Category);
         var addedEntity = await _context.CategoryEntities.AddAsync(categoryEntity, cancellationToken);

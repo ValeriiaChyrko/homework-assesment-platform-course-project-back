@@ -30,7 +30,7 @@ public class ChapterService(
     public async Task<RespondChapterDto> CreateChapterAsync(Guid courseId, RequestCreateChapterDto createChapterDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started creating chapter: {@ChapterDto}", createChapterDto);
+        _logger.LogInformation("Create chapter: {@ChapterDto}", createChapterDto);
 
         var lastChapter = await mediator.Send(new GetLastChapterByIdQuery(courseId), cancellationToken);
         var newPosition = lastChapter != null ? lastChapter.Position + 1 : 0;
@@ -43,19 +43,19 @@ public class ChapterService(
             async () => await mediator.Send(new CreateChapterCommand(chapter), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully created chapter with ID: {ChapterId}", chapter.Id);
+        _logger.LogInformation("Create chapter with ID: {ChapterId}", chapter.Id);
         return mapper.Map<RespondChapterDto>(chapter);
     }
 
     public async Task<RespondChapterDto> UpdateChapterAsync(Guid courseId, Guid chapterId,
         RequestPartialChapterDto chapterDto, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started updating chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Update chapter with ID: {ChapterId}", chapterId);
 
         var chapter = await mediator.Send(new GetChapterByIdQuery(courseId, chapterId), cancellationToken);
         if (chapter == null)
         {
-            _logger.LogWarning("Chapter with ID: {id} does not exist.", chapterId);
+            _logger.LogWarning("Chapter with ID: {id} does not exist", chapterId);
             throw new ArgumentException("Chapter does not exist.");
         }
 
@@ -71,14 +71,14 @@ public class ChapterService(
             async () => await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully updated chapter: {@Chapter}", updatedChapter);
+        _logger.LogInformation("Update chapter: {@Chapter}", updatedChapter);
         return mapper.Map<RespondChapterDto>(updatedChapter);
     }
 
     public async Task DeleteChapterAsync(Guid userId, Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started deleting chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Delete chapter with ID: {ChapterId}", chapterId);
 
         await ExecuteTransactionAsync(
             async () => await mediator.Send(new DeleteChapterCommand(chapterId), cancellationToken),
@@ -89,28 +89,26 @@ public class ChapterService(
         if (!isAnyPublishedChapterInCourse)
             await courseService.UnpublishCourseAsync(userId, courseId, cancellationToken);
 
-        _logger.LogInformation("Successfully deleted chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Delete chapter with ID: {ChapterId}", chapterId);
     }
 
     public async Task<RespondChapterDto> PublishChapterAsync(Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started publishing chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Publish chapter with ID: {ChapterId}", chapterId);
 
         var isAnyPublishedAssignmentInCourse =
             await mediator.Send(new IsAnyPublishedAssignmentByChapterIdQuery(chapterId), cancellationToken);
         if (!isAnyPublishedAssignmentInCourse)
         {
-            _logger.LogInformation(
-                "Unable to publish chapter with ID: {ChapterId}. Chapter does not have published assignments.",
-                chapterId);
+            _logger.LogInformation("Chapter with ID: {ChapterId} has no published assignments", chapterId);
             throw new ArgumentException("Chapter does not have published assignments.");
         }
 
         var chapter = await mediator.Send(new GetChapterByIdQuery(courseId, chapterId), cancellationToken);
         if (chapter == null)
         {
-            _logger.LogWarning("Chapter with ID: {id} does not exist.", chapterId);
+            _logger.LogWarning("Chapter with ID: {id} does not exist", chapterId);
             throw new ArgumentException("Chapter does not exist.");
         }
 
@@ -120,19 +118,19 @@ public class ChapterService(
             async () => await mediator.Send(new UpdateChapterCommand(chapterId, chapter), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully published chapter: {@Chapter}", updatedChapter);
+        _logger.LogInformation("Publish chapter: {@Chapter}", updatedChapter);
         return mapper.Map<RespondChapterDto>(updatedChapter);
     }
 
     public async Task<RespondChapterDto> UnpublishChapterAsync(Guid userId, Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started unpublishing chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Unpublish chapter with ID: {ChapterId}", chapterId);
 
         var chapter = await mediator.Send(new GetChapterByIdQuery(courseId, chapterId), cancellationToken);
         if (chapter == null)
         {
-            _logger.LogWarning("Chapter with ID: {id} does not exist.", chapterId);
+            _logger.LogWarning("Chapter with ID: {id} does not exist", chapterId);
             throw new ArgumentException("Chapter does not exist.");
         }
 
@@ -147,15 +145,14 @@ public class ChapterService(
         if (!isAnyPublishedChapterInCourse)
             await courseService.UnpublishCourseAsync(userId, courseId, cancellationToken);
 
-        _logger.LogInformation("Successfully unpublished chapter: {@Chapter}", updatedChapter);
-
+        _logger.LogInformation("Unpublish chapter: {@Chapter}", updatedChapter);
         return mapper.Map<RespondChapterDto>(updatedChapter);
     }
 
     public async Task ReorderChapterAsync(Guid courseId, IEnumerable<RequestReorderChapterDto> chapterDtos,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started reordering chapters for COURSE_ID: {CourseId}", courseId);
+        _logger.LogInformation("Reorder chapters for COURSE_ID: {CourseId}", courseId);
 
         await ExecuteTransactionAsync(
             async () =>
@@ -166,35 +163,36 @@ public class ChapterService(
             },
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully reordered chapters for COURSE_ID: {CourseId}", courseId);
+        _logger.LogInformation("Reorder chapters for COURSE_ID: {CourseId}", courseId);
     }
-    
-    public async Task<List<RespondChapterDto>> GetChaptersAsync(Guid courseId, CancellationToken cancellationToken = default)
+
+    public async Task<List<RespondChapterDto>> GetChaptersAsync(Guid courseId,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started retrieving all chapters");
+        _logger.LogInformation("Get all published chapters");
 
         var chapters = await mediator.Send(new GetAllPublishedChaptersByCourseIdQuery(courseId), cancellationToken);
 
-        _logger.LogInformation("Successfully retrieved all chapters");
+        _logger.LogInformation("Return all published chapters");
         return chapters.Select(mapper.Map<RespondChapterDto>).ToList();
     }
 
     public async Task<RespondChapterWithAssignmentsDto?> GetChapterByIdAsync(Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started retrieving chapter");
+        _logger.LogInformation("Get chapter with ID: {ChapterId}", chapterId);
 
         var chapter = await mediator.Send(new GetChapterByIdQuery(courseId, chapterId), cancellationToken);
         if (chapter == null)
         {
-            _logger.LogWarning("Chapter with ID: {id} does not exist.", chapterId);
+            _logger.LogWarning("Chapter with ID: {id} does not exist", chapterId);
             return null;
         }
 
         var assignments = await mediator.Send(new GetAllAssignmentsByChapterIdQuery(chapterId), cancellationToken);
         var attachments = await mediator.Send(new GetAllAttachmentsByChapterIdQuery(chapterId), cancellationToken);
 
-        _logger.LogInformation("Successfully retrieved chapter");
+        _logger.LogInformation("Return chapter with assignments and attachments");
         return new RespondChapterWithAssignmentsDto
         {
             Id = chapter.Id,
@@ -213,18 +211,18 @@ public class ChapterService(
     public async Task<RespondChapterDto?> GetFirstChapterByCourseIdAsync(Guid courseId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started retrieving first chapter");
+        _logger.LogInformation("Get first chapter for COURSE_ID: {CourseId}", courseId);
 
         var chapter = await mediator.Send(new GetFirstChapterByIdQuery(courseId), cancellationToken);
 
-        _logger.LogInformation("Successfully retrieved first chapter");
+        _logger.LogInformation("Return first chapter for COURSE_ID: {CourseId}", courseId);
         return chapter == null ? null : mapper.Map<RespondChapterDto>(chapter);
     }
 
     public async Task<RespondChapterDto?> GetNextChapterByChapterIdAsync(Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started retrieving next chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Get next chapter after CHAPTER_ID: {ChapterId}", chapterId);
 
         var chapter = await mediator.Send(new GetChapterByIdQuery(courseId, chapterId), cancellationToken);
         var nextPosition = chapter != null ? chapter.Position + 1 : 0;
@@ -232,7 +230,7 @@ public class ChapterService(
         var nextChapter = await mediator.Send(new GetPublishedChapterByPositionQuery((ushort)nextPosition, courseId),
             cancellationToken);
 
-        _logger.LogInformation("Successfully retrieved next chapter with ID: {ChapterId}", chapterId);
+        _logger.LogInformation("Return next chapter after CHAPTER_ID: {ChapterId}", chapterId);
         return nextChapter == null ? null : mapper.Map<RespondChapterDto>(nextChapter);
     }
 }

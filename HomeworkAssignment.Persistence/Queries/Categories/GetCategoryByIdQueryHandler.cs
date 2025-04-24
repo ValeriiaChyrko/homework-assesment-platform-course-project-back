@@ -6,27 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Categories;
 
-public sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, Category?>
+public sealed class GetCategoryByIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetCategoryByIdQuery, Category?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetCategoryByIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<Category?> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
     {
-        var assignment = await _context
-            .CategoryEntities
-            .AsNoTracking()
-            .SingleOrDefaultAsync(mr =>
-                    mr.Id == query.Id,
-                cancellationToken
-            );
+        ArgumentNullException.ThrowIfNull(query);
 
-        return assignment != null ? _mapper.Map<Category>(assignment) : null;
+        var categoryEntity = await context.CategoryEntities
+            .AsNoTracking()
+            .SingleOrDefaultAsync(c => c.Id == query.Id, cancellationToken);
+
+        return categoryEntity != null ? mapper.Map<Category>(categoryEntity) : null;
     }
 }

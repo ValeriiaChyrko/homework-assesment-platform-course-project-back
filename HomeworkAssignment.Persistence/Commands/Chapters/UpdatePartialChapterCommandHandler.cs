@@ -3,19 +3,16 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Chapters;
 
-public sealed record UpdatePartialChapterCommandHandler : IRequestHandler<UpdatePartialChapterCommand>
+public sealed class UpdatePartialChapterCommandHandler(IHomeworkAssignmentDbContext context)
+    : IRequestHandler<UpdatePartialChapterCommand>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-
-    public UpdatePartialChapterCommandHandler(IHomeworkAssignmentDbContext context)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public async Task Handle(UpdatePartialChapterCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var chapterEntity = await _context.ChapterEntities.FindAsync([command.ChapterId], cancellationToken);
 

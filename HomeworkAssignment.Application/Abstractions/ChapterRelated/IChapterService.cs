@@ -21,9 +21,9 @@ public interface IChapterService
 
     Task ReorderChapterAsync(Guid courseId, IEnumerable<RequestReorderChapterDto> chapterDtos,
         CancellationToken cancellationToken = default);
-    
+
     Task<List<RespondChapterDto>> GetChaptersAsync(Guid courseId, CancellationToken cancellationToken = default);
-    
+
     Task<RespondChapterWithAssignmentsDto?> GetChapterByIdAsync(Guid courseId, Guid chapterId,
         CancellationToken cancellationToken = default);
 

@@ -46,6 +46,8 @@ public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbConte
     public DbSet<CourseEntity> CourseEntities { get; set; } = null!;
     public DbSet<EnrollmentEntity> EnrollmentEntities { get; set; } = null!;
     public DbSet<UserEntity> UserEntities { get; set; } = null!;
+    public DbSet<RoleEntity> RoleEntities { get; set; } = null!;
+    public DbSet<UserRolesEntity> UserRolesEntities { get; set; } = null!;
     public DbSet<UserChapterProgressEntity> UserChapterProgressEntities { get; set; } = null!;
     public DbSet<UserAssignmentProgressEntity> UserAssignmentProgressEntities { get; set; } = null!;
 

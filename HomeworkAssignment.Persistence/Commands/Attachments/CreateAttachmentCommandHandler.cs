@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attachments;
 
-public sealed class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, Attachment>
+public sealed class CreateAttachmentCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<CreateAttachmentCommand, Attachment>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public CreateAttachmentCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
 
     public async Task<Attachment> Handle(CreateAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var attachmentEntity = _mapper.Map<AttachmentEntity>(command.Attachment);
         var addedEntity = await _context.AttachmentEntities.AddAsync(attachmentEntity, cancellationToken);

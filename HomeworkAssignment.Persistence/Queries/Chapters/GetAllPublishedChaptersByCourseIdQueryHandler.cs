@@ -6,29 +6,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Chapters;
 
-public sealed class
-    GetAllPublishedChaptersByCourseIdQueryHandler : IRequestHandler<GetAllPublishedChaptersByCourseIdQuery,
-    IEnumerable<Chapter>>
+public sealed class GetAllPublishedChaptersByCourseIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetAllPublishedChaptersByCourseIdQuery, IEnumerable<Chapter>>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAllPublishedChaptersByCourseIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<IEnumerable<Chapter>> Handle(GetAllPublishedChaptersByCourseIdQuery query,
         CancellationToken cancellationToken)
     {
-        var chapterEntities = await _context
-            .ChapterEntities
-            .Where(c => c.CourseId == query.CourseId && c.IsPublished)
-            .OrderBy(a => a.Position)
+        ArgumentNullException.ThrowIfNull(query);
+
+        var chapterEntities = await context.ChapterEntities
             .AsNoTracking()
+            .Where(c => c.CourseId == query.CourseId && c.IsPublished)
+            .OrderBy(c => c.Position)
             .ToListAsync(cancellationToken);
 
-        return chapterEntities.Select(entityModel => _mapper.Map<Chapter>(entityModel)).ToList();
+        return mapper.Map<IEnumerable<Chapter>>(chapterEntities);
     }
 }

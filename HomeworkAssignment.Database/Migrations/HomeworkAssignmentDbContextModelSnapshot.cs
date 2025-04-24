@@ -253,9 +253,6 @@ namespace HomeAssignment.Database.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UsersProgressId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -263,9 +260,6 @@ namespace HomeAssignment.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("UsersProgressId")
-                        .IsUnique();
 
                     b.ToTable("ChapterEntities");
                 });
@@ -339,6 +333,23 @@ namespace HomeAssignment.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("EnrollmentEntities");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.RoleEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleEntities");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserAssignmentProgressEntity", b =>
@@ -435,16 +446,6 @@ namespace HomeAssignment.Database.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)");
-
-                    b.Property<string>("RoleType")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -457,6 +458,21 @@ namespace HomeAssignment.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("UserEntities");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserRolesEntity", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRolesEntities");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.AssignmentEntity", b =>
@@ -512,14 +528,7 @@ namespace HomeAssignment.Database.Migrations
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("HomeAssignment.Database.Entities.UserChapterProgressEntity", "UsersProgress")
-                        .WithOne("Chapter")
-                        .HasForeignKey("HomeAssignment.Database.Entities.ChapterEntity", "UsersProgressId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("Course");
-
-                    b.Navigation("UsersProgress");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.CourseEntity", b =>
@@ -580,11 +589,37 @@ namespace HomeAssignment.Database.Migrations
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserChapterProgressEntity", b =>
                 {
+                    b.HasOne("HomeAssignment.Database.Entities.ChapterEntity", "Chapter")
+                        .WithMany("UsersProgress")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
                         .WithMany("UsersProgress")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HomeAssignment.Database.Entities.UserRolesEntity", b =>
+                {
+                    b.HasOne("HomeAssignment.Database.Entities.RoleEntity", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("HomeAssignment.Database.Entities.UserEntity", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -606,6 +641,8 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Assignments");
 
                     b.Navigation("Attachments");
+
+                    b.Navigation("UsersProgress");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.CourseEntity", b =>
@@ -617,9 +654,9 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("HomeAssignment.Database.Entities.UserChapterProgressEntity", b =>
+            modelBuilder.Entity("HomeAssignment.Database.Entities.RoleEntity", b =>
                 {
-                    b.Navigation("Chapter");
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("HomeAssignment.Database.Entities.UserEntity", b =>
@@ -629,6 +666,8 @@ namespace HomeAssignment.Database.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Enrollments");
+
+                    b.Navigation("UserRoles");
 
                     b.Navigation("UsersProgress");
                 });

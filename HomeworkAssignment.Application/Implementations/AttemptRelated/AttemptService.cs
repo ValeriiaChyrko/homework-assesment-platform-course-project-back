@@ -24,7 +24,7 @@ public class AttemptService(
     public async Task<RespondAttemptDto> CreateAttemptAsync(Guid userId, Guid assignmentId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started creating attempt with: {@AssignmentId}", assignmentId);
+        _logger.LogInformation("Creating attempt for assignment {AssignmentId}", assignmentId);
 
         var lastAttempt = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetLastAttemptByIdQuery(userId, assignmentId), cancellationToken),
@@ -39,7 +39,7 @@ public class AttemptService(
             async () => await mediator.Send(new CreateAttemptCommand(attempt), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully created attempt with ID: {AttemptId}", attempt.Id);
+        _logger.LogInformation("Successfully created attempt {AttemptId}", attempt.Id);
         return mapper.Map<RespondAttemptDto>(attempt);
     }
 
@@ -47,7 +47,7 @@ public class AttemptService(
         RequestPartialAttemptDto attemptDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started updating attempt: {@AttemptDto}", attemptDto);
+        _logger.LogInformation("Updating attempt {AttemptId}", attemptId);
 
         var attempt = await ExecuteTransactionAsync(
             async () => await mediator.Send(new GetAttemptByIdQuery(assignmentId, attemptId), cancellationToken),
@@ -55,7 +55,7 @@ public class AttemptService(
 
         if (attempt == null)
         {
-            _logger.LogWarning("Attempt with ID: {AttemptId} not found", attemptId);
+            _logger.LogWarning("Attempt {AttemptId} not found", attemptId);
             return null;
         }
 
@@ -65,7 +65,7 @@ public class AttemptService(
             async () => await mediator.Send(new UpdateAttemptCommand(attemptId, attempt), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully updated attempt with ID: {AttemptId}", updatedAttempt.Id);
+        _logger.LogInformation("Successfully updated attempt {AttemptId}", updatedAttempt.Id);
         return mapper.Map<RespondAttemptDto>(updatedAttempt);
     }
 
@@ -73,9 +73,10 @@ public class AttemptService(
         RequestSubmitAttemptDto submitAttemptDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started submitting attempt: {@AttemptDto}", submitAttemptDto);
+        _logger.LogInformation("Submitting attempt {AttemptId}", attemptId);
 
-        if (submitAttemptDto.Attempt.IsCompleted) await CreateAttemptAsync(userId, assignmentId, cancellationToken);
+        if (submitAttemptDto.Attempt.IsCompleted)
+            await CreateAttemptAsync(userId, assignmentId, cancellationToken);
 
         return await UpdateExistingAttemptAsync(assignmentId, attemptId, submitAttemptDto, cancellationToken);
     }
@@ -102,7 +103,7 @@ public class AttemptService(
 
         if (attempt == null)
         {
-            _logger.LogWarning("Attempt with ID: {AttemptId} not found", attemptId);
+            _logger.LogWarning("Attempt {AttemptId} not found", attemptId);
             return null;
         }
 
@@ -117,7 +118,7 @@ public class AttemptService(
             async () => await mediator.Send(new UpdateAttemptCommand(attemptId, attempt), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully updated attempt with ID: {AttemptId}", updatedAttempt.Id);
+        _logger.LogInformation("Successfully updated attempt {AttemptId}", updatedAttempt.Id);
         return mapper.Map<RespondAttemptDto>(updatedAttempt);
     }
 }

@@ -6,16 +6,13 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Users;
 
-public sealed record UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, User>
+public sealed class UpdateUserCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<UpdateUserCommand, User>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public UpdateUserCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     public Task<User> Handle(UpdateUserCommand command,
         CancellationToken cancellationToken = default)

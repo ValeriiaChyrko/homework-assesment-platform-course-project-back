@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace HomeAssignment.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class HomeworkAssignmentPlatform : Migration
+    public partial class Autolearnplatform : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,14 +25,25 @@ namespace HomeAssignment.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RoleEntities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserEntities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FullName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Email = table.Column<string>(type: "character varying(254)", maxLength: 254, nullable: false),
-                    PasswordHash = table.Column<string>(type: "character varying(254)", maxLength: 254, nullable: false),
-                    RoleType = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     GithubUsername = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     GithubProfileUrl = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     GithubPictureUrl = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
@@ -73,12 +85,34 @@ namespace HomeAssignment.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserRolesEntities",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRolesEntities", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_UserRolesEntities_RoleEntities_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "RoleEntities",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserRolesEntities_UserEntities_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UserEntities",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChapterEntities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Description = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: true),
                     VideoUrl = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Position = table.Column<int>(type: "integer", nullable: false),
                     IsPublished = table.Column<bool>(type: "boolean", nullable: false),
@@ -105,7 +139,7 @@ namespace HomeAssignment.Database.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -132,11 +166,11 @@ namespace HomeAssignment.Database.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    RepositoryName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    RepositoryOwner = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: true),
+                    RepositoryName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    RepositoryOwner = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     RepositoryUrl = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Deadline = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Deadline = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     MaxScore = table.Column<int>(type: "integer", nullable: false),
                     MaxAttemptsAmount = table.Column<int>(type: "integer", nullable: false),
                     Position = table.Column<int>(type: "integer", nullable: false),
@@ -152,7 +186,7 @@ namespace HomeAssignment.Database.Migrations
                     AttemptQualityMinScore = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ChapterId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ChapterId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -172,6 +206,7 @@ namespace HomeAssignment.Database.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Url = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    UploadthingKey = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: true),
                     ChapterId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -195,26 +230,7 @@ namespace HomeAssignment.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MuxDataEntities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AssetId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    PlaybackId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ChapterId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MuxDataEntities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MuxDataEntities_ChapterEntities_ChapterId",
-                        column: x => x.ChapterId,
-                        principalTable: "ChapterEntities",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserProgressEntities",
+                name: "UserChapterProgressEntities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -226,31 +242,32 @@ namespace HomeAssignment.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProgressEntities", x => x.Id);
+                    table.PrimaryKey("PK_UserChapterProgressEntities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProgressEntities_ChapterEntities_ChapterId",
+                        name: "FK_UserChapterProgressEntities_ChapterEntities_ChapterId",
                         column: x => x.ChapterId,
                         principalTable: "ChapterEntities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProgressEntities_UserEntities_UserId",
+                        name: "FK_UserChapterProgressEntities_UserEntities_UserId",
                         column: x => x.UserId,
                         principalTable: "UserEntities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AttemptProgressEntities",
+                name: "AttemptEntities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Position = table.Column<int>(type: "integer", nullable: false),
-                    BranchName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    BranchName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     FinalScore = table.Column<int>(type: "integer", nullable: false),
                     CompilationScore = table.Column<int>(type: "integer", nullable: false),
                     QualityScore = table.Column<int>(type: "integer", nullable: false),
                     TestsScore = table.Column<int>(type: "integer", nullable: false),
-                    ProgressStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -259,15 +276,43 @@ namespace HomeAssignment.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AttemptProgressEntities", x => x.Id);
+                    table.PrimaryKey("PK_AttemptEntities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AttemptProgressEntities_AssignmentEntities_UserId",
-                        column: x => x.UserId,
+                        name: "FK_AttemptEntities_AssignmentEntities_AssignmentId",
+                        column: x => x.AssignmentId,
                         principalTable: "AssignmentEntities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AttemptProgressEntities_UserEntities_UserId",
+                        name: "FK_AttemptEntities_UserEntities_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UserEntities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAssignmentProgressEntities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AssignmentId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAssignmentProgressEntities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAssignmentProgressEntities_AssignmentEntities_Assignmen~",
+                        column: x => x.AssignmentId,
+                        principalTable: "AssignmentEntities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAssignmentProgressEntities_UserEntities_UserId",
                         column: x => x.UserId,
                         principalTable: "UserEntities",
                         principalColumn: "Id",
@@ -290,13 +335,13 @@ namespace HomeAssignment.Database.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AttemptProgressEntities_AssignmentId",
-                table: "AttemptProgressEntities",
+                name: "IX_AttemptEntities_AssignmentId",
+                table: "AttemptEntities",
                 column: "AssignmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AttemptProgressEntities_UserId",
-                table: "AttemptProgressEntities",
+                name: "IX_AttemptEntities_UserId",
+                table: "AttemptEntities",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -332,15 +377,24 @@ namespace HomeAssignment.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MuxDataEntities_ChapterId",
-                table: "MuxDataEntities",
-                column: "ChapterId",
-                unique: true);
+                name: "IX_UserAssignmentProgressEntities_AssignmentId",
+                table: "UserAssignmentProgressEntities",
+                column: "AssignmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MuxDataEntities_PlaybackId",
-                table: "MuxDataEntities",
-                column: "PlaybackId",
+                name: "IX_UserAssignmentProgressEntities_UserId",
+                table: "UserAssignmentProgressEntities",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChapterProgressEntities_ChapterId",
+                table: "UserChapterProgressEntities",
+                column: "ChapterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChapterProgressEntities_UserId_ChapterId",
+                table: "UserChapterProgressEntities",
+                columns: new[] { "UserId", "ChapterId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -356,15 +410,9 @@ namespace HomeAssignment.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProgressEntities_ChapterId",
-                table: "UserProgressEntities",
-                column: "ChapterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProgressEntities_UserId_ChapterId",
-                table: "UserProgressEntities",
-                columns: new[] { "UserId", "ChapterId" },
-                unique: true);
+                name: "IX_UserRolesEntities_RoleId",
+                table: "UserRolesEntities",
+                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -374,19 +422,25 @@ namespace HomeAssignment.Database.Migrations
                 name: "AttachmentEntities");
 
             migrationBuilder.DropTable(
-                name: "AttemptProgressEntities");
+                name: "AttemptEntities");
 
             migrationBuilder.DropTable(
                 name: "EnrollmentEntities");
 
             migrationBuilder.DropTable(
-                name: "MuxDataEntities");
+                name: "UserAssignmentProgressEntities");
 
             migrationBuilder.DropTable(
-                name: "UserProgressEntities");
+                name: "UserChapterProgressEntities");
+
+            migrationBuilder.DropTable(
+                name: "UserRolesEntities");
 
             migrationBuilder.DropTable(
                 name: "AssignmentEntities");
+
+            migrationBuilder.DropTable(
+                name: "RoleEntities");
 
             migrationBuilder.DropTable(
                 name: "ChapterEntities");

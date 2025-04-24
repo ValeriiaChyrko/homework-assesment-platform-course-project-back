@@ -27,7 +27,7 @@ public class AssignmentController(
         LocalCacheExpiration = TimeSpan.FromMinutes(5),
         Expiration = TimeSpan.FromMinutes(10)
     };
-    
+
     /// <summary>
     ///     Getting a list of assignments for a chapter.
     /// </summary>
@@ -68,7 +68,7 @@ public class AssignmentController(
         if (cachedAssignment == null) return NotFound();
         return Ok(cachedAssignment);
     }
-    
+
     /// <summary>
     ///     Getting an analityc for a assignment.
     /// </summary>

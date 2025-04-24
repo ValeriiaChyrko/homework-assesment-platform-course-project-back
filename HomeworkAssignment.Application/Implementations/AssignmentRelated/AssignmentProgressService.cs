@@ -24,19 +24,20 @@ public class AssignmentProgressService(
     public async Task<RespondAssignmentUserProgressDto?> GetProgressByAssignmentIdAsync(Guid userId, Guid assignmentId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving progress for assignment {AssignmentId}", assignmentId);
+        _logger.LogInformation("Starting retrieval of user progress for assignment {AssignmentId}", assignmentId);
 
         var result = await ExecuteWithExceptionHandlingAsync(
             async () => await mediator.Send(new GetAssignmentUserProgressByIdQuery(userId, assignmentId),
                 cancellationToken));
 
+        _logger.LogInformation("Successfully retrieved user progress for assignment {AssignmentId}", assignmentId);
         return mapper.Map<RespondAssignmentUserProgressDto>(result);
     }
 
     public async Task<RespondAssignmentUserProgressDto> UpdateProgressAsync(Guid userId, Guid assignmentId,
         bool completed, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Started retrieving progress with {ASSIGNMENT_ID}", assignmentId);
+        _logger.LogInformation("Starting update of user progress for assignment {AssignmentId}", assignmentId);
 
         var userProgress = await ExecuteWithExceptionHandlingAsync(
             async () => await mediator.Send(new GetAssignmentUserProgressByIdQuery(userId, assignmentId),
@@ -51,27 +52,30 @@ public class AssignmentProgressService(
     private async Task<RespondAssignmentUserProgressDto> CreateUserProgressAsync(Guid userId, Guid assignmentId,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Started creating user progress with ASSIGNMENT_ID: {ASSIGNMENT_ID}", assignmentId);
+        _logger.LogInformation("Starting creation of user progress for assignment {AssignmentId}", assignmentId);
 
         var progress = AssignmentUserProgress.Create(true, userId, assignmentId);
         var createdUserProgress = await ExecuteTransactionAsync(
             async () => await mediator.Send(new CreateAssignmentUserProgressCommand(progress), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully created user progress with ASSIGNMENT_ID: {ASSIGNMENT_ID}", assignmentId);
+        _logger.LogInformation("Successfully created user progress for assignment {AssignmentId}", assignmentId);
         return mapper.Map<RespondAssignmentUserProgressDto>(createdUserProgress);
     }
 
     private async Task<RespondAssignmentUserProgressDto> UpdateUserProgressAsync(AssignmentUserProgress userProgress,
         bool completed, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting update of user progress for assignment {AssignmentId}",
+            userProgress.AssignmentId);
+
         userProgress.Update(completed);
 
         var updatedUserProgress = await ExecuteTransactionAsync(
             async () => await mediator.Send(new UpdateAssignmentUserProgressCommand(userProgress), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Successfully updated user progress with ASSIGNMENT_ID: {ASSIGNMENT_ID}",
+        _logger.LogInformation("Successfully updated user progress for assignment {AssignmentId}",
             userProgress.AssignmentId);
         return mapper.Map<RespondAssignmentUserProgressDto>(updatedUserProgress);
     }

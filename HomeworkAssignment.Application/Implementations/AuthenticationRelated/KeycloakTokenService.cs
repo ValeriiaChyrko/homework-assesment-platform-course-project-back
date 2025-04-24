@@ -5,33 +5,27 @@ using Microsoft.Extensions.Logging;
 
 namespace HomeworkAssignment.Application.Implementations.AuthenticationRelated;
 
-public class KeycloakTokenService : IKeycloakTokenService
+public class KeycloakTokenService(
+    HttpClient httpClient,
+    IConfiguration configuration,
+    ILogger<KeycloakTokenService> logger)
+    : IKeycloakTokenService
 {
-    private readonly IConfiguration _configuration;
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<KeycloakTokenService> _logger;
-
-    public KeycloakTokenService(HttpClient httpClient, IConfiguration configuration,
-        ILogger<KeycloakTokenService> logger)
-    {
-        _httpClient = httpClient;
-        _configuration = configuration;
-        _logger = logger;
-    }
-
     public async Task<string?> GetAccessTokenAsync()
     {
-        var keycloakUrl = _configuration["Keycloak:AccessTokenUrl"];
-        var clientId = _configuration["Keycloak:ConfidentialClientId"];
-        var clientSecret = _configuration["Keycloak:ConfidentialClientSecret"];
-        var scope = _configuration["Keycloak:ConfidentialClientScope"];
+        var keycloakUrl = configuration["Keycloak:AccessTokenUrl"];
+        var clientId = configuration["Keycloak:ConfidentialClientId"];
+        var clientSecret = configuration["Keycloak:ConfidentialClientSecret"];
+        var scope = configuration["Keycloak:ConfidentialClientScope"];
 
         if (string.IsNullOrEmpty(keycloakUrl) || string.IsNullOrEmpty(clientId) ||
             string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(scope))
         {
-            _logger.LogError("Keycloak configuration is missing.");
+            logger.LogError("Missing Keycloak configuration.");
             throw new InvalidOperationException("Keycloak configuration is not set properly.");
         }
+
+        logger.LogInformation("Requesting Keycloak access token.");
 
         var request = new HttpRequestMessage(HttpMethod.Post, keycloakUrl)
         {
@@ -44,11 +38,11 @@ public class KeycloakTokenService : IKeycloakTokenService
             })
         };
 
-        var response = await _httpClient.SendAsync(request);
+        var response = await httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();
-            _logger.LogError("Failed to retrieve access token. Status Code: {StatusCode}, Response: {Response}",
+            logger.LogError("Failed to retrieve Keycloak token. Status: {StatusCode}, Body: {Response}",
                 response.StatusCode, errorContent);
             throw new InvalidOperationException(errorContent);
         }
@@ -57,10 +51,11 @@ public class KeycloakTokenService : IKeycloakTokenService
         var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json);
         if (tokenResponse == null)
         {
-            _logger.LogError("Failed to deserialize token response.");
+            logger.LogError("Failed to parse Keycloak token response.");
             throw new InvalidOperationException("Failed to deserialize token response.");
         }
 
-        return tokenResponse?.AccessToken;
+        logger.LogInformation("Successfully retrieved Keycloak access token.");
+        return tokenResponse.AccessToken;
     }
 }

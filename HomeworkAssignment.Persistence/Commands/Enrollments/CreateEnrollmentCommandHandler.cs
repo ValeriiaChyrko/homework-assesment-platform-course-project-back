@@ -6,21 +6,18 @@ using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Enrollments;
 
-public sealed class CreateEnrollmentCommandHandler : IRequestHandler<CreateEnrollmentCommand, Enrollment>
+public sealed class CreateEnrollmentCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    : IRequestHandler<CreateEnrollmentCommand, Enrollment>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public CreateEnrollmentCommandHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
+    private readonly IHomeworkAssignmentDbContext
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
 
     public async Task<Enrollment> Handle(CreateEnrollmentCommand command, CancellationToken cancellationToken)
     {
-        if (command is null) throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var enrollmentEntity = _mapper.Map<EnrollmentEntity>(command.Enrollment);
         var addedEntity = await _context.EnrollmentEntities.AddAsync(enrollmentEntity, cancellationToken);

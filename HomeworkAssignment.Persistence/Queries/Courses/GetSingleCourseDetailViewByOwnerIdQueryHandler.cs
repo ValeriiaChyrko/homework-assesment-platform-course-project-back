@@ -6,36 +6,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class
-    GetSingleCourseDetailViewByOwnerIdQueryHandler : IRequestHandler<GetSingleCourseDetailViewByOwnerIdQuery,
-    CourseDetailView?>
+public sealed class GetSingleCourseDetailViewByOwnerIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetSingleCourseDetailViewByOwnerIdQuery, CourseDetailView?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetSingleCourseDetailViewByOwnerIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<CourseDetailView?> Handle(GetSingleCourseDetailViewByOwnerIdQuery query,
         CancellationToken cancellationToken)
     {
-        var queryable = _context.CourseEntities
-            .Where(a => a.UserId == query.UserId && a.Id == query.CourseId)
-            .AsNoTracking();
+        ArgumentNullException.ThrowIfNull(query);
 
-        if (query.FilterParameters.IncludeCategory)
-            queryable = queryable.Include(a => a.Category);
+        var queryable = context.CourseEntities
+            .AsNoTracking()
+            .Where(course => course.UserId == query.UserId && course.Id == query.CourseId);
 
-        if (query.FilterParameters.IncludeChapters)
-            queryable = queryable.Include(a => a.Chapters);
+        var filters = query.FilterParameters;
 
-        if (query.FilterParameters.IncludeAttachments)
-            queryable = queryable.Include(a => a.Attachments);
+        if (filters.IncludeCategory)
+            queryable = queryable.Include(course => course.Category);
+
+        if (filters.IncludeChapters)
+            queryable = queryable.Include(course => course.Chapters);
+
+        if (filters.IncludeAttachments)
+            queryable = queryable.Include(course => course.Attachments);
 
         var courseEntity = await queryable.SingleOrDefaultAsync(cancellationToken);
-        return courseEntity != null ? _mapper.Map<CourseDetailView>(courseEntity) : null;
+
+        return courseEntity is null
+            ? null
+            : mapper.Map<CourseDetailView>(courseEntity);
     }
 }

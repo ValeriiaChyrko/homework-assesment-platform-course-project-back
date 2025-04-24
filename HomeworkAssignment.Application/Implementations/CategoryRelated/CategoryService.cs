@@ -24,7 +24,7 @@ public class CategoryService(
     public async Task<RespondCategoryDto> CreateCategoryAsync(RequestCategoryDto categoryDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Initiating category creation. Data: {@CategoryDto}", categoryDto);
+        _logger.LogInformation("Creating category. Data: {@CategoryDto}", categoryDto);
 
         var category = mapper.Map<Category>(categoryDto);
 
@@ -32,15 +32,14 @@ public class CategoryService(
             async () => await mediator.Send(new CreateCategoryCommand(category), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Category created successfully. ID: {CategoryId}, Name: {CategoryName}", category.Id,
-            category.Name);
+        _logger.LogInformation("Category created. ID: {CategoryId}, Name: {CategoryName}", category.Id, category.Name);
         return mapper.Map<RespondCategoryDto>(category);
     }
 
     public async Task<RespondCategoryDto> UpdateCategoryAsync(Guid categoryId, RequestCategoryDto categoryDto,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Initiating category update. ID: {CategoryId}, New Data: {@CategoryDto}", categoryId,
+        _logger.LogInformation("Updating category. ID: {CategoryId}, New Data: {@CategoryDto}", categoryId,
             categoryDto);
 
         var category = await ExecuteTransactionAsync(
@@ -49,7 +48,7 @@ public class CategoryService(
 
         if (category == null)
         {
-            _logger.LogError("Category update failed. Category with ID {CategoryId} not found.", categoryId);
+            _logger.LogWarning("Category not found. ID: {CategoryId}", categoryId);
             throw new ArgumentException($"Category with ID {categoryId} does not exist.");
         }
 
@@ -59,32 +58,32 @@ public class CategoryService(
             async () => await mediator.Send(new UpdateCategoryCommand(categoryId, category), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Category updated successfully. ID: {CategoryId}, New Name: {CategoryName}", categoryId,
+        _logger.LogInformation("Category updated. ID: {CategoryId}, New Name: {CategoryName}", categoryId,
             updatedCategory.Name);
         return mapper.Map<RespondCategoryDto>(updatedCategory);
     }
 
     public async Task DeleteCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Initiating category deletion. ID: {CategoryId}", categoryId);
+        _logger.LogInformation("Deleting category. ID: {CategoryId}", categoryId);
 
         await ExecuteTransactionAsync(
             async () => await mediator.Send(new DeleteCategoryCommand(categoryId), cancellationToken),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Category deleted successfully. ID: {CategoryId}", categoryId);
+        _logger.LogInformation("Category deleted. ID: {CategoryId}", categoryId);
     }
 
     public async Task<IReadOnlyCollection<RespondCategoryDto>> GetCategoriesAsync(
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving all categories from the database.");
+        _logger.LogInformation("Retrieving all categories.");
 
         var result = await ExecuteWithExceptionHandlingAsync(
             async () => await mediator.Send(new GetAllCategoriesQuery(), cancellationToken));
 
         var categories = result as Category[] ?? result.ToArray();
-        _logger.LogInformation("Successfully retrieved {CategoryCount} categories.", categories.Length);
+        _logger.LogInformation("Retrieved {CategoryCount} categories.", categories.Length);
 
         return categories.Select(mapper.Map<RespondCategoryDto>).ToList();
     }
@@ -92,19 +91,18 @@ public class CategoryService(
     public async Task<RespondCategoryDto?> GetCategoryByCourseIdAsync(Guid courseId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Retrieving category for course ID: {CourseId}", courseId);
+        _logger.LogInformation("Retrieving category by course ID: {CourseId}", courseId);
 
         var result = await ExecuteWithExceptionHandlingAsync(
             async () => await mediator.Send(new GetCategoryByCourseIdQuery(courseId), cancellationToken));
 
         if (result == null)
         {
-            _logger.LogWarning("No category found for course ID: {CourseId}", courseId);
+            _logger.LogWarning("No category found for course. ID: {CourseId}", courseId);
             return null;
         }
 
-        _logger.LogInformation("Successfully retrieved category. ID: {CategoryId}, Name: {CategoryName}", result.Id,
-            result.Name);
+        _logger.LogInformation("Category retrieved. ID: {CategoryId}, Name: {CategoryName}", result.Id, result.Name);
         return mapper.Map<RespondCategoryDto>(result);
     }
 }

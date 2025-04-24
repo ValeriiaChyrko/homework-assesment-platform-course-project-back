@@ -6,30 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Enrollments;
 
-public sealed class
-    GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQuery,
-    Enrollment>
+public sealed class GetEnrollmentByIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetEnrollmentByIdQuery, Enrollment?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetEnrollmentByIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public async Task<Enrollment> Handle(GetEnrollmentByIdQuery query,
+    public async Task<Enrollment?> Handle(
+        GetEnrollmentByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var enrollmentEntities = await _context
+        ArgumentNullException.ThrowIfNull(query);
+
+        var enrollmentEntity = await context
             .EnrollmentEntities
             .AsNoTracking()
-            .SingleOrDefaultAsync(mr =>
-                    mr.CourseId == query.CourseId && mr.UserId == query.UserId,
-                cancellationToken
-            );
+            .Where(mr => mr.CourseId == query.CourseId && mr.UserId == query.UserId)
+            .SingleOrDefaultAsync(cancellationToken);
 
-        return _mapper.Map<Enrollment>(enrollmentEntities);
+        return enrollmentEntity != null ? mapper.Map<Enrollment>(enrollmentEntity) : null;
     }
 }

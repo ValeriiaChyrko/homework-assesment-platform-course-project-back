@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Entities;
 using HomeAssignment.Domain.Abstractions;
-using HomeAssignment.DTOs.RequestDTOs.UserRelated;
+using HomeAssignment.DTOs.SharedDTOs;
 
 namespace HomeAssignment.DTOs.MappingProfiles;
 
@@ -9,11 +9,11 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
-        CreateMap<RequestUserDto, User>()
-            .ConstructUsing(dto => User.CreateStudent(
+        CreateMap<UserDto, User>()
+            .ConstructUsing(dto => User.CreateUser(
+                dto.Id,
                 dto.FullName,
                 dto.Email,
-                dto.Password, // TODO: Тут має бути хешування пароля перед створенням User
                 dto.GithubUsername,
                 dto.GithubProfileUrl,
                 dto.GithubPictureUrl
@@ -27,6 +27,7 @@ public class UserMappingProfile : Profile
 
         CreateMap<UserEntity, User>()
             .ConstructUsing(src => new User(
+                src.UserRoles != null ? src.UserRoles.Select(a => a.RoleId).ToList() : null,
                 src.Attempts != null ? src.Attempts.Select(a => a.Id).ToList() : null,
                 src.Courses != null ? src.Courses.Select(c => c.Id).ToList() : null,
                 src.Enrollments != null ? src.Enrollments.Select(e => e.Id).ToList() : null,
@@ -34,8 +35,6 @@ public class UserMappingProfile : Profile
                 src.Id,
                 src.FullName,
                 src.Email,
-                src.PasswordHash,
-                src.RoleType,
                 src.GithubUsername,
                 src.GithubProfileUrl,
                 src.GithubPictureUrl,

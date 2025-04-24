@@ -7,33 +7,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Courses;
 
-public sealed class
-    GetAllCourseDetailViewsByOwnerIdQueryHandler : IRequestHandler<GetAllCourseDetailViewsByOwnerIdQuery,
-    PagedList<CourseDetailView>>
+public sealed class GetAllCourseDetailViewsByOwnerIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetAllCourseDetailViewsByOwnerIdQuery, PagedList<CourseDetailView>>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAllCourseDetailViewsByOwnerIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
     public async Task<PagedList<CourseDetailView>> Handle(GetAllCourseDetailViewsByOwnerIdQuery query,
         CancellationToken cancellationToken)
     {
-        var coursesQuery = _context.CourseEntities.Where(a => a.UserId == query.UserId).AsNoTracking();
+        ArgumentNullException.ThrowIfNull(query);
 
-        if (!string.IsNullOrEmpty(query.FilterParameters.Title))
-            coursesQuery = coursesQuery.Where(a => a.Title.Contains(query.FilterParameters.Title));
+        var filter = query.FilterParameters;
+        var baseQuery = context.CourseEntities
+            .AsNoTracking()
+            .Where(c => c.UserId == query.UserId);
 
-        if (query.FilterParameters.IncludeCategory) coursesQuery = coursesQuery.Include(a => a.Category);
+        if (!string.IsNullOrWhiteSpace(filter.Title))
+            baseQuery = baseQuery.Where(c => EF.Functions.ILike(c.Title, $"%{filter.Title}%"));
 
-        coursesQuery = coursesQuery.OrderByDescending(a => a.CreatedAt);
+        if (filter.IncludeCategory) baseQuery = baseQuery.Include(c => c.Category);
 
-        var assignmentDtos = coursesQuery.Select(entityModel => _mapper.Map<CourseDetailView>(entityModel));
-        return await PagedList<CourseDetailView>.CreateAsync(assignmentDtos, query.FilterParameters.Page,
-            query.FilterParameters.PageSize, cancellationToken);
+        var orderedQuery = baseQuery.OrderByDescending(c => c.CreatedAt);
+
+        var projectedQuery = orderedQuery.Select(c => mapper.Map<CourseDetailView>(c));
+
+        return await PagedList<CourseDetailView>.CreateAsync(
+            projectedQuery,
+            filter.Page,
+            filter.PageSize,
+            cancellationToken);
     }
 }
