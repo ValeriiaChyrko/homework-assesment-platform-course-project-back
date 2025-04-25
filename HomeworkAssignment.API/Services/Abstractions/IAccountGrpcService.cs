@@ -6,4 +6,6 @@ public interface IAccountGrpcService
 {
     Task<IReadOnlyList<string>?>
         GetBranchesAsync(RequestBranchDto query, CancellationToken cancellationToken = default);
+    
+    Task<string>PostBranchAsync(RequestBranchDto query, CancellationToken cancellationToken = default);
 }

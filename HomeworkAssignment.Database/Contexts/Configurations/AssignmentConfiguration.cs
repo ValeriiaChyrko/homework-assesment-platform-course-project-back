@@ -21,6 +21,7 @@ public class AssignmentConfiguration : IEntityTypeConfiguration<AssignmentEntity
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
         builder.Property(mr => mr.Description).HasMaxLength(15000);
         builder.Property(mr => mr.RepositoryName).HasMaxLength(64);
+        builder.Property(mr => mr.RepositoryBaseBranchName).HasMaxLength(64);
         builder.Property(mr => mr.RepositoryOwner).HasMaxLength(64);
         builder.Property(mr => mr.RepositoryUrl).HasMaxLength(256);
 

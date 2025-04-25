@@ -73,6 +73,7 @@ public class AssignmentService(
             assignmentDto.Title,
             assignmentDto.Description,
             assignmentDto.RepositoryName,
+            assignmentDto.RepositoryBaseBranchName,
             assignmentDto.RepositoryOwner,
             assignmentDto.RepositoryUrl,
             assignmentDto.Deadline,

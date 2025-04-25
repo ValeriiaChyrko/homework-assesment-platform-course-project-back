@@ -80,6 +80,10 @@ namespace HomeAssignment.Database.Migrations
                     b.Property<int>("Position")
                         .HasColumnType("integer");
 
+                    b.Property<string>("RepositoryBaseBranchName")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("RepositoryName")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");

@@ -62,10 +62,11 @@ public class AttemptsController(
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<RespondAttemptDto>> Create(Guid courseId, Guid chapterId, Guid assignmentId,
-        CancellationToken cancellationToken = default)
+        [FromBody] RequestBranchDto query, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
 
+        await accountGrpc.PostBranchAsync(query, cancellationToken);
         var result = await attemptService.CreateAttemptAsync(userId, assignmentId, cancellationToken);
 
         await cache.RemoveByTagAsync(cacheKeyManager.AssignmentSingleGroup(courseId, chapterId, assignmentId),

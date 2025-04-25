@@ -6,6 +6,7 @@ public sealed class AssignmentEntity
     public required string Title { get; init; }
     public string? Description { get; init; }
     public string? RepositoryName { get; init; }
+    public string? RepositoryBaseBranchName { get; init; }
     public string? RepositoryOwner { get; init; }
     public string? RepositoryUrl { get; init; }
     public DateTime? Deadline { get; init; }

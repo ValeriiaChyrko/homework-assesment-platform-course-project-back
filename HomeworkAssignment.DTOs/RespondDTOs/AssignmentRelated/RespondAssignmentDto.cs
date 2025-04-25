@@ -6,6 +6,7 @@ public class RespondAssignmentDto
     public required string Title { get; set; }
     public string? Description { get; set; }
     public string? RepositoryName { get; set; }
+    public string? RepositoryBaseBranchName { get; set; }
     public string? RepositoryOwner { get; set; }
     public string? RepositoryUrl { get; set; }
     public DateTime Deadline { get; set; }

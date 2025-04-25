@@ -5,7 +5,8 @@ public class Assignment(
     string title,
     string? description,
     string? repositoryName,
-    string? repositoryOwnerUserName,
+    string? repositoryBaseBranchName,
+    string? repositoryOwner,
     string? repositoryUrl,
     DateTime deadline,
     ushort maxScore,
@@ -26,7 +27,8 @@ public class Assignment(
     public string Title { get; set; } = title;
     public string? Description { get; set; } = description;
     public string? RepositoryName { get; set; } = repositoryName;
-    public string? RepositoryOwnerUserName { get; set; } = repositoryOwnerUserName;
+    public string? RepositoryBaseBranchName { get; set; } = repositoryBaseBranchName;
+    public string? RepositoryOwner { get; set; } = repositoryOwner;
     public string? RepositoryUrl { get; set; } = repositoryUrl;
     public DateTime Deadline { get; set; } = deadline;
     public ushort MaxScore { get; set; } = maxScore;
@@ -50,6 +52,7 @@ public class Assignment(
             null,
             null,
             null,
+            null,
             DateTime.UtcNow,
             0,
             0,
@@ -69,6 +72,7 @@ public class Assignment(
         string? title = null,
         string? description = null,
         string? repositoryName = null,
+        string? repositoryBaseBranchName = null,
         string? repositoryOwner = null,
         string? repositoryUrl = null,
         DateTime? deadline = null,
@@ -82,7 +86,8 @@ public class Assignment(
         Title = title ?? Title;
         Description = description ?? Description;
         RepositoryName = repositoryName ?? RepositoryName;
-        RepositoryOwnerUserName = repositoryOwner ?? RepositoryOwnerUserName;
+        RepositoryBaseBranchName = repositoryBaseBranchName ?? RepositoryBaseBranchName;
+        RepositoryOwner = repositoryOwner ?? RepositoryOwner;
         RepositoryUrl = repositoryUrl ?? RepositoryUrl;
         Deadline = deadline ?? Deadline;
         MaxScore = maxScore ?? MaxScore;

@@ -28,8 +28,6 @@ public class AssignmentMappingProfile : Profile
             .ForMember(dest => dest.AttemptCompilationSectionEnable, opt => opt.MapFrom(src => src.CompilationSection.IsEnabled))
             .ForMember(dest => dest.AttemptCompilationMaxScore, opt => opt.MapFrom(src => src.CompilationSection.MaxScore))
             .ForMember(dest => dest.AttemptCompilationMinScore, opt => opt.MapFrom(src => src.CompilationSection.MinScore))
-            .ForMember(dest => dest.RepositoryOwner, opt => opt.MapFrom(src => src.RepositoryOwnerUserName))
-            .ForMember(dest => dest.RepositoryName, opt => opt.MapFrom(src => src.RepositoryName))
             .ForMember(dest => dest.AttemptTestsSectionEnable, opt => opt.MapFrom(src => src.TestsSection.IsEnabled))
             .ForMember(dest => dest.AttemptTestsMaxScore, opt => opt.MapFrom(src => src.TestsSection.MaxScore))
             .ForMember(dest => dest.AttemptTestsMinScore, opt => opt.MapFrom(src => src.TestsSection.MinScore))
@@ -37,8 +35,7 @@ public class AssignmentMappingProfile : Profile
             .ForMember(dest => dest.AttemptQualityMaxScore, opt => opt.MapFrom(src => src.QualitySection.MaxScore))
             .ForMember(dest => dest.AttemptQualityMinScore, opt => opt.MapFrom(src => src.QualitySection.MinScore))
             .ForMember(dest => dest.Attempts, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt));
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
     }
 
     private void MapEntityToDomain()
@@ -49,6 +46,7 @@ public class AssignmentMappingProfile : Profile
                 entity.Title,
                 entity.Description,
                 entity.RepositoryName,
+                entity.RepositoryBaseBranchName,
                 entity.RepositoryOwner,
                 entity.RepositoryUrl,
                 entity.Deadline ?? entity.CreatedAt,
@@ -69,7 +67,6 @@ public class AssignmentMappingProfile : Profile
     private void MapDomainToDto()
     {
         CreateMap<Assignment, RespondAssignmentDto>()
-            .ForMember(dest => dest.RepositoryOwner, opt => opt.MapFrom(src => src.RepositoryOwnerUserName))
             .ForMember(dest => dest.AttemptCompilationSectionEnable, opt => opt.MapFrom(src => src.CompilationSection.IsEnabled))
             .ForMember(dest => dest.AttemptTestsSectionEnable, opt => opt.MapFrom(src => src.TestsSection.IsEnabled))
             .ForMember(dest => dest.AttemptQualitySectionEnable, opt => opt.MapFrom(src => src.QualitySection.IsEnabled))
