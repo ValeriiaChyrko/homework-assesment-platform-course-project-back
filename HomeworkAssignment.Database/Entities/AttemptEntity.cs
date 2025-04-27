@@ -3,18 +3,23 @@
 public class AttemptEntity
 {
     public Guid Id { get; set; }
-    public int AttemptNumber { get; set; }
-    public string BranchName { get; set; } = string.Empty;
-    public DateTime FinishedAt { get; set; }
+    public ushort Position { get; init; }
 
-    public int CompilationScore { get; set; }
-    public int TestsScore { get; set; }
-    public int QualityScore { get; set; }
-    public int FinalScore { get; set; }
+    public string? BranchName { get; init; }
 
-    public Guid StudentId { get; set; }
-    public GitHubProfilesEntity Student { get; set; } = null!;
+    public ushort FinalScore { get; set; }
+    public ushort CompilationScore { get; set; }
+    public ushort QualityScore { get; set; }
+    public ushort TestsScore { get; set; }
 
-    public Guid AssignmentId { get; set; }
-    public AssignmentEntity Assignment { get; set; } = null!;
+    public bool IsCompleted { get; init; }
+
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; }
+
+    public Guid UserId { get; init; }
+    public required UserEntity User { get; init; }
+
+    public Guid AssignmentId { get; init; }
+    public required AssignmentEntity Assignment { get; init; }
 }

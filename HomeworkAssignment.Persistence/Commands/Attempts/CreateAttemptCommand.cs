@@ -1,7 +1,6 @@
-﻿using HomeAssignment.DTOs.RequestDTOs;
-using HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attempts;
 
-public sealed record CreateAttemptCommand(RequestAttemptDto AttemptDto) : IRequest<RespondAttemptDto>;
+public sealed record CreateAttemptCommand(Attempt Attempt) : IRequest<Attempt>;

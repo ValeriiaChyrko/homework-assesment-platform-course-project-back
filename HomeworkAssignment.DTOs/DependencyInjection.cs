@@ -12,12 +12,16 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddAutoMapper(cfg =>
         {
-            cfg.AddProfile<MappingProfile>();
             cfg.AddProfile<AssignmentMappingProfile>();
+            cfg.AddProfile<AttachmentMappingProfile>();
             cfg.AddProfile<AttemptMappingProfile>();
-            cfg.AddProfile<StudentMappingProfile>();
-            cfg.AddProfile<TeacherMappingProfile>();
-            cfg.AddProfile<ScoreSectionMappingProfile>();
+            cfg.AddProfile<CategoryMappingProfile>();
+            cfg.AddProfile<CourseMappingProfile>();
+            cfg.AddProfile<ChapterMappingProfile>();
+            cfg.AddProfile<EnrollmentMappingProfile>();
+            cfg.AddProfile<UserMappingProfile>();
+            cfg.AddProfile<UserChapterProgressMappingProfile>();
+            cfg.AddProfile<UserAssignmentProgressMappingProfile>();
         });
     }
 }

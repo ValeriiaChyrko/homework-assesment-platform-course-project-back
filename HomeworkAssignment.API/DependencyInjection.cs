@@ -2,6 +2,7 @@
 using HomeworkAssignment.Services.Abstractions;
 using Microsoft.OpenApi.Models;
 using RepoAnalisys.Grpc;
+using StackExchange.Redis;
 
 namespace HomeworkAssignment;
 
@@ -9,6 +10,13 @@ public static class DependencyInjection
 {
     public static void AddGrpcServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<ICacheKeyManager, CacheKeyManager>();
+        services.AddSingleton<IConnectionMultiplexer>(
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ??
+                                          throw new InvalidOperationException(
+                                              "Redis connection string is not configured."))
+        );
+
         services.AddScoped<IAccountGrpcService, AccountGrpcService>();
         services.AddScoped<ICompilationGrpcService, CompilationGrpcService>();
         services.AddScoped<IQualityGrpcService, QualityGrpcService>();

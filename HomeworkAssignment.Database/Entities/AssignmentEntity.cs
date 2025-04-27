@@ -3,28 +3,41 @@
 public sealed class AssignmentEntity
 {
     public Guid Id { get; set; }
-    public required string Title { get; set; }
-    public string? Description { get; set; }
-    public required string RepositoryName { get; set; }
-    public DateTime Deadline { get; set; }
-    public int MaxScore { get; set; }
-    public int MaxAttemptsAmount { get; set; }
+    public required string Title { get; init; }
+    public string? Description { get; init; }
+    public string? RepositoryName { get; init; }
+    public string? RepositoryBaseBranchName { get; init; }
+    public string? RepositoryOwner { get; init; }
+    public string? RepositoryUrl { get; init; }
+    public DateTime? Deadline { get; init; }
 
-    public bool AttemptCompilationSectionEnable { get; set; }
-    public bool AttemptTestsSectionEnable { get; set; }
-    public bool AttemptQualitySectionEnable { get; set; }
+    public ushort MaxScore { get; init; }
+    public ushort MaxAttemptsAmount { get; init; }
 
-    public int AttemptCompilationMaxScore { get; set; }
-    public int AttemptCompilationMinScore { get; set; }
+    public ushort Position { get; set; }
+    public bool IsPublished { get; init; }
 
-    public int AttemptTestsMaxScore { get; set; }
-    public int AttemptTestsMinScore { get; set; }
+    public bool AttemptCompilationSectionEnable { get; init; }
+    public bool AttemptTestsSectionEnable { get; init; }
+    public bool AttemptQualitySectionEnable { get; init; }
 
-    public int AttemptQualityMaxScore { get; set; }
-    public int AttemptQualityMinScore { get; set; }
+    public ushort AttemptCompilationMaxScore { get; init; }
+    public ushort AttemptCompilationMinScore { get; init; }
 
-    public Guid OwnerId { get; set; }
-    public GitHubProfilesEntity OwnerEntity { get; set; } = null!;
+    public ushort AttemptTestsMaxScore { get; init; }
+    public ushort AttemptTestsMinScore { get; init; }
 
-    public ICollection<AttemptEntity>? Attempts { get; set; }
+    public ushort AttemptQualityMaxScore { get; init; }
+    public ushort AttemptQualityMinScore { get; init; }
+
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; set; }
+
+
+    public Guid? ChapterId { get; init; }
+    public ChapterEntity? Chapter { get; init; }
+
+
+    public ICollection<UserAssignmentProgressEntity>? UsersProgress { get; init; }
+    public ICollection<AttemptEntity>? Attempts { get; init; }
 }

@@ -1,15 +1,8 @@
 ﻿namespace HomeAssignment.Domain.Abstractions;
 
-public class ScoreSection
+public class ScoreSection(bool isEnabled, ushort maxScore, ushort minScore)
 {
-    public ScoreSection(bool isEnabled, int maxScore, int minScore)
-    {
-        IsEnabled = isEnabled;
-        MaxScore = maxScore;
-        MinScore = minScore;
-    }
-
-    public bool IsEnabled { get; set; }
-    public int MaxScore { get; set; }
-    public int MinScore { get; set; }
+    public bool IsEnabled { get; set; } = isEnabled;
+    public ushort MaxScore { get; set; } = maxScore;
+    public ushort MinScore { get; set; } = minScore;
 }

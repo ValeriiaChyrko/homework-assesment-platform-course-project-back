@@ -1,73 +1,66 @@
 ﻿namespace HomeAssignment.Domain.Abstractions;
 
-public class Attempt
+public class Attempt(
+    Guid id,
+    ushort position,
+    string? branchName,
+    bool isCompleted,
+    DateTime createdAt,
+    DateTime updatedAt,
+    Guid userId,
+    Guid assignmentId)
 {
-    private Attempt(Guid id, Guid studentId, Guid assignmentId, int attemptNumber, string branchName,
-        DateTime finishedAt,
-        int compilationScore, int testsScore, int qualityScore, int finalScore)
+    public Guid Id { get; init; } = id;
+    public ushort Position { get; set; } = position;
+    public string? BranchName { get; set; } = branchName;
+    public ushort FinalScore { get; private set; }
+    public ushort CompilationScore { get; private set; }
+    public ushort QualityScore { get; private set; }
+    public ushort TestsScore { get; private set; }
+    public bool IsCompleted { get; set; } = isCompleted;
+    public DateTime CreatedAt { get; } = createdAt;
+    public DateTime UpdatedAt { get; set; } = updatedAt;
+    public Guid UserId { get; init; } = userId;
+    public Guid AssignmentId { get; set; } = assignmentId;
+
+    private static ushort CalculateFinalScore(ushort compilationScore, ushort qualityScore, ushort testsScore)
     {
-        Id = id;
-        StudentId = studentId;
-        AssignmentId = assignmentId;
-        AttemptNumber = attemptNumber;
-        BranchName = branchName;
-        FinishedAt = finishedAt;
-        CompilationScore = compilationScore;
-        TestsScore = testsScore;
-        QualityScore = qualityScore;
-        FinalScore = finalScore;
+        return (ushort)(compilationScore + qualityScore + testsScore);
     }
 
-    public Guid Id { get; set; }
-    public Guid StudentId { get; set; }
-    public Guid AssignmentId { get; set; }
-    public int AttemptNumber { get; set; }
-    public string BranchName { get; set; }
-    public DateTime FinishedAt { get; set; }
-    public int CompilationScore { get; set; }
-    public int TestsScore { get; set; }
-    public int QualityScore { get; set; }
-    public int FinalScore { get; set; }
-
-    public static Attempt Create(Guid studentId, Guid assignmentId, string branchName, int attemptNumber,
-        int compilationScore,
-        int testsScore, int qualityScore)
+    public static Attempt Create(ushort position, Guid userId, Guid assignmentId)
     {
-        var attemptId = Guid.NewGuid();
-        var finalScore = compilationScore + testsScore + qualityScore;
-        var finishedAt = DateTime.UtcNow;
-
-        var newAttempt = new Attempt(
-            attemptId,
-            studentId,
-            assignmentId,
-            attemptNumber,
-            branchName,
-            finishedAt,
-            compilationScore,
-            testsScore,
-            qualityScore,
-            finalScore
+        return new Attempt(
+            Guid.NewGuid(),
+            position,
+            null,
+            false,
+            DateTime.UtcNow,
+            DateTime.UtcNow,
+            userId,
+            assignmentId
         );
-
-        return newAttempt;
     }
 
-    public void Update(Guid studentId, Guid assignmentId, string branchName, int attemptNumber, int compilationScore,
-        int testsScore,
-        int qualityScore)
+    public void UpdateBranchName(string? branchName)
     {
-        var finalScore = compilationScore + testsScore + qualityScore;
-        var finishedAt = DateTime.UtcNow;
-
-        StudentId = studentId;
-        AssignmentId = assignmentId;
-        AttemptNumber = attemptNumber;
         BranchName = branchName;
-        FinishedAt = finishedAt;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    private void UpdateScores(ushort compilationScore, ushort qualityScore, ushort testsScore)
+    {
         CompilationScore = compilationScore;
-        TestsScore = testsScore;
         QualityScore = qualityScore;
-        FinalScore = finalScore;
+        TestsScore = testsScore;
+        FinalScore = CalculateFinalScore(compilationScore, qualityScore, testsScore);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Submit(string branchName, ushort compilationScore, ushort qualityScore, ushort testsScore)
+    {
+        BranchName = branchName;
+        UpdateScores(compilationScore, qualityScore, testsScore);
+        IsCompleted = true;
     }
 }

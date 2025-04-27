@@ -1,74 +1,114 @@
 ﻿namespace HomeAssignment.Domain.Abstractions;
 
-public class Assignment
+public class Assignment(
+    Guid id,
+    string title,
+    string? description,
+    string? repositoryName,
+    string? repositoryBaseBranchName,
+    string? repositoryOwner,
+    string? repositoryUrl,
+    DateTime deadline,
+    ushort maxScore,
+    ushort maxAttemptsAmount,
+    ushort position,
+    bool isPublished,
+    Guid? chapterId,
+    List<Guid>? attemptIds,
+    DateTime createdAt,
+    DateTime updatedAt,
+    ScoreSection compilationSection,
+    ScoreSection testsSection,
+    ScoreSection qualitySection)
 {
-    public Assignment(Guid id, Guid ownerId, string title, string? description, string repositoryName,
-        DateTime deadline, int maxScore,
-        int maxAttemptsAmount,
-        ScoreSection compilationSection, ScoreSection testsSection, ScoreSection qualitySection)
+    private readonly List<Guid> _attemptIds = attemptIds ?? [];
+
+    public Guid Id { get; init; } = id;
+    public string Title { get; set; } = title;
+    public string? Description { get; set; } = description;
+    public string? RepositoryName { get; set; } = repositoryName;
+    public string? RepositoryBaseBranchName { get; set; } = repositoryBaseBranchName;
+    public string? RepositoryOwner { get; set; } = repositoryOwner;
+    public string? RepositoryUrl { get; set; } = repositoryUrl;
+    public DateTime Deadline { get; set; } = deadline;
+    public ushort MaxScore { get; set; } = maxScore;
+    public ushort MaxAttemptsAmount { get; set; } = maxAttemptsAmount;
+    public ushort Position { get; set; } = position;
+    public bool IsPublished { get; private set; } = isPublished;
+    public Guid? ChapterId { get; set; } = chapterId;
+    public IReadOnlyList<Guid> AttemptProgressIds => _attemptIds.AsReadOnly();
+    public DateTime CreatedAt { get; init; } = createdAt;
+    public DateTime UpdatedAt { get; private set; } = updatedAt;
+    public ScoreSection CompilationSection { get; set; } = compilationSection;
+    public ScoreSection TestsSection { get; set; } = testsSection;
+    public ScoreSection QualitySection { get; set; } = qualitySection;
+
+    public static Assignment Create(string title)
     {
-        Id = id;
-        OwnerId = ownerId;
-        Title = title;
-        Description = description;
-        RepositoryName = repositoryName;
-        Deadline = deadline;
-        MaxScore = maxScore;
-        MaxAttemptsAmount = maxAttemptsAmount;
-        CompilationSection = compilationSection;
-        TestsSection = testsSection;
-        QualitySection = qualitySection;
-    }
-
-    public Guid Id { get; set; }
-    public Guid OwnerId { get; set; }
-    public string Title { get; set; }
-    public string? Description { get; set; }
-    public string RepositoryName { get; set; }
-    public DateTime Deadline { get; set; }
-    public int MaxScore { get; set; }
-    public int MaxAttemptsAmount { get; set; }
-
-    public ScoreSection CompilationSection { get; set; }
-    public ScoreSection TestsSection { get; set; }
-    public ScoreSection QualitySection { get; set; }
-
-    public static Assignment Create(Guid ownerId, string title, string? description, string repositoryName,
-        DateTime deadline, int maxScore,
-        int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
-        ScoreSection? qualitySection = null)
-    {
-        var assignmentId = Guid.NewGuid();
-
         return new Assignment(
-            assignmentId,
-            ownerId,
+            Guid.NewGuid(),
             title,
-            description,
-            repositoryName,
-            deadline,
-            maxScore,
-            maxAttemptsAmount,
-            compilationSection ?? new ScoreSection(false, 0, 0),
-            testsSection ?? new ScoreSection(false, 0, 0),
-            qualitySection ?? new ScoreSection(false, 0, 0)
+            null,
+            null,
+            null,
+            null,
+            null,
+            DateTime.UtcNow,
+            0,
+            0,
+            0,
+            false,
+            null,
+            [],
+            DateTime.UtcNow,
+            DateTime.UtcNow,
+            new ScoreSection(false, 0, 0),
+            new ScoreSection(false, 0, 0),
+            new ScoreSection(false, 0, 0)
         );
     }
 
-    public void Update(Guid ownerId, string title, string? description, string repositoryName, DateTime deadline,
-        int maxScore,
-        int maxAttemptsAmount = 1, ScoreSection? compilationSection = null, ScoreSection? testsSection = null,
+    public void PatchUpdate(
+        string? title = null,
+        string? description = null,
+        string? repositoryName = null,
+        string? repositoryBaseBranchName = null,
+        string? repositoryOwner = null,
+        string? repositoryUrl = null,
+        DateTime? deadline = null,
+        ushort? maxScore = null,
+        ushort? maxAttemptsAmount = null,
+        ushort? position = null,
+        ScoreSection? compilationSection = null,
+        ScoreSection? testsSection = null,
         ScoreSection? qualitySection = null)
     {
-        OwnerId = ownerId;
-        Title = title;
-        Description = description;
-        RepositoryName = repositoryName;
-        Deadline = deadline;
-        MaxScore = maxScore;
-        MaxAttemptsAmount = maxAttemptsAmount;
-        CompilationSection = compilationSection ?? new ScoreSection(false, 0, 0);
-        TestsSection = testsSection ?? new ScoreSection(false, 0, 0);
-        QualitySection = qualitySection ?? new ScoreSection(false, 0, 0);
+        Title = title ?? Title;
+        Description = description ?? Description;
+        RepositoryName = repositoryName ?? RepositoryName;
+        RepositoryBaseBranchName = repositoryBaseBranchName ?? RepositoryBaseBranchName;
+        RepositoryOwner = repositoryOwner ?? RepositoryOwner;
+        RepositoryUrl = repositoryUrl ?? RepositoryUrl;
+        Deadline = deadline ?? Deadline;
+        MaxScore = maxScore ?? MaxScore;
+        MaxAttemptsAmount = maxAttemptsAmount ?? MaxAttemptsAmount;
+        Position = position ?? Position;
+        CompilationSection = compilationSection ?? CompilationSection;
+        TestsSection = testsSection ?? TestsSection;
+        QualitySection = qualitySection ?? QualitySection;
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Publish()
+    {
+        IsPublished = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Unpublish()
+    {
+        IsPublished = false;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

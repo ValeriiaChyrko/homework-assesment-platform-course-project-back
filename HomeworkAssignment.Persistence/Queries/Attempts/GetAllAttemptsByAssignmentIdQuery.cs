@@ -1,6 +1,7 @@
-﻿using HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Queries.Attempts;
 
-public record GetAllAttemptsByAssignmentIdQuery(Guid AssignmentId) : IRequest<IEnumerable<RespondAttemptDto>>;
+public record GetAllAttemptsByAssignmentIdQuery(Guid AssignmentId)
+    : IRequest<IEnumerable<Attempt>>;

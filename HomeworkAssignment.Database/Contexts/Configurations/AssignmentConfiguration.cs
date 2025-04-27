@@ -8,9 +8,9 @@ public class AssignmentConfiguration : IEntityTypeConfiguration<AssignmentEntity
 {
     public void Configure(EntityTypeBuilder<AssignmentEntity> builder)
     {
-        builder.HasOne(a => a.OwnerEntity)
+        builder.HasOne(a => a.Chapter)
             .WithMany(p => p.Assignments)
-            .HasForeignKey(mr => mr.OwnerId)
+            .HasForeignKey(mr => mr.ChapterId)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasMany(a => a.Attempts)
@@ -19,7 +19,12 @@ public class AssignmentConfiguration : IEntityTypeConfiguration<AssignmentEntity
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.Title).IsRequired().HasMaxLength(64);
-        builder.Property(mr => mr.Description).HasMaxLength(512);
-        builder.Property(mr => mr.RepositoryName).IsRequired().HasMaxLength(64);
+        builder.Property(mr => mr.Description).HasMaxLength(15000);
+        builder.Property(mr => mr.RepositoryName).HasMaxLength(64);
+        builder.Property(mr => mr.RepositoryBaseBranchName).HasMaxLength(64);
+        builder.Property(mr => mr.RepositoryOwner).HasMaxLength(64);
+        builder.Property(mr => mr.RepositoryUrl).HasMaxLength(256);
+
+        builder.HasIndex(mr => mr.ChapterId);
     }
 }

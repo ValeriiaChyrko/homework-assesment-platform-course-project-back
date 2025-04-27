@@ -1,29 +1,26 @@
 ﻿using AutoMapper;
 using HomeAssignment.Database.Contexts.Abstractions;
-using HomeAssignment.DTOs.RespondDTOs;
+using HomeAssignment.Domain.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeAssignment.Persistence.Queries.Assignments;
 
-public sealed class GetAssignmentByIdQueryHandler : IRequestHandler<GetAssignmentByIdQuery, RespondAssignmentDto?>
+public sealed class GetAssignmentByIdQueryHandler(
+    IHomeworkAssignmentDbContext context,
+    IMapper mapper)
+    : IRequestHandler<GetAssignmentByIdQuery, Assignment?>
 {
-    private readonly IHomeworkAssignmentDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAssignmentByIdQueryHandler(IHomeworkAssignmentDbContext context, IMapper mapper)
+    public async Task<Assignment?> Handle(GetAssignmentByIdQuery query, CancellationToken cancellationToken)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+        ArgumentNullException.ThrowIfNull(query);
 
-    public async Task<RespondAssignmentDto?> Handle(GetAssignmentByIdQuery query, CancellationToken cancellationToken)
-    {
-        var assignment = await _context
-            .AssignmentEntities
+        var assignment = await context.AssignmentEntities
             .AsNoTracking()
-            .FirstOrDefaultAsync(mr => mr.Id == query.Id, cancellationToken);
+            .SingleOrDefaultAsync(
+                a => a.Id == query.AssignmentId && a.ChapterId == query.ChapterId,
+                cancellationToken);
 
-        return assignment != null ? _mapper.Map<RespondAssignmentDto>(assignment) : null;
+        return assignment is null ? null : mapper.Map<Assignment>(assignment);
     }
 }

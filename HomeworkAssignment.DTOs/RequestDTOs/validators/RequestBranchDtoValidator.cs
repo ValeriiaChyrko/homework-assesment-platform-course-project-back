@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HomeAssignment.DTOs.RequestDTOs.AttemptRelated;
 
 namespace HomeAssignment.DTOs.RequestDTOs.validators;
 
@@ -9,10 +10,6 @@ public class RequestBranchDtoValidator : AbstractValidator<RequestBranchDto>
         RuleFor(x => x.RepoTitle)
             .NotEmpty()
             .WithMessage("Repository title cannot be null or whitespace.");
-
-        RuleFor(x => x.OwnerGitHubUsername)
-            .NotEmpty()
-            .WithMessage("Owner GitHub username cannot be null or whitespace.");
 
         RuleFor(x => x.AuthorGitHubUsername)
             .NotEmpty()

@@ -1,7 +1,6 @@
-﻿using HomeAssignment.DTOs.RequestDTOs;
-using HomeAssignment.DTOs.RespondDTOs;
+﻿using HomeAssignment.Domain.Abstractions;
 using MediatR;
 
 namespace HomeAssignment.Persistence.Commands.Attempts;
 
-public sealed record UpdateAttemptCommand(Guid Id, RequestAttemptDto AttemptDto) : IRequest<RespondAttemptDto>;
+public sealed record UpdateAttemptCommand(Guid Id, Attempt Attempt) : IRequest<Attempt>;
