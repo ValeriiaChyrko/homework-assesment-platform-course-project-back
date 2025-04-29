@@ -4,14 +4,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace HomeAssignment.Database.Contexts.Implementations;
 
-public class HomeworkAssignmentPostgresDbContextFactory : IHomeworkAssignmentDbContextFactory
+public class HomeworkAssignmentPostgresDbContextFactory(IConfiguration config) : IHomeworkAssignmentDbContextFactory
 {
-    private readonly IConfiguration _config;
-
-    public HomeworkAssignmentPostgresDbContextFactory(IConfiguration config)
-    {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
-    }
+    private readonly IConfiguration _config = config ?? throw new ArgumentNullException(nameof(config));
 
     public HomeworkAssignmentDbContext CreateDbContext()
     {
