@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "RepoAnalisys.Grpc";
 
-import "protos/repository_with_branch_query.proto";
+import "Protos/repository_with_branch_query.proto";
 
 package repository;
 
