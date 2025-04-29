@@ -72,6 +72,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -95,5 +97,7 @@ app.MapGet("users/me",
     {
         return claimsPrincipal.Claims.ToDictionary(claim => claim.Type, claim => claim.Value);
     }).RequireAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.Run();

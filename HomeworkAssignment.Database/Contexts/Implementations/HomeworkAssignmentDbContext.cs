@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HomeAssignment.Database.Contexts.Implementations;
 
-public class HomeworkAssignmentDbContext : DbContext, IHomeworkAssignmentDbContext
+public class HomeworkAssignmentDbContext(DbContextOptions<HomeworkAssignmentDbContext> options)
+    : DbContext(options), IHomeworkAssignmentDbContext
 {
-    public HomeworkAssignmentDbContext(DbContextOptions<HomeworkAssignmentDbContext> options)
-        : base(options)
-    {
-    }
-
-
     public void DetachEntitiesInChangeTracker()
     {
         foreach (var entry in ChangeTracker.Entries()) entry.State = EntityState.Detached;

@@ -3,14 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace HomeAssignment.Database.Contexts.Implementations;
 
-public class HomeworkAssignmentDbContextProvider : IHomeworkAssignmentDbContextProvider
+public class HomeworkAssignmentDbContextProvider(IConfiguration config) : IHomeworkAssignmentDbContextProvider
 {
-    private readonly IConfiguration _config;
-
-    public HomeworkAssignmentDbContextProvider(IConfiguration config)
-    {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
-    }
+    private readonly IConfiguration _config = config ?? throw new ArgumentNullException(nameof(config));
 
     public IHomeworkAssignmentDbContextFactory GetFactory()
     {
