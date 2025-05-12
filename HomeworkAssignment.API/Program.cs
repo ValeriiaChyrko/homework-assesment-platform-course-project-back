@@ -23,7 +23,7 @@ builder.Services.AddGrpcServices(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("http://localhost:3000")
+        policy => policy.WithOrigins("https://autolearn-platform.vercel.app")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
@@ -83,7 +83,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowVercel");
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseErrorHandler();
